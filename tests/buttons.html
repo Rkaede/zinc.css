@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>zinc.css dev tests — buttons</title>
+<link rel="stylesheet" href="../src/lib/zinc.css" />
+</head>
+<body>
+<p><a href="index.html">← tests</a></p>
+<h1>Buttons</h1>
+
+<h2>Variants</h2>
+<p>
+  <button>Primary</button>
+  <button data-variant="secondary">Secondary</button>
+  <button data-variant="outline">Outline</button>
+  <button data-variant="ghost">Ghost</button>
+  <button data-variant="danger">Danger</button>
+</p>
+
+<h2>Variants — disabled</h2>
+<p>
+  <button disabled>Primary</button>
+  <button data-variant="secondary" disabled>Secondary</button>
+  <button data-variant="outline" disabled>Outline</button>
+  <button data-variant="ghost" disabled>Ghost</button>
+  <button data-variant="danger" disabled>Danger</button>
+</p>
+
+<h2>Sizes</h2>
+<p>
+  <button data-size="sm">Small</button>
+  <button>Default</button>
+  <button data-size="lg">Large</button>
+</p>
+<p>
+  <button data-variant="outline" data-size="sm">Small</button>
+  <button data-variant="outline">Default</button>
+  <button data-variant="outline" data-size="lg">Large</button>
+</p>
+
+<h2>Sizes — disabled</h2>
+<p>
+  <button data-size="sm" disabled>Small</button>
+  <button disabled>Default</button>
+  <button data-size="lg" disabled>Large</button>
+</p>
+
+<h2>Element types</h2>
+<p>
+  <button>button</button>
+  <input type="submit" value="input submit" />
+  <input type="button" value="input button" />
+  <button type="reset">button reset</button>
+  <input type="reset" value="input reset" />
+  <a role="button" href="#">a role=button</a>
+</p>
+
+<h2>Element types — disabled</h2>
+<p>
+  <button disabled>button</button>
+  <input type="submit" value="input submit" disabled />
+  <input type="button" value="input button" disabled />
+  <button type="reset" disabled>button reset</button>
+  <input type="reset" value="input reset" disabled />
+</p>
+
+<h2>Segmented group</h2>
+<div role="group">
+  <button data-variant="secondary">Day</button>
+  <button data-variant="secondary">Week</button>
+  <button data-variant="secondary">Month</button>
+</div>
+<div role="group">
+  <button data-variant="secondary">Left</button>
+  <button data-variant="secondary" disabled>Middle (disabled)</button>
+  <button data-variant="secondary">Right</button>
+</div>
+
+<h2>Focus (tab through to check focus ring)</h2>
+<p>
+  <button>Primary</button>
+  <button data-variant="secondary">Secondary</button>
+  <button data-variant="outline">Outline</button>
+  <button data-variant="ghost">Ghost</button>
+  <a role="button" href="#">Link button</a>
+</p>
+</body>
+</html>
