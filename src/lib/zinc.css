@@ -484,7 +484,7 @@ a[role="button"]:hover, [data-variant]:hover { background: var(--accent-press); 
 button:active,
 input[type="submit"]:active, input[type="button"]:active,
 a[role="button"]:active, [data-variant]:active { transform: translateY(1px); }
-button:disabled, input:disabled[type="submit"], [data-variant]:disabled { transform: none; background: var(--accent); }
+button:disabled, input:disabled[type="submit"], [data-variant]:disabled { transform: none; }
 
 /* variants (attribute hooks, no classes) -------------------------------- */
 [data-variant="secondary"], button[type="reset"], input[type="reset"] {
