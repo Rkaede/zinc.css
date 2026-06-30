@@ -17,30 +17,37 @@ the deliverable is one CSS file.
 
 `main` and `develop` (this branch) carry **only the library** — no docs site, no
 showcase, no build-site tooling. The multi-page docs site (`src/website/`,
-`build-site.js`, plus the `build:site`/`dev`/`preview:site` pnpm scripts and the
-`http-server` devDependency) lives on a separate local-only `website` branch and is not
-present here. Check out `website` to work on the site or to visually validate a
-stylesheet change against the showcase — its `package.json` has the full script set.
+`build-site.js`, plus the `build:site`/`preview:site` pnpm scripts) lives on a separate
+local-only `website` branch and is not present here. Check out `website` to work on the
+site or to see a stylesheet change against the curated showcase — `tests/` here (see
+below) covers QA, but `website`'s showcase is the polished, documented reference.
 
 ## Layout
 
 - `src/lib/zinc.css` — **the framework. The only source of truth.** Everything is
   authored here by hand.
-- `build.js` — minifies `src/lib/zinc.css` → `dist/zinc.css` + `dist/zinc.min.css` via
-  Lightning CSS. The build does not transform structure, only minifies.
-- `dist/`, `temp/`, `node_modules/` are gitignored. `dist/` is generated; never edit it
-  by hand.
+- `build.js` — minifies `src/lib/zinc.css` → `zinc.css` + `zinc.min.css` **at the repo
+  root** (not `dist/`) via Lightning CSS, so the published npm package has them at its
+  top level — no extra path segment in CDN URLs (e.g.
+  `cdn.jsdelivr.net/npm/zinc.css/zinc.css`). The build does not transform structure,
+  only minifies.
+- `tests/` — internal QA pages (not docs or copy-paste examples) that exhaustively
+  exercise every variant/size/state of one part of the framework per file, for catching
+  regressions while editing `src/lib/zinc.css`. `pnpm run dev` serves the repo and opens
+  this folder.
+- Root-level `zinc.css` / `zinc.min.css`, plus `temp/`, `node_modules/`, are gitignored
+  and generated; never edit them by hand.
 
 ## Commands
 
 ```bash
-pnpm run build   # src/lib/zinc.css → dist/zinc.css + dist/zinc.min.css
+pnpm run build   # src/lib/zinc.css → zinc.css + zinc.min.css (repo root)
+pnpm run dev      # serve the repo, opens tests/ for visual QA
 ```
 
-There are no tests, linter, or typecheck on this branch. Validation is visual and
-requires the `website` branch (see above): `pnpm run dev` there serves the repo and
-opens the showcase, where changes can be checked in light/dark and across the five
-accents.
+There are no tests, linter, or typecheck in the traditional sense — `tests/` is for
+manual visual QA, not automated checks. Run `pnpm run dev` and check pages in `tests/`
+in light/dark and across the five accents.
 
 ## How the stylesheet is organized
 

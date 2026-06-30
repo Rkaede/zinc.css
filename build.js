@@ -1,20 +1,19 @@
 #!/usr/bin/env node
-/* Build src/lib/zinc.css → dist/ with Lightning CSS.
-   Emits an unminified dist/zinc.css and a minified dist/zinc.min.css.
+/* Build src/lib/zinc.css → repo root with Lightning CSS.
+   Emits an unminified zinc.css and a minified zinc.min.css at the project
+   root, so the published npm package has them at its top level (no dist/
+   segment in CDN URLs like jsdelivr.net/npm/zinc.css/zinc.css).
    https://lightningcss.dev/ */
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
 import { transform } from 'lightningcss';
 
 const SRC = 'src/lib/zinc.css';
-const OUT_DIR = 'dist';
 
 const css = await readFile(SRC);
 
-await mkdir(OUT_DIR, { recursive: true });
-
 for (const [out, minify] of [
-  [`${OUT_DIR}/zinc.css`, false],
-  [`${OUT_DIR}/zinc.min.css`, true],
+  ['zinc.css', false],
+  ['zinc.min.css', true],
 ]) {
   const { code } = transform({ filename: SRC, code: css, minify });
   await writeFile(out, code);

@@ -1,45 +1,45 @@
 {
-  "name": "zinc.css",
-  "version": "0.0.0-pre.1",
-  "description": "A classless CSS framework for semantic HTML. Sun-bleached, coastal, one bright accent. No classes, no build step.",
-  "license": "MIT",
-  "author": "Corey McGeachie",
-  "type": "module",
-  "main": "dist/zinc.css",
-  "style": "dist/zinc.css",
-  "exports": {
-    ".": "./dist/zinc.css",
-    "./min": "./dist/zinc.min.css"
-  },
-  "files": [
-    "dist/zinc.css",
-    "dist/zinc.min.css",
-    "README.md",
-    "LICENSE"
-  ],
-  "scripts": {
-    "build": "node build.js",
-    "dev": "http-server . -c-1 -o /tests/",
-    "prepublishOnly": "pnpm run build"
-  },
-  "keywords": [
-    "css",
-    "classless",
-    "framework",
-    "semantic-html",
-    "no-class",
-    "dark-mode",
-    "design-system",
-    "zinc"
-  ],
-  "homepage": "https://github.com/Rkaede/zinc.css#readme",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Rkaede/zinc.css.git"
-  },
-  "devDependencies": {
-    "http-server": "^14.1.1",
-    "lightningcss": "^1.32.0"
-  },
-  "packageManager": "pnpm@9.15.3+sha512.1f79bc245a66eb0b07c5d4d83131240774642caaa86ef7d0434ab47c0d16f66b04e21e0c086eb61e62c77efc4d7f7ec071afad3796af64892fae66509173893a"
+	"name": "zinc.css",
+	"version": "0.0.0-pre.1",
+	"description": "A classless CSS framework for semantic HTML. Sun-bleached, coastal, one bright accent. No classes, no build step.",
+	"license": "MIT",
+	"author": "Corey McGeachie",
+	"type": "module",
+	"main": "zinc.css",
+	"style": "zinc.css",
+	"exports": {
+		".": "./zinc.css",
+		"./min": "./zinc.min.css"
+	},
+	"files": [
+		"zinc.css",
+		"zinc.min.css",
+		"README.md",
+		"LICENSE"
+	],
+	"scripts": {
+		"build": "node build.js",
+		"dev": "http-server . -c-1 -o /tests/",
+		"prepublishOnly": "pnpm run build"
+	},
+	"keywords": [
+		"css",
+		"classless",
+		"framework",
+		"semantic-html",
+		"no-class",
+		"dark-mode",
+		"design-system",
+		"zinc"
+	],
+	"homepage": "https://github.com/Rkaede/zinc.css#readme",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Rkaede/zinc.css.git"
+	},
+	"devDependencies": {
+		"http-server": "^14.1.1",
+		"lightningcss": "^1.32.0"
+	},
+	"packageManager": "pnpm@9.15.3+sha512.1f79bc245a66eb0b07c5d4d83131240774642caaa86ef7d0434ab47c0d16f66b04e21e0c086eb61e62c77efc4d7f7ec071afad3796af64892fae66509173893a"
 }
