@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>zinc.css dev tests — disabled states</title>
+<link rel="stylesheet" href="../src/lib/zinc.css" />
+</head>
+<body>
+<p><a href="index.html">← tests</a></p>
+<h1>Disabled states</h1>
+<p>
+  Every element that can be disabled, enabled vs. disabled side by side.
+  Check: disabled shows the default cursor (never the hand cursor, never
+  not-allowed); hovering a disabled element causes no visual change at all.
+</p>
+
+<h2>Buttons &amp; button-like</h2>
+<p>See <a href="buttons.html">buttons.html</a> for the full variant/size/element-type matrix.</p>
+<p>
+  <button>Enabled</button>
+  <button disabled>Disabled</button>
+  <button data-variant="outline">Enabled</button>
+  <button data-variant="outline" disabled>Disabled</button>
+  <a role="button" href="#">Enabled link</a>
+  <a role="button" href="#" aria-disabled="true">Disabled link</a>
+</p>
+
+<h2>Text-like inputs</h2>
+<p>
+  <label>Text (enabled)<input type="text" value="Editable" /></label>
+  <label>Text (disabled)<input type="text" value="Not editable" disabled /></label>
+</p>
+<p>
+  <label>Email (enabled)<input type="email" value="a@b.com" /></label>
+  <label>Email (disabled)<input type="email" value="a@b.com" disabled /></label>
+</p>
+<p>
+  <label>Password (enabled)<input type="password" value="hunter2" /></label>
+  <label>Password (disabled)<input type="password" value="hunter2" disabled /></label>
+</p>
+<p>
+  <label>Search (enabled)<input type="search" value="query" /></label>
+  <label>Search (disabled)<input type="search" value="query" disabled /></label>
+</p>
+<p>
+  <label>URL (enabled)<input type="url" value="https://example.com" /></label>
+  <label>URL (disabled)<input type="url" value="https://example.com" disabled /></label>
+</p>
+<p>
+  <label>Tel (enabled)<input type="tel" value="555-0100" /></label>
+  <label>Tel (disabled)<input type="tel" value="555-0100" disabled /></label>
+</p>
+<p>
+  <label>Number (enabled)<input type="number" value="42" /></label>
+  <label>Number (disabled)<input type="number" value="42" disabled /></label>
+</p>
+<p>
+  <label>Date (enabled)<input type="date" value="2026-07-02" /></label>
+  <label>Date (disabled)<input type="date" value="2026-07-02" disabled /></label>
+</p>
+<p>
+  <label>Datetime-local (enabled)<input type="datetime-local" value="2026-07-02T12:00" /></label>
+  <label>Datetime-local (disabled)<input type="datetime-local" value="2026-07-02T12:00" disabled /></label>
+</p>
+<p>
+  <label>Month (enabled)<input type="month" value="2026-07" /></label>
+  <label>Month (disabled)<input type="month" value="2026-07" disabled /></label>
+</p>
+<p>
+  <label>Week (enabled)<input type="week" value="2026-W27" /></label>
+  <label>Week (disabled)<input type="week" value="2026-W27" disabled /></label>
+</p>
+<p>
+  <label>Time (enabled)<input type="time" value="12:00" /></label>
+  <label>Time (disabled)<input type="time" value="12:00" disabled /></label>
+</p>
+
+<h2>Textarea</h2>
+<p>
+  <label>Enabled<textarea>Editable text</textarea></label>
+  <label>Disabled<textarea disabled>Not editable text</textarea></label>
+</p>
+
+<h2>Select</h2>
+<p>
+  <label>Enabled
+    <select>
+      <option>One</option>
+      <option>Two</option>
+      <option>Three</option>
+    </select>
+  </label>
+  <label>Disabled
+    <select disabled>
+      <option>One</option>
+      <option>Two</option>
+      <option>Three</option>
+    </select>
+  </label>
+</p>
+<p>
+  <label>Enabled, one option disabled
+    <select>
+      <option>One</option>
+      <option disabled>Two (disabled)</option>
+      <option>Three</option>
+    </select>
+  </label>
+  <label>Enabled, optgroup disabled
+    <select>
+      <option>One</option>
+      <optgroup label="Group" disabled>
+        <option>Two</option>
+        <option>Three</option>
+      </optgroup>
+    </select>
+  </label>
+</p>
+
+<h2>Checkbox</h2>
+<p>
+  <label><input type="checkbox" /> Enabled, unchecked</label>
+  <label><input type="checkbox" checked /> Enabled, checked</label>
+  <label><input type="checkbox" disabled /> Disabled, unchecked</label>
+  <label><input type="checkbox" checked disabled /> Disabled, checked</label>
+</p>
+
+<h2>Radio</h2>
+<p>
+  <label><input type="radio" name="r1" /> Enabled, unselected</label>
+  <label><input type="radio" name="r1" checked /> Enabled, selected</label>
+  <label><input type="radio" name="r2" disabled /> Disabled, unselected</label>
+  <label><input type="radio" name="r2" checked disabled /> Disabled, selected</label>
+</p>
+
+<h2>Switch</h2>
+<p>
+  <label><input type="checkbox" role="switch" /> Enabled, off</label>
+  <label><input type="checkbox" role="switch" checked /> Enabled, on</label>
+  <label><input type="checkbox" role="switch" disabled /> Disabled, off</label>
+  <label><input type="checkbox" role="switch" checked disabled /> Disabled, on</label>
+</p>
+
+<h2>Range</h2>
+<p>
+  <label>Enabled<input type="range" value="50" /></label>
+  <label>Disabled<input type="range" value="50" disabled /></label>
+</p>
+
+<h2>Color</h2>
+<p>
+  <label>Enabled<input type="color" value="#2a6ff3" /></label>
+  <label>Disabled<input type="color" value="#2a6ff3" disabled /></label>
+</p>
+
+<h2>File</h2>
+<p>
+  <label>Enabled<input type="file" /></label>
+  <label>Disabled<input type="file" disabled /></label>
+</p>
+
+<h2>Fieldset (disables all descendants)</h2>
+<fieldset disabled>
+<legend>Shipping details (disabled)</legend>
+<p>
+  <label>Name<input type="text" value="Jane Doe" /></label>
+  <label>Country
+    <select><option>Australia</option><option>New Zealand</option></select>
+  </label>
+  <label><input type="checkbox" checked /> Gift wrap</label>
+  <button>Submit</button>
+</p>
+</fieldset>
+</body>
+</html>
