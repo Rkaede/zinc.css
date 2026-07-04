@@ -110,3 +110,27 @@ variants:
 <!-- a toggle switch -->
 <input type="checkbox" role="switch" />
 ```
+
+## Cards & callouts
+
+Two semantic elements carry visual emphasis:
+
+```html
+<!-- a card: border, shadow, padding, styled header/footer -->
+<article>
+  <header><h3>Key finding</h3></header>
+  <p>Evidence or implication.</p>
+  <footer>Source · confidence</footer>
+</article>
+
+<!-- a callout: accent-tinted panel for warnings and takeaways -->
+<aside>
+  <p>The one thing to remember.</p>
+</aside>
+```
+
+Cards are emphasis, not structure. Build pages from `<section>` elements with
+headings — tables, lists, and prose sit directly in the section — and save
+`<article>` for the panel that deserves the spotlight: a top recommendation, a
+key finding, a group of evidence cards. If everything is a card, nothing is.
+Don't nest `<article>` elements.
