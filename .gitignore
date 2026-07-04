@@ -6,3 +6,5 @@ node_modules/
 .cache/
 temp/
 .vscode/
+.playwright-cli/
+.playwright-mcp/
