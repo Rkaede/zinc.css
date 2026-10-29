@@ -134,3 +134,40 @@ headings — tables, lists, and prose sit directly in the section — and save
 `<article>` for the panel that deserves the spotlight: a top recommendation, a
 key finding, a group of evidence cards. If everything is a card, nothing is.
 Don't nest `<article>` elements.
+
+## Choice cards & question forms
+
+Wrap a radio or checkbox and a `<span>` in a `<label>` to get a large, tappable
+choice card. The title goes in `<strong>` and an optional description in
+`<small>`. A plain `<label><input> text</label>` (no `<span>`) stays a normal
+inline control.
+
+```html
+<label>
+  <input type="radio" name="plan" value="team" />
+  <span><strong>Team</strong><small>Shared billing, up to 20 seats</small></span>
+</label>
+```
+
+Add `data-form="questions"` to a `<form>` to lay it out as a questionnaire.
+Each `<fieldset>` is one question, and its `<legend>` is the question text. An
+optional `<p>` under the legend is a hint.
+
+- Questions are numbered automatically.
+- Each question is separated by a rule.
+- The badge turns red when a required question is left empty.
+- A trailing `<footer>` becomes a sticky action bar.
+
+```html
+<form data-form="questions">
+  <fieldset>
+    <legend>Which plan fits?<abbr title="required">*</abbr></legend>
+    <p>You can change this later.</p>
+    <label><input type="radio" name="plan" value="solo" required />
+      <span><strong>Solo</strong><small>One seat</small></span></label>
+    <label><input type="radio" name="plan" value="team" />
+      <span><strong>Team</strong><small>Up to 20 seats</small></span></label>
+  </fieldset>
+  <footer><button type="submit">Continue</button></footer>
+</form>
+```

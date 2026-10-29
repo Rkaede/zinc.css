@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>zinc.css — question forms</title>
+<link rel="stylesheet" href="../src/lib/zinc.css" />
+</head>
+<body>
+<main>
+<h1>Question forms</h1>
+<p>
+  Choice cards (<code>label</code> wrapping a radio/checkbox plus a <code>span</code>)
+  and the <code>form[data-form="questions"]</code> layout. Check hover, focus
+  (Tab), checked, disabled, and <code>:user-invalid</code> (press the submit button
+  with question 1 empty) in light/dark and across the accents.
+</p>
+
+<form data-form="questions" onsubmit="event.preventDefault()">
+  <fieldset>
+    <legend>Required single choice, nothing checked<abbr title="required">*</abbr></legend>
+    <p>Submitting with this empty should turn the number red.</p>
+    <label><input type="radio" name="q1" value="a" required>
+      <span><strong>Option with a description</strong>
+      <small>A longer description that wraps onto a second line at narrow widths so the alignment of the control against the title can be checked.</small></span></label>
+    <label><input type="radio" name="q1" value="b">
+      <span><strong>Title only</strong></span></label>
+    <label><input type="radio" name="q1" value="other">
+      <span><strong>Something else</strong>
+      <input type="text" name="q1-other" aria-label="Describe" placeholder="Describe…"></span></label>
+  </fieldset>
+
+  <fieldset>
+    <legend>Single choice: checked, disabled, disabled + checked</legend>
+    <label><input type="radio" name="q2" value="a" checked>
+      <span><strong>Checked</strong><small>Accent border and faint accent fill</small></span></label>
+    <label><input type="radio" name="q2" value="b" disabled>
+      <span><strong>Disabled</strong><small>Dimmed, no hover, default cursor</small></span></label>
+    <label><input type="radio" name="q2x" value="c" disabled checked>
+      <span><strong>Disabled + checked</strong><small>Dimmed but still shows its state</small></span></label>
+  </fieldset>
+
+  <fieldset>
+    <legend>Multiple choice with a hint, a very long question that has to wrap across two or more lines at desktop width to check the number badge alignment</legend>
+    <p>Pick as many as apply.</p>
+    <label><input type="checkbox" name="q3" value="a" checked>
+      <span><strong>Checked</strong><small>With <code>inline code</code> in the description</small></span></label>
+    <label><input type="checkbox" name="q3" value="b">
+      <span><strong>Unchecked with <code>code</code> in the title</strong></span></label>
+  </fieldset>
+
+  <fieldset>
+    <legend>Short text</legend>
+    <label for="q4">Field label</label>
+    <input type="text" id="q4" name="q4" placeholder="e.g. example">
+  </fieldset>
+
+  <fieldset>
+    <legend>Yes / no switch (must not become a card)</legend>
+    <label><input type="checkbox" role="switch" name="q5" checked> Yes, include it</label>
+  </fieldset>
+
+  <fieldset>
+    <legend>Scale</legend>
+    <p>1 = not at all, 5 = critical.</p>
+    <label for="q6">Importance: <output for="q6">3</output> / 5</label>
+    <input type="range" id="q6" name="q6" min="1" max="5" value="3">
+  </fieldset>
+
+  <fieldset>
+    <legend>Long text</legend>
+    <label for="q7">Notes</label>
+    <textarea id="q7" name="q7" placeholder="Optional"></textarea>
+  </fieldset>
+
+  <footer>
+    <button type="submit">Copy answers</button>
+    <button type="reset">Start over</button>
+    <output>Status text sits here</output>
+  </footer>
+</form>
+
+<h2>Outside a question form</h2>
+<p>Choice cards work in any fieldset. Plain labels without a <code>span</code> must be unchanged.</p>
+<fieldset>
+  <legend>Regular fieldset with cards</legend>
+  <label><input type="checkbox" name="r1" checked>
+    <span><strong>Card in a regular fieldset</strong><small>Should look the same as above</small></span></label>
+</fieldset>
+<fieldset>
+  <legend>Regression: plain labels</legend>
+  <label><input type="checkbox" name="r2"> Remember me (plain checkbox label)</label>
+  <label><input type="radio" name="r3"> Plain radio label</label>
+</fieldset>
+</main>
+</body>
+</html>
