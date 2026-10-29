@@ -1,6 +1,6 @@
 {
 	"name": "zinc.css",
-	"version": "0.0.0-pre.4",
+	"version": "0.0.0-pre.5",
 	"description": "A classless CSS framework for semantic HTML. Sun-bleached, coastal, one bright accent. No classes, no build step.",
 	"license": "MIT",
 	"author": "Corey McGeachie",
