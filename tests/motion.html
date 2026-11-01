@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>zinc.css dev tests — motion</title>
+<link rel="stylesheet" href="../src/lib/zinc.css" />
+</head>
+<body>
+<p><a href="index.html">← tests</a></p>
+<header>
+  <h1>Motion</h1>
+  <p>
+    This page checks the dialog and details animations (see <code>design.md</code>,
+    “Motion”). Slow them down in the DevTools Animations panel (25% or 10%) to
+    check them frame by frame. Then turn on <code>prefers-reduced-motion: reduce</code>
+    in the Rendering panel: everything on this page must snap.
+  </p>
+</header>
+
+<main>
+<section id="dialog">
+  <h2>Dialog</h2>
+  <p>
+    Opening fades the dialog in and scales it up from 96% over 180ms, and the
+    backdrop fades with it. Closing reverses that in 120ms in Chromium and is
+    instant in other browsers. Close it each way: with a button, with Escape,
+    and by reopening it while it’s still closing (it should turn around, not
+    restart).
+  </p>
+  <p>
+    <button id="open-modal" onclick="document.getElementById('modal').showModal()">Open modal dialog</button>
+    <button id="open-nonmodal" data-variant="secondary" onclick="document.getElementById('nonmodal').show()">Open non-modal dialog</button>
+    <button id="open-popover" data-variant="outline" popovertarget="popover-dialog">Open popover dialog</button>
+  </p>
+
+  <dialog id="modal" aria-labelledby="modal-title">
+    <h3 id="modal-title">Modal dialog</h3>
+    <p>
+      Opened with <code>showModal()</code>. The page behind is inert, and the
+      backdrop dims and blurs it.
+    </p>
+    <form method="dialog">
+      <button id="modal-ok" value="ok">OK</button>
+      <button id="modal-cancel" value="cancel" data-variant="secondary">Cancel</button>
+    </form>
+  </dialog>
+
+  <dialog id="nonmodal" aria-labelledby="nonmodal-title">
+    <h3 id="nonmodal-title">Non-modal dialog</h3>
+    <p>Opened with <code>show()</code>: no backdrop, and the page stays usable.</p>
+    <form method="dialog">
+      <button id="nonmodal-close">Close</button>
+    </form>
+  </dialog>
+
+  <dialog id="popover-dialog" popover aria-labelledby="popover-title">
+    <h3 id="popover-title">Popover dialog</h3>
+    <p>
+      A <code>dialog</code> with the <code>popover</code> attribute has no
+      <code>[open]</code> while it’s showing, so this checks that it stays fully
+      visible. It appears at once and fades out in Chromium. Click outside it
+      or press Escape to close it.
+    </p>
+    <button id="popover-close" popovertarget="popover-dialog" popovertargetaction="hide">Close</button>
+  </dialog>
+</section>
+
+<section id="details">
+  <h2>Details</h2>
+  <p>
+    Opening grows the content to its full height and fades it in over 200ms;
+    closing reverses it. Browsers without <code>interpolate-size</code> or
+    <code>::details-content</code> must snap exactly as before, with no fade. Click a summary twice quickly: the height
+    should turn around from where it is. The paragraph after each group must
+    move with the box and never overlap it.
+  </p>
+
+  <h3>Short</h3>
+  <details id="details-short">
+    <summary>What does “classless” mean?</summary>
+    <p>You style raw HTML elements. The tags carry the design, so there are no class names to learn.</p>
+  </details>
+  <p id="after-short">This paragraph follows the short details.</p>
+
+  <h3>Open in the markup</h3>
+  <details id="details-open" open>
+    <summary>Open on load</summary>
+    <p>This one has the <code>open</code> attribute in the markup. It must be open at once on load, with no animation.</p>
+  </details>
+  <p>This paragraph follows the open details.</p>
+
+  <h3>Nested content</h3>
+  <details id="details-nested">
+    <summary>Lists, code, a form and a nested details</summary>
+    <p>A paragraph with <a href="#details">a link</a> and some <code>inline code</code>.</p>
+    <ul>
+      <li>A list item</li>
+      <li>Another list item, long enough to wrap onto a second line at narrow widths so the height changes with the viewport</li>
+    </ul>
+    <pre><code>details::details-content {
+  block-size: 0;
+}</code></pre>
+    <p>
+      <label for="nested-input">A text field</label>
+      <input type="text" id="nested-input" placeholder="Tab here to check the focus ring" />
+    </p>
+    <details id="details-inner">
+      <summary>A nested details</summary>
+      <p>Open this, then close and reopen the outer one. It should still be open, and both should animate on their own.</p>
+    </details>
+  </details>
+  <p id="after-nested">This paragraph follows the nested details.</p>
+
+  <h3>Long body</h3>
+  <details id="details-long">
+    <summary>A long body, taller than the screen</summary>
+    <p>1. The height animates from 0 to the full content height, so a tall body moves a long way in 200ms. Most of that happens in the first few frames, because the curve is a strong ease-out.</p>
+    <p>2. The content stays clipped to the box while it grows, so nothing paints over the paragraph below.</p>
+    <p>3. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.</p>
+    <p>4. Maecenas faucibus mollis interdum. Cras mattis consectetur purus sit amet fermentum. Donec ullamcorper nulla non metus auctor fringilla.</p>
+    <p>5. Nullam quis risus eget urna mollis ornare vel eu leo. Vestibulum id ligula porta felis euismod semper.</p>
+    <p>6. Aenean lacinia bibendum nulla sed consectetur. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</p>
+    <p>7. Etiam porta sem malesuada magna mollis euismod. Sed posuere consectetur est at lobortis.</p>
+    <p>8. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.</p>
+    <p>9. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit.</p>
+    <p>10. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
+    <p>11. Donec id elit non mi porta gravida at eget metus. Nulla vitae elit libero, a pharetra augue.</p>
+    <p>12. The last paragraph. The box ends here when it’s open.</p>
+  </details>
+  <p id="after-long">This paragraph follows the long details.</p>
+
+  <h3>Exclusive group</h3>
+  <p>These three share a <code>name</code>, so opening one closes the open one, and both animate at once.</p>
+  <details id="group-a" name="faq" open>
+    <summary>First question</summary>
+    <p>The first answer. Opening another question closes this one.</p>
+  </details>
+  <details id="group-b" name="faq">
+    <summary>Second question</summary>
+    <p>The second answer is a little longer, so the group’s total height changes as the two swap.</p>
+    <p>A second paragraph in the second answer.</p>
+  </details>
+  <details id="group-c" name="faq">
+    <summary>Third question</summary>
+    <p>The third answer.</p>
+  </details>
+  <p id="after-group">This paragraph follows the group.</p>
+</section>
+</main>
+</body>
+</html>
