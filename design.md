@@ -120,7 +120,8 @@ for repo layout/build instructions; this file is about *design* rules.
   `--ease-out`; the switch track's color change rides along at 200ms. A
   button press is `translateY(1px)` over 60ms. Animate
   transform and opacity, never layout properties (`left`, `top`, `width`,
-  `height`).
+  `height`). The one exception is the details content's `block-size` (see
+  below): CSS has no transform-based way to reveal native disclosure content.
 - **Dialog enter and exit.** Opening fades the dialog in and scales it up from
   `scale(0.96)` over 180ms with `--ease-out`, starting from `@starting-style`.
   The backdrop fades along with it. Closing is faster, 120ms. It runs only inside
@@ -132,6 +133,17 @@ for repo layout/build instructions; this file is about *design* rules.
   showing has no `[open]` and would otherwise turn invisible. A popover dialog
   appears at once and fades out. A `<dialog open>` in the markup fades in on
   page load.
+- **Details open and close.** `::details-content` grows from `block-size: 0`
+  to `auto` and fades in over 200ms with `--ease-out`, then reverses on close.
+  `content-visibility` transitions with `allow-discrete`, so the content stays
+  painted until it has collapsed. `interpolate-size: allow-keywords` sits on
+  `details` (it inherits). The whole block is gated on
+  `@supports (interpolate-size: allow-keywords) and selector(::details-content)`.
+  A browser that has `::details-content` without `interpolate-size` (Safari,
+  for now) would otherwise fade the content while its height snaps. Behind the
+  gate, it snaps exactly as before. The content keeps `overflow-y: clip` while
+  open, so it can't paint outside the growing box. Horizontal overflow is
+  left visible.
 - **Hover is for fine pointers.** Every `:hover` rule sits inside
   `@media (hover: hover) and (pointer: fine)`, because touch browsers keep
   `:hover` stuck after a tap. `:active` stays ungated.
@@ -142,7 +154,12 @@ for repo layout/build instructions; this file is about *design* rules.
 - **Reduced motion.** The kill switch also covers `*::before`, `*::after`,
   `::backdrop` and `::file-selector-button`, and sets the iteration count to 1.
   zinc deliberately kills color fades too. Anything new that animates must be
-  covered by it.
+  covered by it. A newer pseudo-element gets its own rule (as
+  `::details-content` does), never a place in an existing selector list: a
+  browser that doesn't know it drops the whole list. Lightning CSS keeps those
+  rules apart in `zinc.min.css`. Enter/exit motion (dialog, details) also sits
+  inside `@media (prefers-reduced-motion: no-preference)`, so reduced motion
+  never declares it at all.
 - **Hover never outranks state.** A hover rule must not beat checked or
   selected styles. For example, the choice-card hover condition is wrapped in
   `:where()`, so a checked card keeps its accent border while hovered.

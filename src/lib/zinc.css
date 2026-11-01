@@ -161,8 +161,8 @@ body {
 
 /* reduced motion: every animation and transition ends at once, including on
    pseudo-elements (the switch thumb and summary marker animate there).
-   ::backdrop and ::file-selector-button get their own rule, so an unsupported
-   one can't void the main list. */
+   ::backdrop and ::file-selector-button get their own rule, and the newer
+   ::details-content one more, so an unsupported one can't void another list. */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.001ms !important;
@@ -171,6 +171,11 @@ body {
     scroll-behavior: auto !important;
   }
   ::backdrop, ::file-selector-button {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  ::details-content {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
@@ -826,6 +831,23 @@ details[open] summary { border-bottom: 1.5px solid var(--line); }
 details > :not(summary) { padding-inline: 1.1rem; }
 details > :not(summary):first-of-type { padding-top: 0.95rem; }
 details > :not(summary):last-child { padding-bottom: 1.1rem; margin-bottom: 0; }
+/* open/close: the content grows from 0 to its full height and fades in over
+   200ms, and reverses on close (content-visibility is held until it has
+   collapsed). Height can only reach auto through interpolate-size, so browsers
+   without it or ::details-content skip the block and snap as before. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (interpolate-size: allow-keywords) and selector(::details-content) {
+    details { interpolate-size: allow-keywords; }
+    details::details-content {
+      block-size: 0;
+      overflow-y: clip;
+      opacity: 0;
+      transition: block-size 0.2s var(--ease-out), opacity 0.2s var(--ease-out),
+        content-visibility 0.2s allow-discrete;
+    }
+    details[open]::details-content { block-size: auto; opacity: 1; }
+  }
+}
 
 /* dialog */
 dialog {
