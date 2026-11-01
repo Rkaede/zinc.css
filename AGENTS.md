@@ -35,6 +35,9 @@ below) covers QA, but `website`'s showcase is the polished, documented reference
   exercise every variant/size/state of one part of the framework per file, for catching
   regressions while editing `src/lib/zinc.css`. `pnpm run dev` serves the repo and opens
   this folder.
+- `scripts/contrast.mjs` — `pnpm run contrast`: reads the color tokens from
+  `src/lib/zinc.css` and prints a before/after WCAG contrast table for every accent in
+  both modes (baseline: the `v0.0.0-pre.5` tag). Exits 1 if a check fails.
 - Root-level `zinc.css` / `zinc.min.css`, plus `temp/`, `node_modules/`, are gitignored
   and generated; never edit them by hand.
 
@@ -43,10 +46,12 @@ below) covers QA, but `website`'s showcase is the polished, documented reference
 ```bash
 pnpm run build   # src/lib/zinc.css → zinc.css + zinc.min.css (repo root)
 pnpm run dev      # serve the repo, opens tests/ for visual QA
+pnpm run contrast   # before/after contrast table, every accent × mode (exits 1 on a failure)
 ```
 
 There are no tests, linter, or typecheck in the traditional sense — `tests/` is for
-manual visual QA, not automated checks. Run `pnpm run dev` and check pages in `tests/`
+manual visual QA, not automated checks. The one automated check is `pnpm run contrast`;
+run it after touching any color token. Run `pnpm run dev` and check pages in `tests/`
 in light/dark and across the five accents.
 
 ## How the stylesheet is organized
@@ -64,10 +69,16 @@ rules should reference these tokens, not hard-coded values.
   be kept in sync when editing dark neutrals: the system path
   `@media (prefers-color-scheme: dark) :root:not([data-mode="light"])` and the manual
   override `:root[data-mode="dark"]`. Editing one without the other is the most common
-  bug here.
-- **Accents** are swapped by `:root[data-accent="electric|hot|amber|forest|violet"]`, each setting
-  `--accent` + `--on-accent`. Derived accent shades (`--accent-press`, `--accent-soft`,
-  `--accent-faint`) are computed with `color-mix()` so they follow whatever `--accent` is.
+  bug here. Both dark blocks also set `color-scheme: dark`, and `:root[data-mode="light"]`
+  pins `color-scheme: light`, so native controls and `light-dark()` follow `data-mode`
+  rather than the system.
+- **Accents** are swapped by `:root[data-accent="electric|hot|amber|forest|violet"]`. Each
+  sets `--accent` and `--on-accent` as `light-dark(light shade, dark shade)` pairs, so
+  accents need no entries in the dark blocks. `light-dark()` resolves from the used
+  `color-scheme`, which is why a forced `data-mode` pins it. Derived accent shades
+  (`--accent-press`, `--accent-soft`, `--accent-faint`) still come from `color-mix()` so
+  they follow whatever `--accent` is; `--accent-press` darkens in light and lightens in
+  dark (set in the dark blocks).
 - **User-facing API** (documented in README): theme hooks `data-mode` / `data-accent` on
   `<html>`; variant hooks `data-variant` / `data-size` and `role="button"` / `role="switch"`
   on elements; tunable tokens (`--accent`, `--radius`, `--width`, `--gutter`, fonts).

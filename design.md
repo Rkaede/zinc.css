@@ -59,3 +59,35 @@ for repo layout/build instructions; this file is about *design* rules.
   create a parallel one — when adding a new disableable element or variant.
   `tests/buttons.html` remains the source of truth for the full
   button variant/size/element-type matrix.
+
+## Accessibility floor
+
+- **Contrast targets: 4.5:1 for text, 3:1 for the focus ring** (WCAG AA).
+  Every accent has a light and a dark shade, and each must clear the targets
+  on its own mode's `--bg` and `--surface`, on the `aside` callout tint, and
+  under button text (`--on-accent` on `--accent` and on `--accent-press`).
+  `pnpm run contrast` measures all of it for every accent in both modes,
+  compares against a baseline release (`--before`, default `v0.0.0-pre.5`),
+  and exits 1 on a failure. Run it after touching any color token.
+- **Type floor: nothing under 14px (`0.875rem`).** Secondary reading text
+  (`small`, `figcaption`, `caption`, labels, `footer`) sits at 15px
+  (`0.9375rem`). Mono text sized in `em` (`code`, `kbd`, `samp`) uses
+  `max(…em, 0.875rem)` so it can't shrink under the floor inside small text.
+  `sub`/`sup` are the one exception (0.72em, set by typographic convention).
+- **Links never rely on color alone.** A link keeps a resting underline at
+  60% of its color, and hover completes it. Nav links stay accent-colored, so
+  they never pass for headings, and drop the resting underline (hover adds
+  it; the current page is text-colored with an accent underline). Footer
+  links share the footer's muted color, so the underline is their only cue
+  and stays full strength. Both nav and footer link rules skip
+  `a[role="button"]`: a link-button keeps its button colors (an accent hover
+  color on an accent fill would make the label vanish).
+- **Hover only on things you can click.** Table rows don't tint on hover: a
+  hover state promises an action, so it belongs on links, buttons and
+  controls.
+- **Focus is a 2px solid accent ring at 2px offset.** Text fields swap the
+  outline for an accent border plus a 1px ring and a soft halo; every other
+  control keeps the plain ring. Choice cards move the ring onto the card
+  instead of the input inside it. Never set `border-radius` in the global
+  `:focus-visible` rule: it overrides each element's own radius (a button
+  would jump from 6px to 3px corners).

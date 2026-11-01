@@ -20,6 +20,7 @@
 	"scripts": {
 		"build": "node build.js",
 		"dev": "http-server . -c-1 -o /tests/",
+		"contrast": "node scripts/contrast.mjs",
 		"prepublishOnly": "pnpm run build"
 	},
 	"keywords": [

@@ -52,14 +52,17 @@ change under you in production.
 
 Set hooks on the `<html>` element — no classes anywhere.
 
-| Hook          | Values                                             | Effect                                           |
-| ------------- | -------------------------------------------------- | ------------------------------------------------ |
-| `data-mode`   | `light` · `dark`                                   | Force a color scheme (omit to follow the system) |
-| `data-accent` | `electric` · `hot` · `amber` · `forest` · `violet` | Pick the accent color                            |
+| Hook          | Values                                             | Effect                                                    |
+| ------------- | -------------------------------------------------- | --------------------------------------------------------- |
+| `data-mode`   | `light` · `dark`                                   | Force a color scheme (omit to follow the system)          |
+| `data-accent` | `electric` · `hot` · `amber` · `forest` · `violet` | Pick the accent color (each has a light and a dark shade) |
 
 ```html
 <html data-mode="dark" data-accent="electric"></html>
 ```
+
+Every built-in accent keeps link text, button text and the focus ring at WCAG AA
+contrast in both modes.
 
 ### Tune the tokens
 
@@ -67,7 +70,8 @@ Override any of these on `:root` to rebrand without touching the framework:
 
 ```css
 :root {
-  --accent: #0d9488; /* your brand color */
+  --accent: light-dark(#0f766e, #2dd4bf); /* brand color: light shade, dark shade */
+  --on-accent: light-dark(#ffffff, #0c0c0d); /* text on accent fills */
   --radius: 9px; /* global corner radius */
   --width: 72rem; /* max content width */
   --gutter: 2.5rem; /* page padding */
@@ -76,6 +80,10 @@ Override any of these on `:root` to rebrand without touching the framework:
   --font-display: var(--font-sans);
 }
 ```
+
+One color works in both modes; `light-dark()` gives each mode its own shade. Keep
+accent text at 4.5:1 on the page background and `--on-accent` at 4.5:1 on the
+accent.
 
 The full token set (neutrals, surfaces, shadows, code panel) is documented at
 the top of [`zinc.css`](./src/lib/zinc.css).
