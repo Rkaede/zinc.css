@@ -66,6 +66,31 @@
   </blockquote>
 </section>
 
+<section id="controls-danger">
+  <h2>Control borders, danger and variants</h2>
+  <p>Unchecked controls and field borders need 3:1 against the page; danger text and button labels need 4.5:1.</p>
+  <p>
+    <label><input type="checkbox" /> Unchecked checkbox</label>
+    <label><input type="radio" name="cd" /> Unchecked radio</label>
+    <label><input type="checkbox" role="switch" /> Switch off</label>
+  </p>
+  <form data-form="questions" onsubmit="event.preventDefault()">
+    <fieldset>
+      <legend>Required question<abbr title="required">*</abbr></legend>
+      <p>Submit empty: the badge and the border turn danger.</p>
+      <input type="text" name="cd-q" aria-label="Answer" required />
+    </fieldset>
+    <footer><button type="submit">Submit empty</button></footer>
+  </form>
+  <p>
+    <button data-variant="danger">Danger button</button>
+    <a role="button" href="#" data-variant="secondary">Link secondary</a>
+    <a role="button" href="#" data-variant="outline">Link outline</a>
+    <a role="button" href="#" data-variant="ghost">Link ghost</a>
+    <a role="button" href="#" data-variant="danger">Link danger</a>
+  </p>
+</section>
+
 <section id="type-floor">
   <h2>Type floor</h2>
   <p>Nothing under 14px. Each sample is labelled with the size it should compute to.</p>
