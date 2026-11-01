@@ -840,6 +840,28 @@ dialog {
 }
 dialog::backdrop { background: rgba(8, 8, 9, 0.55); backdrop-filter: blur(2px); }
 dialog > :last-child { margin-bottom: 0; }
+/* open/close: the dialog fades in and scales up from 96% over 180ms, and its
+   backdrop fades with it. Closing reverses that in 120ms where overlay can be
+   transitioned, which keeps the dialog in the top layer until it has faded;
+   other browsers close at once. A popover dialog has no [open] attribute while
+   it's showing, so the closed state skips :popover-open. */
+@media (prefers-reduced-motion: no-preference) {
+  dialog[open], dialog[open]::backdrop {
+    transition: opacity 0.18s var(--ease-out), transform 0.18s var(--ease-out);
+  }
+  @starting-style {
+    dialog[open] { opacity: 0; transform: scale(0.96); }
+    dialog[open]::backdrop { opacity: 0; }
+  }
+  @supports (overlay: auto) {
+    dialog, dialog::backdrop {
+      transition: opacity 0.12s var(--ease-out), transform 0.12s var(--ease-out),
+        display 0.12s allow-discrete, overlay 0.12s allow-discrete;
+    }
+    dialog:not([open], :popover-open) { opacity: 0; transform: scale(0.96); }
+    dialog:not([open], :popover-open)::backdrop { opacity: 0; }
+  }
+}
 
 /* progress + meter */
 progress, meter {

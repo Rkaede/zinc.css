@@ -121,6 +121,17 @@ for repo layout/build instructions; this file is about *design* rules.
   button press is `translateY(1px)` over 60ms. Animate
   transform and opacity, never layout properties (`left`, `top`, `width`,
   `height`).
+- **Dialog enter and exit.** Opening fades the dialog in and scales it up from
+  `scale(0.96)` over 180ms with `--ease-out`, starting from `@starting-style`.
+  The backdrop fades along with it. Closing is faster, 120ms. It runs only inside
+  `@supports (overlay: auto)` (Chromium), where `display` and `overlay`
+  transition with `allow-discrete`, so the dialog stays in the top layer until
+  it has faded. Other browsers close at once, as they did before. A dialog
+  scales from its center, because modals are exempt from trigger origins. The
+  closed state skips `:popover-open`, because a `dialog[popover]` that is
+  showing has no `[open]` and would otherwise turn invisible. A popover dialog
+  appears at once and fades out. A `<dialog open>` in the markup fades in on
+  page load.
 - **Hover is for fine pointers.** Every `:hover` rule sits inside
   `@media (hover: hover) and (pointer: fine)`, because touch browsers keep
   `:hover` stuck after a tap. `:active` stays ungated.
