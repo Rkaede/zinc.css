@@ -28,7 +28,7 @@ No download, no `npm install` — just point a `<link>` at jsDelivr or unpkg:
 <link rel="stylesheet" href="https://unpkg.com/zinc.css/zinc.css" />
 ```
 
-Pin a version once you're past prototyping (e.g. `zinc.css@0.1.0/zinc.css`) —
+Pin a version once you're past prototyping (e.g. `zinc.css@0.0.0-pre.6/zinc.css`) —
 an unpinned URL always serves `latest`, which is fine for a demo but can
 change under you in production.
 
