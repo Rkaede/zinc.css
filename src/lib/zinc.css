@@ -35,6 +35,9 @@
   --width: 72rem;
   --gutter: clamp(1.25rem, 4vw, 2.5rem);
 
+  /* motion ---------------------------------------------------------------- */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+
   /* accent (default: electric) -------------------------------------------
      Each accent is a light-dark(light, dark) pair. The light shade is deep
      enough for white text and 4.5:1 on the light neutrals; the dark shade is
@@ -115,7 +118,6 @@
 html {
   -webkit-text-size-adjust: 100%;
   background: var(--bg);
-  scroll-behavior: smooth;
   scrollbar-color: var(--muted) transparent;
 }
 
@@ -144,8 +146,22 @@ body {
 
 [hidden] { display: none !important; }
 
+/* reduced motion: every animation and transition ends at once, including on
+   pseudo-elements (the switch thumb and summary marker animate there).
+   ::backdrop and ::file-selector-button get their own rule, so an unsupported
+   one can't void the main list. */
 @media (prefers-reduced-motion: reduce) {
-  * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  ::backdrop, ::file-selector-button {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }
 
 /* section rhythm — top-level document sections read as distinct tiers, set
@@ -207,7 +223,11 @@ a {
   text-decoration-color: color-mix(in srgb, currentColor 60%, transparent);
   transition: text-decoration-color 0.15s ease, color 0.15s ease;
 }
-a:hover { text-decoration-color: currentColor; }
+/* hover styles are for fine pointers only: touch browsers keep :hover stuck
+   after a tap */
+@media (hover: hover) and (pointer: fine) {
+  a:hover { text-decoration-color: currentColor; }
+}
 
 mark {
   background: var(--accent);
@@ -345,14 +365,18 @@ textarea { min-height: 6.5rem; resize: vertical; line-height: 1.55; }
 /* text fields swap the outline for an accent edge (border + 1px ring) and a
    soft halo. Checkboxes, radios, switches, range, color, file and button
    inputs keep the global :focus-visible ring. :where() keeps the exclusions
-   from raising specificity. */
+   from raising specificity. The ring lands at once; blur still fades out. */
 :is(input, textarea, select):where(:not([type="checkbox"], [type="radio"], [type="range"], [type="color"], [type="file"], [type="submit"], [type="button"], [type="reset"], [type="image"])):focus {
   outline: none;
   border-color: var(--accent);
   box-shadow: 0 0 0 1px var(--accent), 0 0 0 4px var(--accent-soft);
+  transition-duration: 0s;
 }
 ::placeholder { color: var(--muted); opacity: 1; }
-:disabled { opacity: 0.55; cursor: default; }
+:disabled { cursor: default; }
+/* dim controls, not a disabled fieldset itself: its controls dim on their own
+   and its legend stays enabled */
+:disabled:not(fieldset) { opacity: 0.55; }
 :user-invalid { border-color: #e5484d; }
 :user-invalid:where(:not([type="checkbox"], [type="radio"])):focus {
   border-color: #e5484d;
@@ -425,16 +449,18 @@ input[type="checkbox"][role="switch"]::after {
   position: absolute;
   top: 50%;
   left: 3px;
-  transform: translateY(-50%);
+  transform: translate(0, -50%);
   width: 1.15rem;
   height: 1.15rem;
   border-radius: 50%;
   background: #fff;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
-  transition: left 0.2s ease;
+  transition: transform 0.2s var(--ease-out);
 }
 input[type="checkbox"][role="switch"]:checked { background: var(--accent); }
-input[type="checkbox"][role="switch"]:checked::after { left: calc(100% - 1.15rem - 3px); }
+/* the thumb slides with transform, off the layout path: 1.55rem is the
+   2.7rem track minus the 1.15rem thumb, less the 3px inset on each side */
+input[type="checkbox"][role="switch"]:checked::after { transform: translate(calc(1.55rem - 6px), -50%); }
 
 /* range ------------------------------------------------------------------ */
 input[type="range"] {
@@ -486,7 +512,9 @@ input[type="file"]::file-selector-button {
   cursor: pointer;
   transition: background 0.15s ease;
 }
-input[type="file"]:not(:disabled)::file-selector-button:hover { background: var(--surface-alt); }
+@media (hover: hover) and (pointer: fine) {
+  input[type="file"]:not(:disabled)::file-selector-button:hover { background: var(--surface-alt); }
+}
 
 /* fieldset --------------------------------------------------------------- */
 fieldset {
@@ -521,8 +549,10 @@ label:where(:has(> input[type="radio"], > input[type="checkbox"]:not([role="swit
 label:where(:has(> input[type="radio"], > input[type="checkbox"]:not([role="switch"])):has(> span)) > span { flex: 1; display: grid; gap: 0.2rem; }
 label:where(:has(> input[type="radio"], > input[type="checkbox"]:not([role="switch"])):has(> span)) small { line-height: 1.45; }
 label:where(:has(> input[type="radio"], > input[type="checkbox"]:not([role="switch"])):has(> span)) > span > input { margin-top: 0.35rem; }
-label:where(:has(> input[type="radio"], > input[type="checkbox"]:not([role="switch"])):has(> span)):not(:has(> input:disabled)):hover {
-  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+@media (hover: hover) and (pointer: fine) {
+  label:where(:has(> input[type="radio"], > input[type="checkbox"]:not([role="switch"])):has(> span)):where(:not(:has(> input:disabled))):hover {
+    border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+  }
 }
 label:where(:has(> input[type="radio"], > input[type="checkbox"]:not([role="switch"])):has(> span)):has(> input:checked) {
   border-color: var(--accent);
@@ -593,6 +623,9 @@ form[data-form="questions"] > footer {
   border-top: 1.5px solid var(--line);
 }
 form[data-form="questions"] > footer output { font-size: 0.9375rem; color: var(--muted); }
+/* keep a focused control clear of the sticky footer (WCAG 2.4.11); 8rem
+   covers the footer even when it wraps to two rows on narrow screens */
+html:has(form[data-form="questions"]) { scroll-padding-block-end: 8rem; }
 
 /* ==========================================================================
    Buttons
@@ -617,9 +650,6 @@ a[role="button"], [data-variant] {
   cursor: pointer;
   transition: background 0.15s ease, transform 0.06s ease, box-shadow 0.15s ease, color 0.15s ease;
 }
-button:not(:disabled):hover,
-input[type="submit"]:not(:disabled):hover, input[type="button"]:not(:disabled):hover,
-a[role="button"]:not([aria-disabled="true"]):hover, [data-variant]:not(:disabled):hover { background: var(--accent-press); }
 button:not(:disabled):active,
 input[type="submit"]:not(:disabled):active, input[type="button"]:not(:disabled):active,
 a[role="button"]:not([aria-disabled="true"]):active, [data-variant]:not(:disabled):active { transform: translateY(1px); }
@@ -630,26 +660,33 @@ a[role="button"]:not([aria-disabled="true"]):active, [data-variant]:not(:disable
   color: var(--text);
   border-color: var(--ink);
 }
-[data-variant="secondary"]:not(:disabled):hover, button[type="reset"]:not(:disabled):hover, input[type="reset"]:not(:disabled):hover {
-  background: var(--surface-alt);
-}
 [data-variant="outline"] {
   background: transparent;
   color: var(--accent);
   border-color: var(--accent);
 }
-[data-variant="outline"]:not(:disabled):hover { background: var(--accent-soft); }
 [data-variant="ghost"] {
   background: transparent;
   color: var(--text);
   border-color: transparent;
 }
-[data-variant="ghost"]:not(:disabled):hover { background: var(--surface-alt); }
 [data-variant="danger"] {
   background: #e5484d;
   color: #fff;
 }
-[data-variant="danger"]:not(:disabled):hover { background: #cf3b40; }
+
+/* hover (fine pointers only) --------------------------------------------- */
+@media (hover: hover) and (pointer: fine) {
+  button:not(:disabled):hover,
+  input[type="submit"]:not(:disabled):hover, input[type="button"]:not(:disabled):hover,
+  a[role="button"]:not([aria-disabled="true"]):hover, [data-variant]:not(:disabled):hover { background: var(--accent-press); }
+  [data-variant="secondary"]:not(:disabled):hover, button[type="reset"]:not(:disabled):hover, input[type="reset"]:not(:disabled):hover {
+    background: var(--surface-alt);
+  }
+  [data-variant="outline"]:not(:disabled):hover { background: var(--accent-soft); }
+  [data-variant="ghost"]:not(:disabled):hover { background: var(--surface-alt); }
+  [data-variant="danger"]:not(:disabled):hover { background: #cf3b40; }
+}
 
 /* sizes ------------------------------------------------------------------ */
 [data-size="sm"] { padding: 0.4rem 0.8rem; font-size: 0.875rem; border-radius: calc(var(--radius) - 1px); }
@@ -729,7 +766,9 @@ nav li { margin: 0; }
    drop the resting underline. Hover adds it; the current page reads as text
    with an accent underline. Link-buttons are left to the button styles. */
 nav a:not([role="button"]) { font-weight: 600; text-decoration-line: none; }
-nav a:not([role="button"]):hover { text-decoration-line: underline; }
+@media (hover: hover) and (pointer: fine) {
+  nav a:not([role="button"]):hover { text-decoration-line: underline; }
+}
 nav a:not([role="button"])[aria-current] { color: var(--text); text-decoration-line: underline; text-decoration-color: var(--accent); }
 
 /* details / accordion */
@@ -754,7 +793,7 @@ summary::after {
   font-size: 1.4em;
   line-height: 1;
   color: var(--muted);
-  transition: transform 0.2s ease;
+  transition: transform 0.2s var(--ease-out);
 }
 details[open] summary::after { transform: rotate(45deg); }
 details[open] summary { border-bottom: 1.5px solid var(--line); }
@@ -806,4 +845,6 @@ footer {
    only cue: keep it full strength. Link-buttons keep their button colors
    (an accent hover color would vanish on the accent fill). */
 footer a:not([role="button"]) { color: var(--muted); text-decoration-color: currentColor; }
-footer a:not([role="button"]):hover { color: var(--accent); }
+@media (hover: hover) and (pointer: fine) {
+  footer a:not([role="button"]):hover { color: var(--accent); }
+}

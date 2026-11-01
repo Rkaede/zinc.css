@@ -40,6 +40,11 @@ below) covers QA, but `website`'s showcase is the polished, documented reference
   both modes (baseline: the `v0.0.0-pre.5` tag). Exits 1 if a check fails.
 - Root-level `zinc.css` / `zinc.min.css`, plus `temp/`, `node_modules/`, are gitignored
   and generated; never edit them by hand.
+- `.agents/skills/` (real files), `.claude/skills/` (relative symlinks to them) and
+  `skills-lock.json` are Emil Kowalski's design and animation skills, installed from
+  emilkowalski/skills with `npx skills add`. They're agent tooling, not part of the
+  build or the npm package. Use `review-animations` and `find-animation-opportunities`
+  before changing transitions or interactive states.
 
 ## Commands
 

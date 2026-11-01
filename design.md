@@ -91,3 +91,26 @@ for repo layout/build instructions; this file is about *design* rules.
   instead of the input inside it. Never set `border-radius` in the global
   `:focus-visible` rule: it overrides each element's own radius (a button
   would jump from 6px to 3px corners).
+
+## Motion
+
+- **Durations and easing.** Color and hover fades run 120–150ms with `ease`.
+  Movement (the switch thumb, the summary marker) runs 200ms with
+  `--ease-out`; the switch track's color change rides along at 200ms. A
+  button press is `translateY(1px)` over 60ms. Animate
+  transform and opacity, never layout properties (`left`, `top`, `width`,
+  `height`).
+- **Hover is for fine pointers.** Every `:hover` rule sits inside
+  `@media (hover: hover) and (pointer: fine)`, because touch browsers keep
+  `:hover` stuck after a tap. `:active` stays ungated.
+- **Keyboard focus never animates.** Focus styles land at once (text fields set
+  `transition-duration: 0s` while focused); blur may fade out.
+- **No smooth scrolling.** `scroll-behavior: smooth` animated Tab-focus
+  scrolling for up to a second, so jumps are instant.
+- **Reduced motion.** The kill switch also covers `*::before`, `*::after`,
+  `::backdrop` and `::file-selector-button`, and sets the iteration count to 1.
+  zinc deliberately kills color fades too. Anything new that animates must be
+  covered by it.
+- **Hover never outranks state.** A hover rule must not beat checked or
+  selected styles. For example, the choice-card hover condition is wrapped in
+  `:where()`, so a checked card keeps its accent border while hovered.
