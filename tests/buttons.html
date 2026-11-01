@@ -67,6 +67,25 @@
   <a role="button" href="#" aria-disabled="true">a role=button (aria-disabled)</a>
 </p>
 
+<h2>Variants on link-buttons, input buttons and reset</h2>
+<p>An explicit <code>data-variant</code> beats the element's default look.</p>
+<p>
+  <a role="button" href="#">Link</a>
+  <a role="button" href="#" data-variant="secondary">Link secondary</a>
+  <a role="button" href="#" data-variant="outline">Link outline</a>
+  <a role="button" href="#" data-variant="ghost">Link ghost</a>
+  <a role="button" href="#" data-variant="danger">Link danger</a>
+</p>
+<p>
+  <input type="submit" value="Submit outline" data-variant="outline" />
+  <input type="button" value="Input ghost" data-variant="ghost" />
+  <button type="reset" data-variant="danger">Reset danger</button>
+  <input type="reset" value="Reset outline" data-variant="outline" />
+</p>
+<p>
+  <a role="button" href="#" data-variant="outline" aria-disabled="true">Disabled link outline</a>
+</p>
+
 <h2>Segmented group</h2>
 <div role="group">
   <button data-variant="secondary">Day</button>

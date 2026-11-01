@@ -37,7 +37,8 @@ below) covers QA, but `website`'s showcase is the polished, documented reference
   this folder.
 - `scripts/contrast.mjs` — `pnpm run contrast`: reads the color tokens from
   `src/lib/zinc.css` and prints a before/after WCAG contrast table for every accent in
-  both modes (baseline: the `v0.0.0-pre.5` tag). Exits 1 if a check fails.
+  both modes (baseline: the `v0.0.0-pre.5` tag). It also checks the control borders
+  (`--line-strong`) and the danger pair in each mode. Exits 1 if a check fails.
 - Root-level `zinc.css` / `zinc.min.css`, plus `temp/`, `node_modules/`, are gitignored
   and generated; never edit them by hand.
 - `.agents/skills/` (real files), `.claude/skills/` (relative symlinks to them) and
@@ -51,7 +52,7 @@ below) covers QA, but `website`'s showcase is the polished, documented reference
 ```bash
 pnpm run build   # src/lib/zinc.css → zinc.css + zinc.min.css (repo root)
 pnpm run dev      # serve the repo, opens tests/ for visual QA
-pnpm run contrast   # before/after contrast table, every accent × mode (exits 1 on a failure)
+pnpm run contrast   # before/after contrast: every accent × mode, plus control borders and danger (exits 1 on a failure)
 ```
 
 There are no tests, linter, or typecheck in the traditional sense — `tests/` is for
@@ -84,6 +85,14 @@ rules should reference these tokens, not hard-coded values.
   (`--accent-press`, `--accent-soft`, `--accent-faint`) still come from `color-mix()` so
   they follow whatever `--accent` is; `--accent-press` darkens in light and lightens in
   dark (set in the dark blocks).
+- **Danger** is `--danger` and `--on-danger`, a `light-dark(light, dark)` pair like the
+  accents, so it needs no entries in the dark blocks. `--danger-press` is derived with
+  `color-mix()` like `--accent-press`: darker in `:root`, lighter in both dark blocks.
+  Never hard-code a red.
+- **`--line-strong`** is the neutral for control boundaries (form fields, checkbox,
+  radio, switch and range tracks, color input, select chevron), at 3:1 or better on
+  `--bg` and `--surface`. Like the other neutrals it is defined in `:root` and in both
+  dark blocks. `--line` stays for decorative rules.
 - **User-facing API** (documented in README): theme hooks `data-mode` / `data-accent` on
   `<html>`; variant hooks `data-variant` / `data-size` and `role="button"` / `role="switch"`
   on elements; tunable tokens (`--accent`, `--radius`, `--width`, `--gutter`, fonts).

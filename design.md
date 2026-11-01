@@ -60,6 +60,17 @@ for repo layout/build instructions; this file is about *design* rules.
   `tests/buttons.html` remains the source of truth for the full
   button variant/size/element-type matrix.
 
+## Variants
+
+- **An explicit `data-variant` always wins.** Element defaults that set button
+  colors (`input[type="submit"]`, `input[type="button"]`, `input[type="reset"]`,
+  `a[role="button"]`, and `button[type="reset"]` / `input[type="reset"]` as
+  secondary) carry `:where(:not([data-variant]))`. Without it the element
+  selector (0,1,1) outranks `[data-variant="…"]` (0,1,0) and the variant is
+  silently ignored. `:where()` adds no specificity, so markup without a
+  variant resolves exactly as before. Mirror it when adding a new element
+  default, in the base rule and in its hover rule alike.
+
 ## Accessibility floor
 
 - **Contrast targets: 4.5:1 for text, 3:1 for the focus ring** (WCAG AA).
@@ -69,6 +80,16 @@ for repo layout/build instructions; this file is about *design* rules.
   `pnpm run contrast` measures all of it for every accent in both modes,
   compares against a baseline release (`--before`, default `v0.0.0-pre.5`),
   and exits 1 on a failure. Run it after touching any color token.
+- **Control boundaries clear 3:1** (WCAG 1.4.11). Fields, checkbox, radio,
+  switch and range tracks, the color input and the select chevron use
+  `--line-strong`, 3:1 or better on `--bg` and `--surface` in both modes
+  (`pnpm run contrast` checks it). Decorative rules (hr, tables, cards,
+  fieldset, details, code, kbd, footer, choice cards, progress, meter) keep
+  the softer `--line`.
+- **Danger is a token pair, never a hex.** `--danger` and `--on-danger` are a
+  `light-dark()` pair like the accents, and clear 4.5:1 as text on `--bg` and
+  `--surface` and under the button label. `--danger-press` darkens in light
+  and lightens in dark, so it is set in both dark blocks like `--accent-press`.
 - **Type floor: nothing under 14px (`0.875rem`).** Secondary reading text
   (`small`, `figcaption`, `caption`, labels, `footer`) sits at 15px
   (`0.9375rem`). Mono text sized in `em` (`code`, `kbd`, `samp`) uses

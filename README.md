@@ -72,6 +72,7 @@ Override any of these on `:root` to rebrand without touching the framework:
 :root {
   --accent: light-dark(#0f766e, #2dd4bf); /* brand color: light shade, dark shade */
   --on-accent: light-dark(#ffffff, #0c0c0d); /* text on accent fills */
+  --danger: light-dark(#d1242f, #ff6369); /* destructive actions, errors */
   --radius: 9px; /* global corner radius */
   --width: 72rem; /* max content width */
   --gutter: 2.5rem; /* page padding */
@@ -85,7 +86,7 @@ One color works in both modes; `light-dark()` gives each mode its own shade. Kee
 accent text at 4.5:1 on the page background and `--on-accent` at 4.5:1 on the
 accent.
 
-The full token set (neutrals, surfaces, shadows, code panel) is documented at
+The full token set (neutrals, control borders, surfaces, shadows, code panel) is documented at
 the top of [`zinc.css`](./src/lib/zinc.css).
 
 ## Optional variant hooks
@@ -114,6 +115,7 @@ variants:
 
 <!-- a link that looks like a button -->
 <a role="button" href="#">Get started</a>
+<a role="button" data-variant="outline" href="#">Learn more</a>
 
 <!-- a toggle switch -->
 <input type="checkbox" role="switch" />

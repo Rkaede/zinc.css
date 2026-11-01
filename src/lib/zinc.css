@@ -51,6 +51,12 @@
   --accent-soft: color-mix(in srgb, var(--accent) 10%, transparent);
   --accent-faint: color-mix(in srgb, var(--accent) 7%, transparent);
 
+  /* danger: a light-dark(light, dark) pair like the accents, for destructive
+     buttons, invalid fields and the required marker */
+  --danger: light-dark(#d1242f, #ff6369);
+  --on-danger: light-dark(#ffffff, #0c0c0d);
+  --danger-press: color-mix(in srgb, var(--danger) 86%, #000);
+
   /* neutrals — light ------------------------------------------------------ */
   --bg: #faf9f7;
   --surface: #ffffff;
@@ -58,6 +64,9 @@
   --text: #131210;
   --muted: #6c6a64;
   --line: #e4e1da;
+  /* control boundaries (form fields, checkbox, radio, switch and range
+     tracks) need 3:1 against the page; --line stays for decorative rules */
+  --line-strong: #85827b;
   --ink: #131210;
   --shadow: 0 1px 2px rgba(19, 18, 16, 0.05), 0 14px 30px -18px rgba(19, 18, 16, 0.28);
 
@@ -90,9 +99,11 @@
     --text: #f4f3f0;
     --muted: #a3a19a;
     --line: #2a2a2e;
+    --line-strong: #706e69;
     --ink: #f4f3f0;
     --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 18px 40px -20px rgba(0, 0, 0, 0.75);
     --accent-press: color-mix(in srgb, var(--accent) 82%, #fff);
+    --danger-press: color-mix(in srgb, var(--danger) 82%, #fff);
   }
 }
 /* dark neutrals — manual override -------------------------------------- */
@@ -104,9 +115,11 @@
   --text: #f4f3f0;
   --muted: #a3a19a;
   --line: #2a2a2e;
+  --line-strong: #706e69;
   --ink: #f4f3f0;
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 18px 40px -20px rgba(0, 0, 0, 0.75);
   --accent-press: color-mix(in srgb, var(--accent) 82%, #fff);
+  --danger-press: color-mix(in srgb, var(--danger) 82%, #fff);
 }
 
 /* ==========================================================================
@@ -356,7 +369,7 @@ label { display: block; font-weight: 600; font-size: 0.9375rem; margin-bottom: 0
   padding: 0.62rem 0.8rem;
   color: var(--text);
   background: var(--surface);
-  border: 1.5px solid var(--line);
+  border: 1.5px solid var(--line-strong);
   border-radius: var(--radius);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
@@ -377,10 +390,11 @@ textarea { min-height: 6.5rem; resize: vertical; line-height: 1.55; }
 /* dim controls, not a disabled fieldset itself: its controls dim on their own
    and its legend stays enabled */
 :disabled:not(fieldset) { opacity: 0.55; }
-:user-invalid { border-color: #e5484d; }
+/* :is() lifts this to (0,1,1) so it beats the text-field border rule above */
+:is(input, textarea, select):user-invalid { border-color: var(--danger); }
 :user-invalid:where(:not([type="checkbox"], [type="radio"])):focus {
-  border-color: #e5484d;
-  box-shadow: 0 0 0 1px #e5484d, 0 0 0 4px color-mix(in srgb, #e5484d 22%, transparent);
+  border-color: var(--danger);
+  box-shadow: 0 0 0 1px var(--danger), 0 0 0 4px color-mix(in srgb, var(--danger) 22%, transparent);
 }
 
 /* select chevron --------------------------------------------------------- */
@@ -388,7 +402,7 @@ select {
   appearance: none;
   -webkit-appearance: none;
   padding-right: 2.3rem;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='%2385827b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 0.85rem center;
   background-size: 0.85rem;
@@ -404,7 +418,7 @@ input[type="checkbox"]:not([role="switch"]), input[type="radio"] {
   flex: 0 0 auto;
   display: inline-grid;
   place-content: center;
-  border: 1.5px solid var(--line);
+  border: 1.5px solid var(--line-strong);
   background: var(--surface);
   cursor: pointer;
   vertical-align: -0.22em;
@@ -439,7 +453,7 @@ input[type="checkbox"][role="switch"] {
   height: 1.55rem;
   flex: 0 0 auto;
   border-radius: 999px;
-  background: var(--line);
+  background: var(--line-strong);
   cursor: pointer;
   vertical-align: -0.4em;
   transition: background 0.2s ease;
@@ -470,8 +484,8 @@ input[type="range"] {
   background: transparent;
   cursor: pointer;
 }
-input[type="range"]::-webkit-slider-runnable-track { height: 6px; border-radius: 999px; background: var(--line); }
-input[type="range"]::-moz-range-track { height: 6px; border-radius: 999px; background: var(--line); }
+input[type="range"]::-webkit-slider-runnable-track { height: 6px; border-radius: 999px; background: var(--line-strong); }
+input[type="range"]::-moz-range-track { height: 6px; border-radius: 999px; background: var(--line-strong); }
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
@@ -492,7 +506,7 @@ input[type="range"]::-moz-range-thumb {
 /* color + file ----------------------------------------------------------- */
 input[type="color"] {
   width: 3rem; height: 2.5rem; padding: 0.25rem;
-  border: 1.5px solid var(--line);
+  border: 1.5px solid var(--line-strong);
   border-radius: var(--radius);
   background: var(--surface);
   cursor: pointer;
@@ -608,9 +622,9 @@ form[data-form="questions"] > fieldset > legend::before {
   background: var(--accent);
   border-radius: 50%;
 }
-form[data-form="questions"] > fieldset:has(:user-invalid) > legend::before { background: #e5484d; }
+form[data-form="questions"] > fieldset:has(:user-invalid) > legend::before { background: var(--danger); color: var(--on-danger); }
 form[data-form="questions"] > fieldset > p { margin: 0 0 0.4rem; color: var(--muted); }
-form[data-form="questions"] abbr[title="required"] { margin-left: 0.2rem; color: #e5484d; text-decoration: none; }
+form[data-form="questions"] abbr[title="required"] { margin-left: 0.2rem; color: var(--danger); text-decoration: none; }
 form[data-form="questions"] > footer {
   position: sticky;
   bottom: 0;
@@ -630,9 +644,15 @@ html:has(form[data-form="questions"]) { scroll-padding-block-end: 8rem; }
 /* ==========================================================================
    Buttons
    ========================================================================== */
+/* element defaults (submit/button/reset inputs, link-buttons, and reset as
+   secondary) carry :where(:not([data-variant])), so an explicit data-variant
+   always wins at unchanged specificity */
 button,
-input[type="submit"], input[type="button"], input[type="reset"],
-a[role="button"], [data-variant] {
+input[type="submit"]:where(:not([data-variant])),
+input[type="button"]:where(:not([data-variant])),
+input[type="reset"]:where(:not([data-variant])),
+a[role="button"]:where(:not([data-variant])),
+[data-variant] {
   font: inherit;
   font-weight: 600;
   line-height: 1.2;
@@ -655,7 +675,9 @@ input[type="submit"]:not(:disabled):active, input[type="button"]:not(:disabled):
 a[role="button"]:not([aria-disabled="true"]):active, [data-variant]:not(:disabled):active { transform: translateY(1px); }
 
 /* variants (attribute hooks, no classes) -------------------------------- */
-[data-variant="secondary"], button[type="reset"], input[type="reset"] {
+[data-variant="secondary"],
+button[type="reset"]:where(:not([data-variant])),
+input[type="reset"]:where(:not([data-variant])) {
   background: var(--surface);
   color: var(--text);
   border-color: var(--ink);
@@ -671,21 +693,25 @@ a[role="button"]:not([aria-disabled="true"]):active, [data-variant]:not(:disable
   border-color: transparent;
 }
 [data-variant="danger"] {
-  background: #e5484d;
-  color: #fff;
+  background: var(--danger);
+  color: var(--on-danger);
 }
 
 /* hover (fine pointers only) --------------------------------------------- */
 @media (hover: hover) and (pointer: fine) {
   button:not(:disabled):hover,
-  input[type="submit"]:not(:disabled):hover, input[type="button"]:not(:disabled):hover,
-  a[role="button"]:not([aria-disabled="true"]):hover, [data-variant]:not(:disabled):hover { background: var(--accent-press); }
-  [data-variant="secondary"]:not(:disabled):hover, button[type="reset"]:not(:disabled):hover, input[type="reset"]:not(:disabled):hover {
+  input[type="submit"]:where(:not([data-variant])):not(:disabled):hover,
+  input[type="button"]:where(:not([data-variant])):not(:disabled):hover,
+  a[role="button"]:where(:not([data-variant])):not([aria-disabled="true"]):hover,
+  [data-variant]:not(:disabled):hover { background: var(--accent-press); }
+  [data-variant="secondary"]:not(:disabled):hover,
+  button[type="reset"]:where(:not([data-variant])):not(:disabled):hover,
+  input[type="reset"]:where(:not([data-variant])):not(:disabled):hover {
     background: var(--surface-alt);
   }
   [data-variant="outline"]:not(:disabled):hover { background: var(--accent-soft); }
   [data-variant="ghost"]:not(:disabled):hover { background: var(--surface-alt); }
-  [data-variant="danger"]:not(:disabled):hover { background: #cf3b40; }
+  [data-variant="danger"]:not(:disabled):hover { background: var(--danger-press); }
 }
 
 /* sizes ------------------------------------------------------------------ */

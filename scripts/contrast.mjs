@@ -1,16 +1,27 @@
 #!/usr/bin/env node
-/* Contrast report for src/lib/zinc.css: every accent × mode, before vs after.
+/* Contrast report for src/lib/zinc.css: every accent × mode, before vs after,
+   plus the control borders and the danger pair in each mode.
    Resolves the color tokens and the :focus-visible ring the way the cascade
    does (:root, then the accent theme and any forced mode), evaluates var(),
-   light-dark() and color-mix(), and measures WCAG 2 contrast ratios:
-     link/bg       --accent on --bg                                 >= 4.5
-     link/surface  --accent on --surface                            >= 4.5
-     link/aside    --accent on --accent-soft over --bg (callout)    >= 4.5
-     on/accent     --on-accent on --accent (button text)            >= 4.5
-     on/press      --on-accent on --accent-press (button hover)     >= 4.5
-     ring          focus ring on --bg and --surface, the lower      >= 3
-   Translucent colors are composited over their background first. Also warns if
-   the two dark blocks differ, since AGENTS.md says to keep them in sync.
+   light-dark() and color-mix(), and measures WCAG 2 contrast ratios.
+   Per accent and mode:
+     link/bg          --accent on --bg                                 >= 4.5
+     link/surface     --accent on --surface                            >= 4.5
+     link/aside       --accent on --accent-soft over --bg (callout)    >= 4.5
+     on/accent        --on-accent on --accent (button text)            >= 4.5
+     on/press         --on-accent on --accent-press (button hover)     >= 4.5
+     ring             focus ring on --bg and --surface, the lower      >= 3
+   Per mode, with no accent theme applied:
+     control/bg       --line-strong on --bg (control borders)          >= 3
+     control/surface  --line-strong on --surface                       >= 3
+     danger/bg        --danger on --bg                                 >= 4.5
+     danger/surface   --danger on --surface                            >= 4.5
+     on/danger        --on-danger on --danger (danger button text)     >= 4.5
+     on/danger-press  --on-danger on --danger-press (button hover)     >= 4.5
+   Translucent colors are composited over their background first. A stylesheet
+   from before the control and danger tokens (the --before baseline) is measured
+   with the colors it hard-coded instead (LEGACY). Also warns if the two dark
+   blocks differ, since AGENTS.md says to keep them in sync.
 
    Usage:  node scripts/contrast.mjs [--before <git-ref|file>] [--after <file>]
    --before defaults to the git ref v0.0.0-pre.5 (the last release before the
@@ -64,6 +75,25 @@ const CHECKS = [
   { id: 'on/press', min: 4.5, run: (c) => ratio(c.onAccent, over(c.press, c.bg)) },
   { id: 'ring', min: 3, run: (c) => Math.min(ratio(c.ring, c.bg), ratio(c.ring, c.surface)) },
 ];
+
+// per mode, no accent applied
+const CONTROL_CHECKS = [
+  { id: 'control/bg', min: 3, run: (c) => ratio(c.lineStrong, c.bg) },
+  { id: 'control/surface', min: 3, run: (c) => ratio(c.lineStrong, c.surface) },
+  { id: 'danger/bg', min: 4.5, run: (c) => ratio(c.danger, c.bg) },
+  { id: 'danger/surface', min: 4.5, run: (c) => ratio(c.danger, c.surface) },
+  { id: 'on/danger', min: 4.5, run: (c) => ratio(c.onDanger, over(c.danger, c.bg)) },
+  { id: 'on/danger-press', min: 4.5, run: (c) => ratio(c.onDanger, over(c.dangerPress, c.bg)) },
+];
+
+// older stylesheets lack these tokens; this is what they used instead:
+// control borders took --line, the danger button hard-coded the rest
+const LEGACY = {
+  '--line-strong': 'var(--line)',
+  '--danger': '#e5484d',
+  '--on-danger': '#ffffff',
+  '--danger-press': '#cf3b40',
+};
 
 // color evaluator -------------------------------------------------------------
 const NAMED = new Map([
@@ -343,6 +373,24 @@ function measure(model, mode, accent) {
   return { colors, values: CHECKS.map((check) => check.run(colors)) };
 }
 
+// the tokens that ignore the accent: only :root and the mode rules apply. A token
+// the stylesheet lacks falls back to LEGACY and is reported in `missing`.
+function measureControls(model, mode) {
+  const props = propsFor(model, mode, null);
+  const ctx = { props, mode };
+  const get = (name) => evalColor((!props.has(name) && LEGACY[name]) || `var(${name})`, ctx);
+  const colors = {
+    lineStrong: get('--line-strong'),
+    danger: get('--danger'),
+    onDanger: get('--on-danger'),
+    dangerPress: get('--danger-press'),
+    bg: get('--bg'),
+    surface: get('--surface'),
+  };
+  const missing = Object.keys(LEGACY).filter((name) => !props.has(name));
+  return { values: CONTROL_CHECKS.map((check) => check.run(colors)), missing };
+}
+
 function syncWarning(model, side) {
   const keys = new Set([...model.darkAuto.keys(), ...model.darkManual.keys()]);
   const differing = [...keys].filter((k) => model.darkAuto.get(k) !== model.darkManual.get(k));
@@ -445,11 +493,19 @@ function main(argv) {
     }
   };
 
+  const measureControlsSide = (side, mode) => {
+    try {
+      return measureControls(sides[side].model, mode);
+    } catch (err) {
+      throw new Error(`${side} (${sides[side].label}), ${mode}: ${err.message}`);
+    }
+  };
+
   const out = [
     'zinc.css contrast: before → after, every accent × mode',
     `  before   ${sides.before.label}`,
     `  after    ${sides.after.label}`,
-    '  targets  text 4.5:1 (link/*, on/*), focus ring 3:1 (WCAG 2 AA); ✓/✗ judge the after value',
+    '  targets  text 4.5:1 (link/*, danger/*, on/*), ring and control/* 3:1 (WCAG 2 AA); ✓/✗ judge the after value',
   ];
   for (const side of ['before', 'after']) {
     const warning = syncWarning(sides[side].model, side);
@@ -474,12 +530,35 @@ function main(argv) {
     out.push('', `${mode}   --bg ${neutrals[0]}   --surface ${neutrals[1]}`, ...table(rows));
   }
 
-  const total = MODES.length * accents.length * CHECKS.length;
+  const controlRows = [['mode', ...CONTROL_CHECKS.map((check) => check.id)]];
+  const missing = { before: new Set(), after: new Set() };
+  for (const mode of MODES) {
+    const before = measureControlsSide('before', mode);
+    const after = measureControlsSide('after', mode);
+    before.missing.forEach((name) => missing.before.add(name));
+    after.missing.forEach((name) => missing.after.add(name));
+    const cells = CONTROL_CHECKS.map((check, i) => {
+      const ok = after.values[i] >= check.min;
+      if (!ok) failures.push({ mode, check, value: after.values[i] });
+      return `${num(before.values[i])}→${num(after.values[i])} ${ok ? '✓' : '✗'}`;
+    });
+    controlRows.push([mode, ...cells]);
+  }
+  out.push('', 'controls and danger (accent-independent)', ...table(controlRows));
+  for (const side of ['before', 'after']) {
+    if (missing[side].size) {
+      const names = [...missing[side]].join(', ');
+      out.push(`note: ${side} has no ${names}; the values shown are the ones that stylesheet hard-coded`);
+    }
+  }
+
+  const total = MODES.length * (accents.length * CHECKS.length + CONTROL_CHECKS.length);
   out.push('');
   if (failures.length) {
     out.push(`after: ${failures.length} of ${total} checks fail`);
     for (const { mode, accent, check, value } of failures) {
-      out.push(`  ${mode}/${accent} ${check.id}: ${value.toFixed(2)} (needs ${check.min})`);
+      const where = accent ? `${mode}/${accent}` : mode;
+      out.push(`  ${where} ${check.id}: ${value.toFixed(2)} (needs ${check.min})`);
     }
   } else {
     out.push(`after: all ${total} checks pass`);
