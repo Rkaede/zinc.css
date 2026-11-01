@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>zinc.css dev tests — accessibility</title>
+<link rel="stylesheet" href="../src/lib/zinc.css" />
+</head>
+<body>
+<p><a href="index.html">← tests</a></p>
+<header>
+  <h1>Accessibility</h1>
+  <p>
+    This page checks contrast, focus and the type floor (see
+    <code>design.md</code>, “Accessibility floor”). <code>pnpm run contrast</code>
+    checks the numbers; this page is for the look. Check it in light/dark and
+    across the five accents, and Tab through the Focus section.
+  </p>
+  <p>
+    Regression checks: hover the nav link-button (it must keep its button
+    colors and get no underline) and the card’s “Read more” button (its label
+    must stay readable).
+  </p>
+  <nav>
+    <ul>
+      <li><a href="#links" aria-current="page">Current page</a></li>
+      <li><a href="#type-floor">Plain link</a></li>
+      <li><a href="#focus">Another plain link</a></li>
+      <li><a role="button" data-size="sm" href="#focus">Nav link-button</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+<section id="links">
+  <h2>Links</h2>
+  <p>
+    Inline links in body text: <a href="#">the first link</a> and
+    <a href="#">a second link</a>. Each keeps a resting underline, so color is
+    never the only cue.
+  </p>
+  <p><small>Small text with a link inside: <a href="#">a small link</a>.</small></p>
+  <aside>
+    <p>
+      A callout sentence with <strong>strong text</strong> and
+      <a href="#">a link</a> on the accent tint.
+    </p>
+  </aside>
+  <article>
+    <header><h3>Card heading</h3></header>
+    <p>Card text with <a href="#">an inline link</a> on the surface color.</p>
+    <footer>
+      <a href="#">Plain footer link</a>
+      <a role="button" href="#">Read more</a>
+    </footer>
+  </article>
+  <p>Highlighted with <mark>mark</mark> and inserted with <ins>ins</ins>.</p>
+  <p>
+    <button>Primary</button>
+    <button data-variant="secondary">Secondary</button>
+    <button data-variant="outline">Outline</button>
+  </p>
+  <blockquote>
+    <p>A quotation with <a href="#">a link inside it</a>.</p>
+    <cite>The cite line</cite>
+  </blockquote>
+</section>
+
+<section id="type-floor">
+  <h2>Type floor</h2>
+  <p>Nothing under 14px. Each sample is labelled with the size it should compute to.</p>
+  <h5>h5 (15.2px)</h5>
+  <h6>h6 (14px)</h6>
+  <p><small>small (15px)</small></p>
+  <figure>
+    <svg width="96" height="48" viewBox="0 0 96 48" aria-hidden="true"><rect width="96" height="48" rx="6" /></svg>
+    <figcaption>figcaption (15px)</figcaption>
+  </figure>
+  <table>
+    <caption>caption (15px)</caption>
+    <thead>
+      <tr><th>Element</th><th>Expected size</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>thead th</td><td>14px, uppercase</td><td>The header row above</td></tr>
+      <tr><td>td</td><td>15.2px</td><td>A cell with inline <code>code</code> (14px or more)</td></tr>
+    </tbody>
+  </table>
+  <p>
+    <kbd>Tab</kbd>, <samp>samp output</samp> and inline <code>code</code> in a
+    paragraph: all 14px or more.
+  </p>
+  <p><small>Inline <code>code</code> inside small text: still 14px or more.</small></p>
+  <p>
+    <label for="floor-input">label (15px)</label>
+    <input type="text" id="floor-input" value="Input text" />
+  </p>
+  <p><button data-size="sm">Small button (14px)</button></p>
+</section>
+
+<section id="focus">
+  <h2>Focus</h2>
+  <p>
+    Tab through these in order. Every control needs a visible ring; a choice
+    card carries the ring on the card, not on its radio.
+  </p>
+  <p>
+    <a href="#focus" id="focus-link">Link</a>
+    <button id="focus-button">Button</button>
+    <a role="button" href="#focus" id="focus-link-button">Link-button</a>
+  </p>
+  <p>
+    <label for="focus-text">Text input</label>
+    <input type="text" id="focus-text" value="Some text" />
+  </p>
+  <p>
+    <label for="focus-select">Select</label>
+    <select id="focus-select">
+      <option>One</option>
+      <option>Two</option>
+      <option>Three</option>
+    </select>
+  </p>
+  <p>
+    <label for="focus-textarea">Textarea</label>
+    <textarea id="focus-textarea">Some text</textarea>
+  </p>
+  <p>
+    <label><input type="checkbox" id="focus-checkbox" checked /> Plain checkbox label</label>
+    <label><input type="radio" name="plain" id="focus-radio" /> Plain radio label</label>
+    <label><input type="checkbox" role="switch" id="focus-switch" /> Switch</label>
+  </p>
+  <p>
+    <label for="focus-range">Range</label>
+    <input type="range" id="focus-range" value="50" />
+  </p>
+  <p>
+    <label for="focus-color">Color</label>
+    <input type="color" id="focus-color" value="#1d5ce0" />
+  </p>
+  <p>
+    <label for="focus-file">File</label>
+    <input type="file" id="focus-file" />
+  </p>
+  <details open>
+    <summary id="focus-summary">Details summary</summary>
+    <p>A paragraph inside the details.</p>
+  </details>
+  <fieldset>
+    <legend>Choice cards</legend>
+    <label><input type="radio" name="c" id="focus-card-a">
+      <span><strong>First card</strong><small>Unchecked, with a description</small></span></label>
+    <label><input type="radio" name="c" id="focus-card-b" checked>
+      <span><strong>Second card</strong><small>Checked, with a description</small></span></label>
+  </fieldset>
+  <p><input type="submit" id="focus-submit" value="Submit" /></p>
+</section>
+</main>
+
+<footer>
+  <p>
+    Footer text is muted, and its links keep a full-strength underline:
+    <a href="#links">back to top</a> or <a href="index.html">all tests</a>.
+  </p>
+</footer>
+</body>
+</html>
