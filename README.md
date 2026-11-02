@@ -36,15 +36,15 @@ change under you in production.
 
 ### Fonts (optional but recommended)
 
-`zinc.css` defaults to **Space Grotesk** for display and body text, and
-**Space Mono** for code — with safe system fallbacks if you skip this step.
+`zinc.css` defaults to **Inter** for display and body text, and
+**JetBrains Mono** for code — with safe system fallbacks if you skip this step.
 
 ```html
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link
   rel="stylesheet"
-  href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
+  href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
 />
 ```
 
@@ -76,8 +76,8 @@ Override any of these on `:root` to rebrand without touching the framework:
   --radius: 9px; /* global corner radius */
   --width: 72rem; /* max content width */
   --gutter: 2.5rem; /* page padding */
-  --font-sans: "Space Grotesk", system-ui, sans-serif;
-  --font-mono: "Space Mono", monospace;
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
   --font-display: var(--font-sans);
 }
 ```
