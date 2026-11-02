@@ -383,8 +383,10 @@ textarea { min-height: 6.5rem; resize: vertical; line-height: 1.55; }
 /* text fields swap the outline for an accent edge (border + 1px ring) and a
    soft halo. Checkboxes, radios, switches, range, color, file and button
    inputs keep the global :focus-visible ring. :where() keeps the exclusions
-   from raising specificity. The ring lands at once; blur still fades out. */
-:is(input, textarea, select):where(:not([type="checkbox"], [type="radio"], [type="range"], [type="color"], [type="file"], [type="submit"], [type="button"], [type="reset"], [type="image"])):focus {
+   from raising specificity. The ring lands at once; blur still fades out.
+   Browsers match :focus-visible on a clicked text field too, since it takes
+   keyboard input, so the ring still shows on click. */
+:is(input, textarea, select):where(:not([type="checkbox"], [type="radio"], [type="range"], [type="color"], [type="file"], [type="submit"], [type="button"], [type="reset"], [type="image"])):focus-visible {
   outline: none;
   border-color: var(--accent);
   box-shadow: 0 0 0 1px var(--accent), 0 0 0 4px var(--accent-soft);
@@ -397,7 +399,7 @@ textarea { min-height: 6.5rem; resize: vertical; line-height: 1.55; }
 :disabled:not(fieldset) { opacity: 0.55; }
 /* :is() lifts this to (0,1,1) so it beats the text-field border rule above */
 :is(input, textarea, select):user-invalid { border-color: var(--danger); }
-:user-invalid:where(:not([type="checkbox"], [type="radio"])):focus {
+:user-invalid:where(:not([type="checkbox"], [type="radio"])):focus-visible {
   border-color: var(--danger);
   box-shadow: 0 0 0 1px var(--danger), 0 0 0 4px color-mix(in srgb, var(--danger) 22%, transparent);
 }
