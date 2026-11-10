@@ -63,7 +63,10 @@ details[data-debug-panel] [role="radiogroup"] { margin-block-start: 0.3rem; }
   margin-block-start: calc(3rem * var(--debug-space));
 }
 
-/* a hairline between sub-sections, halfway through the gap */
+/* a hairline above every sub-section, the first included, so a run of them
+   reads as a ruled list; each rule sits halfway through the gap above it.
+   The "+ section" selector matches the spacing rule's weight so this wins. */
+:root[data-debug-rules="on"] main > section > section,
 :root[data-debug-rules="on"] main > section > section + section {
   margin-block-start: calc(1.5rem * var(--debug-space));
   padding-block-start: calc(1.5rem * var(--debug-space));
