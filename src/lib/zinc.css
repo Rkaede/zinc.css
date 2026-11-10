@@ -745,6 +745,12 @@ label:where(:has(> input[type="radio"], > input[type="checkbox"]:not([role="swit
   cursor: pointer;
   transition: border-color 0.12s ease, background 0.12s ease, box-shadow 0.12s ease;
 }
+/* stacked cards sit 0.5rem apart. In a question form the fieldset's grid gap
+   already spaces them, so they're left out there. */
+label:where(:has(> input[type="radio"], > input[type="checkbox"]:not([role="switch"])):has(> span):not([role="radiogroup"] > label))
+  + label:where(:has(> input[type="radio"], > input[type="checkbox"]:not([role="switch"])):has(> span):not([role="radiogroup"] > label, form[data-form="questions"] > fieldset > label)) {
+  margin-top: 0.5rem;
+}
 label:where(:has(> input[type="radio"], > input[type="checkbox"]:not([role="switch"])):has(> span):not([role="radiogroup"] > label)) > input { margin-top: 0.1rem; }
 label:where(:has(> input[type="radio"], > input[type="checkbox"]:not([role="switch"])):has(> span):not([role="radiogroup"] > label)) > span { flex: 1; display: grid; gap: 0.15rem; }
 label:where(:has(> input[type="radio"], > input[type="checkbox"]:not([role="switch"])):has(> span):not([role="radiogroup"] > label)) strong { font-weight: 500; }
