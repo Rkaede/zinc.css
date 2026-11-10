@@ -14,11 +14,19 @@
     const s = JSON.parse(localStorage.getItem("zinc-docs-theme")) || {};
     for (const k of ["mode", "accent", "paper"]) if (/^[a-z]+$/.test(s[k] || "")) document.documentElement.dataset[k] = s[k];
   } catch {}
+  // debug panel choices (docs.js), stored or from ?toc=list and ?labels=above
+  try {
+    const s = JSON.parse(localStorage.getItem("zinc-docs-debug")) || {};
+    if (s.toc === "list") document.documentElement.dataset.debugToc = "list";
+    if (s.labels === "above") document.documentElement.dataset.debugLabels = "above";
+  } catch {}
   // ?mode=light|dark, ?accent=<name> and ?paper=beige set the theme hooks
   const q = new URLSearchParams(location.search), d = document.documentElement.dataset;
   if (/^(light|dark)$/.test(q.get("mode"))) d.mode = q.get("mode");
   if (/^[a-z]+$/.test(q.get("accent") || "")) d.accent = q.get("accent");
   if (q.get("paper") === "beige") d.paper = "beige";
+  if (q.get("toc") === "list") d.debugToc = "list";
+  if (q.get("labels") === "above") d.debugLabels = "above";
 </script>
 <script src="docs.js" defer></script>
 </head>

@@ -62,7 +62,40 @@
     show();
   }
 
-  /* 4. The example pages read ?mode, ?accent and ?paper but not the stored
+  /* 4. Debug panel: layout options to try out, on every docs page. Each
+     switch sets an attribute on <html> (styled in docs.css) and is stored,
+     so the head script applies it before paint on the next page. */
+  {
+    const DEBUG_KEY = "zinc-docs-debug";
+    const OPTIONS = [
+      { key: "toc", attr: "debugToc", on: "list", label: "Contents as a list", hint: "“On this page” links in one column" },
+      { key: "labels", attr: "debugLabels", on: "above", label: "Headings above content", hint: "Wide windows (56rem+) put them in the margin" },
+    ];
+    const panel = document.createElement("details");
+    panel.dataset.debugPanel = "";
+    panel.innerHTML = "<summary>Debug</summary><fieldset></fieldset>";
+    const fieldset = panel.querySelector("fieldset");
+    for (const option of OPTIONS) {
+      const label = document.createElement("label");
+      label.innerHTML = `<input type="checkbox" role="switch" /> <span>${option.label}<small>${option.hint}</small></span>`;
+      const input = label.querySelector("input");
+      input.checked = root.dataset[option.attr] === option.on;
+      input.addEventListener("change", () => {
+        if (input.checked) root.dataset[option.attr] = option.on;
+        else delete root.dataset[option.attr];
+        const stored = {};
+        for (const o of OPTIONS) if (root.dataset[o.attr] === o.on) stored[o.key] = o.on;
+        try {
+          if (Object.keys(stored).length) localStorage.setItem(DEBUG_KEY, JSON.stringify(stored));
+          else localStorage.removeItem(DEBUG_KEY);
+        } catch {}
+      });
+      fieldset.append(label);
+    }
+    document.body.append(panel);
+  }
+
+  /* 5. The example pages read ?mode, ?accent and ?paper but not the stored
      theme, so links to them carry the current hooks along. */
   const params = new URLSearchParams();
   for (const k of HOOKS) if (root.dataset[k]) params.set(k, root.dataset[k]);
