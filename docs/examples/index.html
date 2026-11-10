@@ -7,27 +7,31 @@
 <meta name="description" content="Whole pages built with zinc.css: reports, a dashboard, a triage board and forms, in plain semantic HTML with no classes." />
 <link rel="icon" href="data:," />
 <link rel="stylesheet" href="../../src/lib/zinc.css" />
+<link rel="stylesheet" href="../debug.css" />
 <script>
   // a theme picked on the theming page is stored, and every page applies it
   try {
     const s = JSON.parse(localStorage.getItem("zinc-docs-theme")) || {};
     for (const k of ["mode", "accent", "paper"]) if (/^[a-z]+$/.test(s[k] || "")) document.documentElement.dataset[k] = s[k];
   } catch {}
-  // debug panel choices (docs.js), stored or from ?toc=list and ?labels=above
-  try {
-    const s = JSON.parse(localStorage.getItem("zinc-docs-debug")) || {};
-    if (s.toc === "list") document.documentElement.dataset.debugToc = "list";
-    if (s.labels === "above") document.documentElement.dataset.debugLabels = "above";
-  } catch {}
   // ?mode=light|dark, ?accent=<name> and ?paper=beige set the theme hooks
   const q = new URLSearchParams(location.search), d = document.documentElement.dataset;
   if (/^(light|dark)$/.test(q.get("mode"))) d.mode = q.get("mode");
   if (/^[a-z]+$/.test(q.get("accent") || "")) d.accent = q.get("accent");
   if (q.get("paper") === "beige") d.paper = "beige";
-  if (q.get("toc") === "list") d.debugToc = "list";
-  if (q.get("labels") === "above") d.debugLabels = "above";
 </script>
 <script src="../docs.js" defer></script>
+<script>
+  // Debug panel choices (debug.js): stored, or ?toc= ?labels= ?spacing= ?rules=
+  try {
+    const s = JSON.parse(localStorage.getItem("zinc-docs-debug")) || {}, u = new URLSearchParams(location.search);
+    for (const [k, a] of [["toc", "debugToc"], ["labels", "debugLabels"], ["spacing", "debugSpacing"], ["rules", "debugRules"]]) {
+      const v = u.get(k) || s[k];
+      if (/^[a-z]+$/.test(v || "")) document.documentElement.dataset[a] = v;
+    }
+  } catch {}
+</script>
+<script src="../debug.js" defer></script>
 </head>
 <body>
 <header>

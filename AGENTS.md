@@ -37,6 +37,9 @@ change and its documentation land together. There is no separate docs branch.
   the demo (`<figure data-demo>`) and runs the theme switcher; `docs/docs.css` holds
   the little docs-only chrome. Like the framework, the site uses no `class` attributes.
   `docs/demos/` holds small whole-page demos for patterns that need a page of their own.
+  `docs/debug.js` + `docs/debug.css` add a Debug panel to every docs and example page
+  for trying layout options (contents as a list, headings above content, section
+  spacing, rules between sub-sections); docs-only overrides, never part of zinc.
 - `docs/examples/` — whole realistic pages (reports, a dashboard, a triage board, forms),
   for checking how the stylesheet holds up on a real page rather than one element at a
   time. Their content is invented: never paste real conversations, people, projects,

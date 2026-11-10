@@ -1,0 +1,71 @@
+/* ==========================================================================
+   Debug panel (built by debug.js): layout options to try out on the docs
+   and example pages. Each control sets an attribute on <html>; nothing
+   here is part of zinc.
+   ========================================================================== */
+details[data-debug-panel] {
+  position: fixed;
+  inset-block-end: 1rem;
+  inset-inline-end: 1rem;
+  z-index: 10;
+  margin: 0;
+  max-inline-size: min(22rem, calc(100vw - 2rem));
+  padding: 0.55rem 0.9rem;
+  font-size: var(--size-small);
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+}
+details[data-debug-panel] > summary { margin: 0; font-weight: 500; }
+details[data-debug-panel] > fieldset { margin: 0.6rem 0 0.2rem; display: grid; gap: 0.5rem; }
+details[data-debug-panel] label { margin: 0; }
+details[data-debug-panel] small { display: block; color: var(--muted); }
+details[data-debug-panel] [role="radiogroup"] { margin-block-start: 0.3rem; }
+
+/* contents as a vertical list instead of rows of links */
+:root[data-debug-toc="list"] nav[aria-label="On this page"] ul {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+}
+
+/* section headings above their content, even on a wide screen: undoes
+   zinc's margin labels (min-width: 56rem) and restores the plain <h2> */
+@media (min-width: 56rem) {
+  :root[data-debug-labels="above"] body {
+    max-width: calc(var(--width) + 2 * var(--gutter));
+    padding-inline-start: var(--gutter);
+  }
+  :root[data-debug-labels="above"] :is(main, main > form) > :is(section, nav) > h2:first-child {
+    float: none;
+    position: static;
+    inline-size: auto;
+    margin: 0 0 0.7em;
+    font-size: 1.375rem;
+    line-height: 1.2;
+    letter-spacing: -0.018em;
+    text-wrap: balance;
+  }
+}
+
+/* section spacing: scales the gap between sections (zinc's --section-gap,
+   4rem, or 3.25rem on a phone) and between sub-sections (3rem) */
+:root { --debug-space: 1; }
+:root[data-debug-spacing="tight"] { --debug-space: 0.7; }
+:root[data-debug-spacing="roomy"] { --debug-space: 1.5; }
+:root[data-debug-spacing="spacious"] { --debug-space: 2; }
+:root[data-debug-spacing] { --section-gap: calc(4rem * var(--debug-space)); }
+@media (max-width: 40rem) {
+  :root[data-debug-spacing] { --section-gap: calc(3.25rem * var(--debug-space)); }
+}
+:root[data-debug-spacing] main > section > section + section {
+  margin-block-start: calc(3rem * var(--debug-space));
+}
+
+/* a hairline between sub-sections, halfway through the gap */
+:root[data-debug-rules="on"] main > section > section + section {
+  margin-block-start: calc(1.5rem * var(--debug-space));
+  padding-block-start: calc(1.5rem * var(--debug-space));
+  border-block-start: 1px solid var(--line);
+}

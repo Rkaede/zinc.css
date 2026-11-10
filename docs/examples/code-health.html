@@ -6,6 +6,7 @@
     <title>Code health: harbor-api</title>
     <link rel="icon" href="data:," />
     <link rel="stylesheet" href="../../src/lib/zinc.css" />
+    <link rel="stylesheet" href="../debug.css" />
     <script>
       // ?mode=light|dark, ?accent=<name> and ?paper=beige set the theme hooks
       const q = new URLSearchParams(location.search), d = document.documentElement.dataset;
@@ -13,7 +14,18 @@
       if (/^[a-z]+$/.test(q.get("accent") || "")) d.accent = q.get("accent");
       if (q.get("paper") === "beige") d.paper = "beige";
     </script>
-  </head>
+  <script>
+  // Debug panel choices (debug.js): stored, or ?toc= ?labels= ?spacing= ?rules=
+  try {
+    const s = JSON.parse(localStorage.getItem("zinc-docs-debug")) || {}, u = new URLSearchParams(location.search);
+    for (const [k, a] of [["toc", "debugToc"], ["labels", "debugLabels"], ["spacing", "debugSpacing"], ["rules", "debugRules"]]) {
+      const v = u.get(k) || s[k];
+      if (/^[a-z]+$/.test(v || "")) document.documentElement.dataset[a] = v;
+    }
+  } catch {}
+</script>
+<script src="../debug.js" defer></script>
+</head>
   <body>
     <header>
       <p>harbor-api · Deadwood 1.8.0 · 12 March 2026</p>
