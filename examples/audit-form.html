@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Decision form for the Tidewater accessibility and quality audit: choose what to do with each finding and copy the result.">
+<title>Tidewater audit decisions</title>
+<link rel="stylesheet" href="../src/lib/zinc.css" />
+<script>
+  // ?mode=light|dark, ?accent=<name> and ?paper=beige set the theme hooks
+  const q = new URLSearchParams(location.search), d = document.documentElement.dataset;
+  if (/^(light|dark)$/.test(q.get("mode"))) d.mode = q.get("mode");
+  if (/^[a-z]+$/.test(q.get("accent") || "")) d.accent = q.get("accent");
+  if (q.get("paper") === "beige") d.paper = "beige";
+</script>
+</head>
+<body>
+<header>
+  <p><small>Tidewater · <code>main</code> @ a1b2c3d · 30 findings from AUDIT.md</small></p>
+  <h1>Audit decisions</h1>
+  <p>Choose what to do with each finding, then copy your choices back into the audit thread.</p>
+</header>
+<main>
+<nav aria-labelledby="toc-heading">
+  <h2 id="toc-heading">Sections</h2>
+  <ol>
+<li><a href="#sec-F">Fix these first</a> <small data-count="F">0 / 5</small></li>
+<li><a href="#sec-ED">Editor and formatting</a> <small data-count="ED">0 / 3</small></li>
+<li><a href="#sec-IO">Import and export (<code>src/io</code>)</a> <small data-count="IO">0 / 2</small></li>
+<li><a href="#sec-SY">Sync, storage and data safety</a> <small data-count="SY">0 / 2</small></li>
+<li><a href="#sec-SR">Search and navigation</a> <small data-count="SR">0 / 2</small></li>
+<li><a href="#sec-SE">Security</a> <small data-count="SE">0 / 2</small></li>
+<li><a href="#sec-UX">UX and copy</a> <small data-count="UX">0 / 2</small></li>
+<li><a href="#sec-MO">Mobile and responsive</a> <small data-count="MO">0 / 1</small></li>
+<li><a href="#sec-A11Y">Accessibility</a> <small data-count="A11Y">0 / 3</small></li>
+<li><a href="#sec-TH">Theming and styles</a> <small data-count="TH">0 / 2</small></li>
+<li><a href="#sec-PF">Performance</a> <small data-count="PF">0 / 2</small></li>
+<li><a href="#sec-BT">Build, tests, tooling and docs</a> <small data-count="BT">0 / 2</small></li>
+<li><a href="#sec-CL">Cleanup and dead code</a> <small data-count="CL">0 / 2</small></li>
+  </ol>
+</nav>
+<form data-decisions data-form="questions" aria-label="Audit decisions">
+<menu>
+  <li><label><input type="checkbox" data-filter-sev value="H" checked> High</label></li>
+  <li><label><input type="checkbox" data-filter-sev value="M" checked> Medium</label></li>
+  <li><label><input type="checkbox" data-filter-sev value="L" checked> Low</label></li>
+  <li><label><input type="checkbox" role="switch" data-filter-undecided> Only undecided</label></li>
+</menu>
+<p><small>Set every undecided item shown to</small> <span role="group"><button type="button" data-variant="secondary" data-size="sm" data-bulk-all="fix">Fix now</button><button type="button" data-variant="secondary" data-size="sm" data-bulk-all="later">Later</button><button type="button" data-variant="secondary" data-size="sm" data-bulk-all="skip">Skip</button><button type="button" data-variant="secondary" data-size="sm" data-bulk-all="discuss">Discuss</button></span></p>
+<section id="sec-F" data-section="F" aria-labelledby="h-F">
+<h2 id="h-F">Fix these first</h2>
+<p><small>Set the undecided items here to</small> <span role="group"><button type="button" data-variant="secondary" data-size="sm" data-bulk="fix">Fix now</button><button type="button" data-variant="secondary" data-size="sm" data-bulk="later">Later</button><button type="button" data-variant="secondary" data-size="sm" data-bulk="skip">Skip</button><button type="button" data-variant="secondary" data-size="sm" data-bulk="discuss">Discuss</button></span> <button type="button" data-variant="ghost" data-size="sm" data-bulk="clear">Clear section</button></p>
+<ol role="list">
+<li id="F1" data-item data-sev="H" data-title="Pasting a table from a spreadsheet freezes the editor.">
+  <b>F1</b> <small>High · Reproduced</small>
+  <p>Pasting a table from a spreadsheet freezes the editor. <code>src/editor/paste.ts:42</code> converts the pasted HTML on the main thread and re-parses the whole note once per cell. A 40-row paste locks the tab for about 20 seconds, and the autosave that fires afterwards writes a half-converted note.</p>
+  <p><span role="radiogroup" aria-label="Action for F1"><label><input type="radio" name="F1" value="fix"><span>Fix now</span></label><label><input type="radio" name="F1" value="later"><span>Later</span></label><label><input type="radio" name="F1" value="skip"><span>Skip</span></label><label><input type="radio" name="F1" value="discuss"><span>Discuss</span></label></span> <button type="button" data-variant="ghost" data-size="sm" data-note-toggle aria-expanded="false">Add note</button></p>
+  <input type="text" name="F1-note" data-note placeholder="Note for F1" aria-label="Note for F1" hidden>
+</li>
+<li id="F2" data-item data-sev="H" data-title="Notes edited offline are lost when sync resumes.">
+  <b>F2</b> <small>High · Reproduced</small>
+  <p>Notes edited offline are lost when sync resumes. <code>src/sync/queue.ts:88</code> replays queued changes but compares them with the server copy's <code>updatedAt</code>, so a note edited on two devices keeps the server version and drops the local one without a conflict prompt. Reproduced by editing the same note on a laptop in flight mode and on a phone.</p>
+  <p><span role="radiogroup" aria-label="Action for F2"><label><input type="radio" name="F2" value="fix"><span>Fix now</span></label><label><input type="radio" name="F2" value="later"><span>Later</span></label><label><input type="radio" name="F2" value="skip"><span>Skip</span></label><label><input type="radio" name="F2" value="discuss"><span>Discuss</span></label></span> <button type="button" data-variant="ghost" data-size="sm" data-note-toggle aria-expanded="false">Add note</button></p>
+  <input type="text" name="F2-note" data-note placeholder="Note for F2" aria-label="Note for F2" hidden>
+</li>
+<li id="F3" data-item data-sev="H" data-title="Deleted notes stay readable through shared links.">
+  <b>F3</b> <small>High · Read in code</small>
+  <p>Deleted notes stay readable through shared links. Revoking a share in <code>src/share/links.ts</code> hides the link in the interface but never deletes the token, and <code>GET /s/:token</code> (<code>server/routes/share.ts:19</code>) doesn't check <code>deletedAt</code>. Anyone with an old link can still read a note its owner deleted.</p>
+  <p><span role="radiogroup" aria-label="Action for F3"><label><input type="radio" name="F3" value="fix"><span>Fix now</span></label><label><input type="radio" name="F3" value="later"><span>Later</span></label><label><input type="radio" name="F3" value="skip"><span>Skip</span></label><label><input type="radio" name="F3" value="discuss"><span>Discuss</span></label></span> <button type="button" data-variant="ghost" data-size="sm" data-note-toggle aria-expanded="false">Add note</button></p>
+  <input type="text" name="F3-note" data-note placeholder="Note for F3" aria-label="Note for F3" hidden>
+</li>
+<li id="F4" data-item data-sev="H" data-title="The formatting toolbar can't be reached by keyboard.">
+  <b>F4</b> <small>High · Reproduced</small>
+  <p>The formatting toolbar can't be reached by keyboard. <code>src/editor/toolbar.ts</code> renders its buttons as <code>&lt;div&gt;</code>s with click handlers, so Tab jumps straight from the title to the note body. Bold, lists and links have shortcuts; headings, checklists and tables have none.</p>
+  <p><span role="radiogroup" aria-label="Action for F4"><label><input type="radio" name="F4" value="fix"><span>Fix now</span></label><label><input type="radio" name="F4" value="later"><span>Later</span></label><label><input type="radio" name="F4" value="skip"><span>Skip</span></label><label><input type="radio" name="F4" value="discuss"><span>Discuss</span></label></span> <button type="button" data-variant="ghost" data-size="sm" data-note-toggle aria-expanded="false">Add note</button></p>
+  <input type="text" name="F4-note" data-note placeholder="Note for F4" aria-label="Note for F4" hidden>
+</li>
+<li id="F5" data-item data-sev="H" data-title="Attachments are stored as base64 strings inside each note.">
+  <b>F5</b> <small>High · Read in code</small>
+  <p>Attachments are stored as base64 strings inside each note. <code>src/storage/attachments.ts:31</code> inlines every image into the note record, so a note with three photos weighs several megabytes and every keystroke saves all of it. When the storage quota runs out, the save throws and the error is swallowed.</p>
+  <p><span role="radiogroup" aria-label="Action for F5"><label><input type="radio" name="F5" value="fix"><span>Fix now</span></label><label><input type="radio" name="F5" value="later"><span>Later</span></label><label><input type="radio" name="F5" value="skip"><span>Skip</span></label><label><input type="radio" name="F5" value="discuss"><span>Discuss</span></label></span> <button type="button" data-variant="ghost" data-size="sm" data-note-toggle aria-expanded="false">Add note</button></p>
+  <input type="text" name="F5-note" data-note placeholder="Note for F5" aria-label="Note for F5" hidden>
+</li>
+</ol>
+</section>
+<section id="sec-ED" data-section="ED" aria-labelledby="h-ED">
+<h2 id="h-ED">Editor and formatting</h2>
+<p><small>Set the undecided items here to</small> <span role="group"><button type="button" data-variant="secondary" data-size="sm" data-bulk="fix">Fix now</button><button type="button" data-variant="secondary" data-size="sm" data-bulk="later">Later</button><button type="button" data-variant="secondary" data-size="sm" data-bulk="skip">Skip</button><button type="button" data-variant="secondary" data-size="sm" data-bulk="discuss">Discuss</button></span> <button type="button" data-variant="ghost" data-size="sm" data-bulk="clear">Clear section</button></p>
+<ol role="list">
+<li id="ED1" data-item data-sev="H" data-title="Undo after an autosave restores the wrong text.">
+  <b>ED1</b> <small>High · Reproduced</small>
+  <p>Undo after an autosave restores the wrong text. The history stack (<code>src/editor/history.ts:54</code>) is rebuilt from the saved document after each autosave, so <strong>Undo</strong> jumps back to the last save instead of the last edit. Reproduced: type two words, wait three seconds, undo, and both words disappear.</p>
+  <p><span role="radiogroup" aria-label="Action for ED1"><label><input type="radio" name="ED1" value="fix"><span>Fix now</span></label><label><input type="radio" name="ED1" value="later"><span>Later</span></label><label><input type="radio" name="ED1" value="skip"><span>Skip</span></label><label><input type="radio" name="ED1" value="discuss"><span>Discuss</span></label></span> <button type="button" data-variant="ghost" data-size="sm" data-note-toggle aria-expanded="false">Add note</button></p>
+  <input type="text" name="ED1-note" data-note placeholder="Note for ED1" aria-label="Note for ED1" hidden>
+</li>
+<li id="ED2" data-item data-sev="M" data-title="Checklist items lose their ticks when reordered.">
+  <b>ED2</b> <small>Medium · Read in code</small>
+  <p>Checklist items lose their ticks when reordered. Dragging an item calls <code>moveBlock</code> (<code>src/editor/blocks.ts:120</code>), which copies the text but not the <code>checked</code> attribute.</p>
+  <p><span role="radiogroup" aria-label="Action for ED2"><label><input type="radio" name="ED2" value="fix"><span>Fix now</span></label><label><input type="radio" name="ED2" value="later"><span>Later</span></label><label><input type="radio" name="ED2" value="skip"><span>Skip</span></label><label><input type="radio" name="ED2" value="discuss"><span>Discuss</span></label></span> <button type="button" data-variant="ghost" data-size="sm" data-note-toggle aria-expanded="false">Add note</button></p>
+  <input type="text" name="ED2-note" data-note placeholder="Note for ED2" aria-label="Note for ED2" hidden>
+</li>
+<li id="ED3" data-item data-sev="L" data-title="Smart quotes are applied inside code spans.">
+  <b>ED3</b> <small>Low · Read in code</small>
+  <p>Smart quotes are applied inside code spans. The typography plugin in <code>src/editor/typography.ts</code> doesn't skip code marks, so straight quotes in inline code turn curly and break copied snippets.</p>
+  <p><span role="radiogroup" aria-label="Action for ED3"><label><input type="radio" name="ED3" value="fix"><span>Fix now</span></label><label><input type="radio" name="ED3" value="later"><span>Later</span></label><label><input type="radio" name="ED3" value="skip"><span>Skip</span></label><label><input type="radio" name="ED3" value="discuss"><span>Discuss</span></label></span> <button type="button" data-variant="ghost" data-size="sm" data-note-toggle aria-expanded="false">Add note</button></p>
+  <input type="text" name="ED3-note" data-note placeholder="Note for ED3" aria-label="Note for ED3" hidden>
+</li>
+</ol>
+</section>
+<section id="sec-IO" data-section="IO" aria-labelledby="h-IO">
+<h2 id="h-IO">Import and export (<code>src/io</code>)</h2>
+<p><small>Set the undecided items here to</small> <span role="group"><button type="button" data-variant="secondary" data-size="sm" data-bulk="fix">Fix now</button><button type="button" data-variant="secondary" data-size="sm" data-bulk="later">Later</button><button type="button" data-variant="secondary" data-size="sm" data-bulk="skip">Skip</button><button type="button" data-variant="secondary" data-size="sm" data-bulk="discuss">Discuss</button></span> <button type="button" data-variant="ghost" data-size="sm" data-bulk="clear">Clear section</button></p>
+<ol role="list">
+<li id="IO1" data-item data-sev="M" data-title="Markdown export drops front matter.">
+  <b>IO1</b> <small>Medium · Reproduced</small>
+  <p>Markdown export drops front matter. <code>export-md.ts:22</code> writes only the note body, so tags, the creation date and the pinned state are lost, and re-importing the file gives a note with no tags. Reproduced with a note tagged <strong>Recipes</strong>.</p>
+  <p><span role="radiogroup" aria-label="Action for IO1"><label><input type="radio" name="IO1" value="fix"><span>Fix now</span></label><label><input type="radio" name="IO1" value="later"><span>Later</span></label><label><input type="radio" name="IO1" value="skip"><span>Skip</span></label><label><input type="radio" name="IO1" value="discuss"><span>Discuss</span></label></span> <button type="button" data-variant="ghost" data-size="sm" data-note-toggle aria-expanded="false">Add note</button></p>
+  <input type="text" name="IO1-note" data-note placeholder="Note for IO1" aria-label="Note for IO1" hidden>
+</li>
+<li id="IO2" data-item data-sev="L" data-title="The importer assumes every file is UTF-8.">
+  <b>IO2</b> <small>Low · Read in code</small>
+  <p>The importer assumes every file is UTF-8. <code>import.ts:9</code> calls <code>file.text()</code> without checking for a byte-order mark, so UTF-16 files from older editors come in as garbled text.</p>
+  <p><span role="radiogroup" aria-label="Action for IO2"><label><input type="radio" name="IO2" value="fix"><span>Fix now</span></label><label><input type="radio" name="IO2" value="later"><span>Later</span></label><label><input type="radio" name="IO2" value="skip"><span>Skip</span></label><label><input type="radio" name="IO2" value="discuss"><span>Discuss</span></label></span> <button type="button" data-variant="ghost" data-size="sm" data-note-toggle aria-expanded="false">Add note</button></p>
+  <input type="text" name="IO2-note" data-note placeholder="Note for IO2" aria-label="Note for IO2" hidden>
+</li>
+</ol>
+</section>
+<section id="sec-SY" data-section="SY" aria-labelledby="h-SY">
+<h2 id="h-SY">Sync, storage and data safety</h2>
+<p><small>Set the undecided items here to</small> <span role="group"><button type="button" data-variant="secondary" data-size="sm" data-bulk="fix">Fix now</button><button type="button" data-variant="secondary" data-size="sm" data-bulk="later">Later</button><button type="button" data-variant="secondary" data-size="sm" data-bulk="skip">Skip</button><button type="button" data-variant="secondary" data-size="sm" data-bulk="discuss">Discuss</button></span> <button type="button" data-variant="ghost" data-size="sm" data-bulk="clear">Clear section</button></p>
+<ol role="list">
+<li id="SY1" data-item data-sev="M" data-title="Two open tabs overwrite each other's changes.">
+  <b>SY1</b> <small>Medium · Read in code</small>
+  <p>Two open tabs overwrite each other's changes. Each tab keeps its own copy of the open note and saves it whole, and nothing listens for changes from other tabs, so the last tab to save wins.</p>
+  <p><span role="radiogroup" aria-label="Action for SY1"><label><input type="radio" name="SY1" value="fix"><span>Fix now</span></label><label><input type="radio" name="SY1" value="later"><span>Later</span></label><label><input type="radio" name="SY1" value="skip"><span>Skip</span></label><label><input type="radio" name="SY1" value="discuss"><span>Discuss</span></label></span> <button type="button" data-variant="ghost" data-size="sm" data-note-toggle aria-expanded="false">Add note</button></p>
+  <input type="text" name="SY1-note" data-note placeholder="Note for SY1" aria-label="Note for SY1" hidden>
+</li>
+<li id="SY2" data-item data-sev="L" data-title="The sync badge says Synced while changes are still queued.">
+  <b>SY2</b> <small>Low · Reproduced</small>
+  <p>The sync badge says Synced while changes are still queued. <code>src/sync/status.ts</code> sets the badge from the last response rather than the queue length, so closing the tab at that moment loses the pending edits.</p>
+  <p><span role="radiogroup" aria-label="Action for SY2"><label><input type="radio" name="SY2" value="fix"><span>Fix now</span></label><label><input type="radio" name="SY2" value="later"><span>Later</span></label><label><input type="radio" name="SY2" value="skip"><span>Skip</span></label><label><input type="radio" name="SY2" value="discuss"><span>Discuss</span></label></span> <button type="button" data-variant="ghost" data-size="sm" data-note-toggle aria-expanded="false">Add note</button></p>
+  <input type="text" name="SY2-note" data-note placeholder="Note for SY2" aria-label="Note for SY2" hidden>
+</li>
+</ol>
+</section>
+<section id="sec-SR" data-section="SR" aria-labelledby="h-SR">
+<h2 id="h-SR">Search and navigation</h2>
+<p><small>Set the undecided items here to</small> <span role="group"><button type="button" data-variant="secondary" data-size="sm" data-bulk="fix">Fix now</button><button type="button" data-variant="secondary" data-size="sm" data-bulk="later">Later</button><button type="button" data-variant="secondary" data-size="sm" data-bulk="skip">Skip</button><button type="button" data-variant="secondary" data-size="sm" data-bulk="discuss">Discuss</button></span> <button type="button" data-variant="ghost" data-size="sm" data-bulk="clear">Clear section</button></p>
+<ol role="list">
+<li id="SR1" data-item data-sev="M" data-title="Search ignores accents in titles but not in note bodies.">
+  <b>SR1</b> <small>Medium · Reproduced</small>
+  <p>Search ignores accents in titles but not in note bodies. Titles are normalised (<code>src/search/index.ts:47</code>) and bodies aren't, so searching for &quot;cafe&quot; finds a note titled &quot;Café list&quot; but none of the notes that mention it.</p>
+  <p><span role="radiogroup" aria-label="Action for SR1"><label><input type="radio" name="SR1" value="fix"><span>Fix now</span></label><label><input type="radio" name="SR1" value="later"><span>Later</span></label><label><input type="radio" name="SR1" value="skip"><span>Skip</span></label><label><input type="radio" name="SR1" value="discuss"><span>Discuss</span></label></span> <button type="button" data-variant="ghost" data-size="sm" data-note-toggle aria-expanded="false">Add note</button></p>
+  <input type="text" name="SR1-note" data-note placeholder="Note for SR1" aria-label="Note for SR1" hidden>
+</li>
+<li id="SR2" data-item data-sev="L" data-title="The back button doesn't return to search results.">
+  <b>SR2</b> <small>Low · Read in code</small>
+  <p>The back button doesn't return to search results. Opening a result replaces the URL instead of pushing a new entry (<code>src/router.ts:63</code>), so Back leaves the app.</p>
+  <p><span role="radiogroup" aria-label="Action for SR2"><label><input type="radio" name="SR2" value="fix"><span>Fix now</span></label><label><input type="radio" name="SR2" value="later"><span>Later</span></label><label><input type="radio" name="SR2" value="skip"><span>Skip</span></label><label><input type="radio" name="SR2" value="discuss"><span>Discuss</span></label></span> <button type="button" data-variant="ghost" data-size="sm" data-note-toggle aria-expanded="false">Add note</button></p>
+  <input type="text" name="SR2-note" data-note placeholder="Note for SR2" aria-label="Note for SR2" hidden>
+</li>
+</ol>
+</section>
+<section id="sec-SE" data-section="SE" aria-labelledby="h-SE">
+<h2 id="h-SE">Security</h2>
+<p><small>Set the undecided items here to</small> <span role="group"><button type="button" data-variant="secondary" data-size="sm" data-bulk="fix">Fix now</button><button type="button" data-variant="secondary" data-size="sm" data-bulk="later">Later</button><button type="button" data-variant="secondary" data-size="sm" data-bulk="skip">Skip</button><button type="button" data-variant="secondary" data-size="sm" data-bulk="discuss">Discuss</button></span> <button type="button" data-variant="ghost" data-size="sm" data-bulk="clear">Clear section</button></p>
+<ol role="list">
+<li id="SE1" data-item data-sev="M" data-title="Pasted HTML keeps inline event handlers until the next save.">
+  <b>SE1</b> <small>Medium · Read in code</small>
+  <p>Pasted HTML keeps inline event handlers until the next save. The paste sanitiser strips <code>&lt;script&gt;</code> but not <code>onerror</code> attributes, and the live preview renders them before the save step cleans them up.</p>
+  <p><span role="radiogroup" aria-label="Action for SE1"><label><input type="radio" name="SE1" value="fix"><span>Fix now</span></label><label><input type="radio" name="SE1" value="later"><span>Later</span></label><label><input type="radio" name="SE1" value="skip"><span>Skip</span></label><label><input type="radio" name="SE1" value="discuss"><span>Discuss</span></label></span> <button type="button" data-variant="ghost" data-size="sm" data-note-toggle aria-expanded="false">Add note</button></p>
+  <input type="text" name="SE1-note" data-note placeholder="Note for SE1" aria-label="Note for SE1" hidden>
+</li>
+<li id="SE2" data-item data-sev="L" data-title="The session cookie has no `SameSite` attribute.">
+  <b>SE2</b> <small>Low · Read in code</small>
+  <p>The session cookie has no <code>SameSite</code> attribute. <code>server/auth/session.ts:14</code> relies on browser defaults. Set <code>SameSite=Lax</code> explicitly, and <code>Secure</code> in production.</p>
+  <p><span role="radiogroup" aria-label="Action for SE2"><label><input type="radio" name="SE2" value="fix"><span>Fix now</span></label><label><input type="radio" name="SE2" value="later"><span>Later</span></label><label><input type="radio" name="SE2" value="skip"><span>Skip</span></label><label><input type="radio" name="SE2" value="discuss"><span>Discuss</span></label></span> <button type="button" data-variant="ghost" data-size="sm" data-note-toggle aria-expanded="false">Add note</button></p>
+  <input type="text" name="SE2-note" data-note placeholder="Note for SE2" aria-label="Note for SE2" hidden>
+</li>
+</ol>
+</section>
+<section id="sec-UX" data-section="UX" aria-labelledby="h-UX">
+<h2 id="h-UX">UX and copy</h2>
+<p><small>Set the undecided items here to</small> <span role="group"><button type="button" data-variant="secondary" data-size="sm" data-bulk="fix">Fix now</button><button type="button" data-variant="secondary" data-size="sm" data-bulk="later">Later</button><button type="button" data-variant="secondary" data-size="sm" data-bulk="skip">Skip</button><button type="button" data-variant="secondary" data-size="sm" data-bulk="discuss">Discuss</button></span> <button type="button" data-variant="ghost" data-size="sm" data-bulk="clear">Clear section</button></p>
+<ol role="list">
+<li id="UX1" data-item data-sev="M" data-title="Deleting a notebook deletes its notes without saying so.">
+  <b>UX1</b> <small>Medium · Reproduced</small>
+  <p>Deleting a notebook deletes its notes without saying so. The dialog asks &quot;Delete notebook?&quot; but doesn't mention the notes inside it, and the trash keeps deleted notes but not deleted notebooks.</p>
+  <p><span role="radiogroup" aria-label="Action for UX1"><label><input type="radio" name="UX1" value="fix"><span>Fix now</span></label><label><input type="radio" name="UX1" value="later"><span>Later</span></label><label><input type="radio" name="UX1" value="skip"><span>Skip</span></label><label><input type="radio" name="UX1" value="discuss"><span>Discuss</span></label></span> <button type="button" data-variant="ghost" data-size="sm" data-note-toggle aria-expanded="false">Add note</button></p>
+  <input type="text" name="UX1-note" data-note placeholder="Note for UX1" aria-label="Note for UX1" hidden>
+</li>
+<li id="UX2" data-item data-sev="L" data-title="Copy is inconsistent.">
+  <b>UX2</b> <small>Low · Read in code</small>
+  <p>Copy is inconsistent:</p><ul><li>&quot;Notebook&quot; in the sidebar, &quot;Folder&quot; in settings</li><li>&quot;Sign in&quot; and &quot;Log in&quot; on the same screen</li><li>&quot;Synced&quot; vs &quot;Up to date&quot;</li><li>&quot;tidewater&quot; in lower case in the About dialog</li><li>&quot;Delete forever&quot; in the trash, &quot;Remove&quot; everywhere else</li></ul>
+  <p><span role="radiogroup" aria-label="Action for UX2"><label><input type="radio" name="UX2" value="fix"><span>Fix now</span></label><label><input type="radio" name="UX2" value="later"><span>Later</span></label><label><input type="radio" name="UX2" value="skip"><span>Skip</span></label><label><input type="radio" name="UX2" value="discuss"><span>Discuss</span></label></span> <button type="button" data-variant="ghost" data-size="sm" data-note-toggle aria-expanded="false">Add note</button></p>
+  <input type="text" name="UX2-note" data-note placeholder="Note for UX2" aria-label="Note for UX2" hidden>
+</li>
+</ol>
+</section>
+<section id="sec-MO" data-section="MO" aria-labelledby="h-MO">
+<h2 id="h-MO">Mobile and responsive</h2>
+<p><small>Set the undecided items here to</small> <span role="group"><button type="button" data-variant="secondary" data-size="sm" data-bulk="fix">Fix now</button><button type="button" data-variant="secondary" data-size="sm" data-bulk="later">Later</button><button type="button" data-variant="secondary" data-size="sm" data-bulk="skip">Skip</button><button type="button" data-variant="secondary" data-size="sm" data-bulk="discuss">Discuss</button></span> <button type="button" data-variant="ghost" data-size="sm" data-bulk="clear">Clear section</button></p>
+<ol role="list">
+<li id="MO1" data-item data-sev="M" data-title="The formatting toolbar sits under the on-screen keyboard.">
+  <b>MO1</b> <small>Medium · Reproduced</small>
+  <p>The formatting toolbar sits under the on-screen keyboard. On a 390px phone it is fixed to the bottom of the layout viewport (<code>src/styles/toolbar.css:8</code>) rather than the visual viewport, so it is hidden whenever you type.</p>
+  <p><span role="radiogroup" aria-label="Action for MO1"><label><input type="radio" name="MO1" value="fix"><span>Fix now</span></label><label><input type="radio" name="MO1" value="later"><span>Later</span></label><label><input type="radio" name="MO1" value="skip"><span>Skip</span></label><label><input type="radio" name="MO1" value="discuss"><span>Discuss</span></label></span> <button type="button" data-variant="ghost" data-size="sm" data-note-toggle aria-expanded="false">Add note</button></p>
+  <input type="text" name="MO1-note" data-note placeholder="Note for MO1" aria-label="Note for MO1" hidden>
+</li>
+</ol>
+</section>
+<section id="sec-A11Y" data-section="A11Y" aria-labelledby="h-A11Y">
+<h2 id="h-A11Y">Accessibility</h2>
+<p><small>Set the undecided items here to</small> <span role="group"><button type="button" data-variant="secondary" data-size="sm" data-bulk="fix">Fix now</button><button type="button" data-variant="secondary" data-size="sm" data-bulk="later">Later</button><button type="button" data-variant="secondary" data-size="sm" data-bulk="skip">Skip</button><button type="button" data-variant="secondary" data-size="sm" data-bulk="discuss">Discuss</button></span> <button type="button" data-variant="ghost" data-size="sm" data-bulk="clear">Clear section</button></p>
+<ol role="list">
+<li id="A11Y1" data-item data-sev="H" data-title="Focus is lost after closing any dialog.">
+  <b>A11Y1</b> <small>High · Reproduced</small>
+  <p>Focus is lost after closing any dialog. <code>src/ui/dialog.ts</code> removes the dialog without returning focus to the button that opened it, so keyboard and screen reader users land at the top of the page every time.</p>
+  <p><span role="radiogroup" aria-label="Action for A11Y1"><label><input type="radio" name="A11Y1" value="fix"><span>Fix now</span></label><label><input type="radio" name="A11Y1" value="later"><span>Later</span></label><label><input type="radio" name="A11Y1" value="skip"><span>Skip</span></label><label><input type="radio" name="A11Y1" value="discuss"><span>Discuss</span></label></span> <button type="button" data-variant="ghost" data-size="sm" data-note-toggle aria-expanded="false">Add note</button></p>
+  <input type="text" name="A11Y1-note" data-note placeholder="Note for A11Y1" aria-label="Note for A11Y1" hidden>
+</li>
+<li id="A11Y2" data-item data-sev="M" data-title="Contrast falls short in several places.">
+  <b>A11Y2</b> <small>Medium · Reproduced</small>
+  <p>Contrast:</p><ul><li>Editor placeholder text: 2.3:1</li><li>Tag chips in the sidebar: 2.8:1</li><li>Disabled toolbar buttons look the same as enabled ones</li><li>Selected note in the list: about 1.2:1 against its neighbours</li><li>Links in dark mode: 2.6:1</li></ul>
+  <p><span role="radiogroup" aria-label="Action for A11Y2"><label><input type="radio" name="A11Y2" value="fix"><span>Fix now</span></label><label><input type="radio" name="A11Y2" value="later"><span>Later</span></label><label><input type="radio" name="A11Y2" value="skip"><span>Skip</span></label><label><input type="radio" name="A11Y2" value="discuss"><span>Discuss</span></label></span> <button type="button" data-variant="ghost" data-size="sm" data-note-toggle aria-expanded="false">Add note</button></p>
+  <input type="text" name="A11Y2-note" data-note placeholder="Note for A11Y2" aria-label="Note for A11Y2" hidden>
+</li>
+<li id="A11Y3" data-item data-sev="L" data-title="The note list has no accessible name.">
+  <b>A11Y3</b> <small>Low · Read in code</small>
+  <p>The note list has no accessible name. <code>src/ui/note-list.ts</code> renders a bare <code>&lt;ul&gt;</code>, and each row announces only the title, not the date or notebook shown beside it.</p>
+  <p><span role="radiogroup" aria-label="Action for A11Y3"><label><input type="radio" name="A11Y3" value="fix"><span>Fix now</span></label><label><input type="radio" name="A11Y3" value="later"><span>Later</span></label><label><input type="radio" name="A11Y3" value="skip"><span>Skip</span></label><label><input type="radio" name="A11Y3" value="discuss"><span>Discuss</span></label></span> <button type="button" data-variant="ghost" data-size="sm" data-note-toggle aria-expanded="false">Add note</button></p>
+  <input type="text" name="A11Y3-note" data-note placeholder="Note for A11Y3" aria-label="Note for A11Y3" hidden>
+</li>
+</ol>
+</section>
+<section id="sec-TH" data-section="TH" aria-labelledby="h-TH">
+<h2 id="h-TH">Theming and styles</h2>
+<p><small>Set the undecided items here to</small> <span role="group"><button type="button" data-variant="secondary" data-size="sm" data-bulk="fix">Fix now</button><button type="button" data-variant="secondary" data-size="sm" data-bulk="later">Later</button><button type="button" data-variant="secondary" data-size="sm" data-bulk="skip">Skip</button><button type="button" data-variant="secondary" data-size="sm" data-bulk="discuss">Discuss</button></span> <button type="button" data-variant="ghost" data-size="sm" data-bulk="clear">Clear section</button></p>
+<ol role="list">
+<li id="TH1" data-item data-sev="M" data-title="Dark mode flashes white on load.">
+  <b>TH1</b> <small>Medium · Read in code</small>
+  <p>Dark mode flashes white on load. <code>src/theme.ts</code> applies the theme after the app bundle loads. Read the stored preference in a small inline script in <code>index.html</code> before first paint.</p>
+  <p><span role="radiogroup" aria-label="Action for TH1"><label><input type="radio" name="TH1" value="fix"><span>Fix now</span></label><label><input type="radio" name="TH1" value="later"><span>Later</span></label><label><input type="radio" name="TH1" value="skip"><span>Skip</span></label><label><input type="radio" name="TH1" value="discuss"><span>Discuss</span></label></span> <button type="button" data-variant="ghost" data-size="sm" data-note-toggle aria-expanded="false">Add note</button></p>
+  <input type="text" name="TH1-note" data-note placeholder="Note for TH1" aria-label="Note for TH1" hidden>
+</li>
+<li id="TH2" data-item data-sev="L" data-title="Colours are hard-coded in 23 places.">
+  <b>TH2</b> <small>Low · Read in code</small>
+  <p>Colours are hard-coded in 23 places. Most components use the variables in <code>src/styles/tokens.css</code>, but the editor, the tag chips and the print styles use literal hex values that ignore the theme.</p>
+  <p><span role="radiogroup" aria-label="Action for TH2"><label><input type="radio" name="TH2" value="fix"><span>Fix now</span></label><label><input type="radio" name="TH2" value="later"><span>Later</span></label><label><input type="radio" name="TH2" value="skip"><span>Skip</span></label><label><input type="radio" name="TH2" value="discuss"><span>Discuss</span></label></span> <button type="button" data-variant="ghost" data-size="sm" data-note-toggle aria-expanded="false">Add note</button></p>
+  <input type="text" name="TH2-note" data-note placeholder="Note for TH2" aria-label="Note for TH2" hidden>
+</li>
+</ol>
+</section>
+<section id="sec-PF" data-section="PF" aria-labelledby="h-PF">
+<h2 id="h-PF">Performance</h2>
+<p><small>Set the undecided items here to</small> <span role="group"><button type="button" data-variant="secondary" data-size="sm" data-bulk="fix">Fix now</button><button type="button" data-variant="secondary" data-size="sm" data-bulk="later">Later</button><button type="button" data-variant="secondary" data-size="sm" data-bulk="skip">Skip</button><button type="button" data-variant="secondary" data-size="sm" data-bulk="discuss">Discuss</button></span> <button type="button" data-variant="ghost" data-size="sm" data-bulk="clear">Clear section</button></p>
+<ol role="list">
+<li id="PF1" data-item data-sev="M" data-title="Opening a notebook with 2,000 notes takes four seconds.">
+  <b>PF1</b> <small>Medium · Reproduced</small>
+  <p>Opening a notebook with 2,000 notes takes four seconds. <code>src/ui/note-list.ts</code> renders every row up front and builds a preview excerpt for each. Virtualise the list or build excerpts as rows scroll into view.</p>
+  <p><span role="radiogroup" aria-label="Action for PF1"><label><input type="radio" name="PF1" value="fix"><span>Fix now</span></label><label><input type="radio" name="PF1" value="later"><span>Later</span></label><label><input type="radio" name="PF1" value="skip"><span>Skip</span></label><label><input type="radio" name="PF1" value="discuss"><span>Discuss</span></label></span> <button type="button" data-variant="ghost" data-size="sm" data-note-toggle aria-expanded="false">Add note</button></p>
+  <input type="text" name="PF1-note" data-note placeholder="Note for PF1" aria-label="Note for PF1" hidden>
+</li>
+<li id="PF2" data-item data-sev="L" data-title="The emoji picker's data loads on startup.">
+  <b>PF2</b> <small>Low · Read in code</small>
+  <p>The emoji picker's data loads on startup. <code>src/editor/emoji.ts</code> imports a 900 KB JSON file at the top level; load it when the picker first opens.</p>
+  <p><span role="radiogroup" aria-label="Action for PF2"><label><input type="radio" name="PF2" value="fix"><span>Fix now</span></label><label><input type="radio" name="PF2" value="later"><span>Later</span></label><label><input type="radio" name="PF2" value="skip"><span>Skip</span></label><label><input type="radio" name="PF2" value="discuss"><span>Discuss</span></label></span> <button type="button" data-variant="ghost" data-size="sm" data-note-toggle aria-expanded="false">Add note</button></p>
+  <input type="text" name="PF2-note" data-note placeholder="Note for PF2" aria-label="Note for PF2" hidden>
+</li>
+</ol>
+</section>
+<section id="sec-BT" data-section="BT" aria-labelledby="h-BT">
+<h2 id="h-BT">Build, tests, tooling and docs</h2>
+<p><small>Set the undecided items here to</small> <span role="group"><button type="button" data-variant="secondary" data-size="sm" data-bulk="fix">Fix now</button><button type="button" data-variant="secondary" data-size="sm" data-bulk="later">Later</button><button type="button" data-variant="secondary" data-size="sm" data-bulk="skip">Skip</button><button type="button" data-variant="secondary" data-size="sm" data-bulk="discuss">Discuss</button></span> <button type="button" data-variant="ghost" data-size="sm" data-bulk="clear">Clear section</button></p>
+<ol role="list">
+<li id="BT1" data-item data-sev="M" data-title="`npm test` passes with no tests run.">
+  <b>BT1</b> <small>Medium · Reproduced</small>
+  <p><code>npm test</code> passes with no tests run. The <code>include</code> pattern in <code>vitest.config.ts:6</code> points at <code>test/</code>, but the tests live in <code>src/**/__tests__</code>, so the run finds zero files and exits 0.</p>
+  <p><span role="radiogroup" aria-label="Action for BT1"><label><input type="radio" name="BT1" value="fix"><span>Fix now</span></label><label><input type="radio" name="BT1" value="later"><span>Later</span></label><label><input type="radio" name="BT1" value="skip"><span>Skip</span></label><label><input type="radio" name="BT1" value="discuss"><span>Discuss</span></label></span> <button type="button" data-variant="ghost" data-size="sm" data-note-toggle aria-expanded="false">Add note</button></p>
+  <input type="text" name="BT1-note" data-note placeholder="Note for BT1" aria-label="Note for BT1" hidden>
+</li>
+<li id="BT2" data-item data-sev="L" data-title="The README's setup steps are out of date.">
+  <b>BT2</b> <small>Low · Read in code</small>
+  <p>The README's setup steps are out of date. It still says <code>npm run db:migrate</code>, which is now <code>npm run migrate</code>, and it doesn't mention the <code>SYNC_SECRET</code> variable the server needs.</p>
+  <p><span role="radiogroup" aria-label="Action for BT2"><label><input type="radio" name="BT2" value="fix"><span>Fix now</span></label><label><input type="radio" name="BT2" value="later"><span>Later</span></label><label><input type="radio" name="BT2" value="skip"><span>Skip</span></label><label><input type="radio" name="BT2" value="discuss"><span>Discuss</span></label></span> <button type="button" data-variant="ghost" data-size="sm" data-note-toggle aria-expanded="false">Add note</button></p>
+  <input type="text" name="BT2-note" data-note placeholder="Note for BT2" aria-label="Note for BT2" hidden>
+</li>
+</ol>
+</section>
+<section id="sec-CL" data-section="CL" aria-labelledby="h-CL">
+<h2 id="h-CL">Cleanup and dead code</h2>
+<p><small>Set the undecided items here to</small> <span role="group"><button type="button" data-variant="secondary" data-size="sm" data-bulk="fix">Fix now</button><button type="button" data-variant="secondary" data-size="sm" data-bulk="later">Later</button><button type="button" data-variant="secondary" data-size="sm" data-bulk="skip">Skip</button><button type="button" data-variant="secondary" data-size="sm" data-bulk="discuss">Discuss</button></span> <button type="button" data-variant="ghost" data-size="sm" data-bulk="clear">Clear section</button></p>
+<ol role="list">
+<li id="CL1" data-item data-sev="L" data-title="The old Markdown renderer is still bundled.">
+  <b>CL1</b> <small>Low · Read in code</small>
+  <p>The old Markdown renderer is still bundled. Only a test imports <code>src/render/legacy.ts</code>, but <code>src/render/index.ts</code> re-exports it, so it ends up in the app bundle.</p>
+  <p><span role="radiogroup" aria-label="Action for CL1"><label><input type="radio" name="CL1" value="fix"><span>Fix now</span></label><label><input type="radio" name="CL1" value="later"><span>Later</span></label><label><input type="radio" name="CL1" value="skip"><span>Skip</span></label><label><input type="radio" name="CL1" value="discuss"><span>Discuss</span></label></span> <button type="button" data-variant="ghost" data-size="sm" data-note-toggle aria-expanded="false">Add note</button></p>
+  <input type="text" name="CL1-note" data-note placeholder="Note for CL1" aria-label="Note for CL1" hidden>
+</li>
+<li id="CL2" data-item data-sev="L" data-title="Unused files: `src/ui/color-picker.ts`; `src/sync/poller.ts` (replaced by the WebSocket client); `src/editor/vim-mode…">
+  <b>CL2</b> <small>Low · Read in code</small>
+  <p>Unused files:</p><ul><li><code>src/ui/color-picker.ts</code></li><li><code>src/sync/poller.ts</code> (replaced by the WebSocket client)</li><li><code>src/editor/vim-mode.ts</code> and its keymap</li><li><code>src/styles/print-old.css</code></li><li><code>fixtures/demo-notes.json</code> in the production build</li></ul>
+  <p><span role="radiogroup" aria-label="Action for CL2"><label><input type="radio" name="CL2" value="fix"><span>Fix now</span></label><label><input type="radio" name="CL2" value="later"><span>Later</span></label><label><input type="radio" name="CL2" value="skip"><span>Skip</span></label><label><input type="radio" name="CL2" value="discuss"><span>Discuss</span></label></span> <button type="button" data-variant="ghost" data-size="sm" data-note-toggle aria-expanded="false">Add note</button></p>
+  <input type="text" name="CL2-note" data-note placeholder="Note for CL2" aria-label="Note for CL2" hidden>
+</li>
+</ol>
+</section>
+<section aria-labelledby="general-heading">
+  <h2 id="general-heading">Anything else?</h2>
+  <p><label for="general-notes">General notes, priorities or constraints</label>
+  <textarea id="general-notes" name="general-notes" placeholder="Optional"></textarea></p>
+</section>
+<details>
+  <summary>Preview what gets copied</summary>
+  <pre><code data-preview></code></pre>
+</details>
+<footer>
+  <button type="submit">Copy decisions</button>
+  <button type="button" data-variant="ghost" data-reset>Reset</button>
+  <span data-summary aria-live="polite"></span>
+  <output data-status aria-live="polite"></output>
+</footer>
+</form>
+</main>
+<script>
+(() => {
+  const STORE_KEY = 'tidewater-audit-decisions:a1b2c3d';
+  const TOTAL = 30;
+  const LABELS = { fix: 'Fix now', later: 'Later', skip: 'Skip', discuss: 'Discuss', notes: 'Note only, no action picked' };
+  const form = document.querySelector('[data-decisions]');
+  const items = [...document.querySelectorAll('[data-item]')];
+  const preview = document.querySelector('[data-preview]');
+  const summary = document.querySelector('[data-summary]');
+  const status = document.querySelector('[data-status]');
+  const general = document.getElementById('general-notes');
+
+  const radioFor = (el) => el.closest('[role="radiogroup"] label')?.querySelector('input[type="radio"]');
+  const choiceOf = (li) => li.querySelector('input[type="radio"]:checked')?.value ?? '';
+  const noteOf = (li) => li.querySelector('[data-note]').value.trim();
+
+  function showNote(li, focus) {
+    const input = li.querySelector('[data-note]');
+    const toggle = li.querySelector('[data-note-toggle]');
+    input.hidden = false;
+    toggle.setAttribute('aria-expanded', 'true');
+    toggle.textContent = 'Hide note';
+    if (focus) input.focus();
+  }
+  function hideNote(li) {
+    const input = li.querySelector('[data-note]');
+    const toggle = li.querySelector('[data-note-toggle]');
+    input.hidden = true;
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.textContent = input.value.trim() ? 'Edit note' : 'Add note';
+  }
+
+  function serialize() {
+    const groups = { fix: [], later: [], skip: [], discuss: [], notes: [] };
+    const undecided = [];
+    for (const li of items) {
+      const choice = choiceOf(li);
+      if (choice) groups[choice].push(li);
+      else if (noteOf(li)) groups.notes.push(li);
+      else undecided.push(li.id);
+    }
+    const decided = TOTAL - undecided.length - groups.notes.length;
+    const lines = ['## Audit decisions: Tidewater main @ a1b2c3d', `Decided ${decided} of ${TOTAL}.`, ''];
+    for (const key of Object.keys(groups)) {
+      if (!groups[key].length) continue;
+      lines.push(`### ${LABELS[key]} (${groups[key].length})`);
+      for (const li of groups[key]) {
+        const note = noteOf(li);
+        lines.push(`- ${li.id} [${li.dataset.sev}] ${li.dataset.title}${note ? ` — Note: ${note}` : ''}`);
+      }
+      lines.push('');
+    }
+    if (undecided.length) lines.push(`### Undecided (${undecided.length})`, undecided.join(', '), '');
+    if (general.value.trim()) lines.push('### General notes', general.value.trim(), '');
+    return lines.join('\n').trimEnd() + '\n';
+  }
+
+  function refresh() {
+    const counts = { fix: 0, later: 0, skip: 0, discuss: 0 };
+    const perSection = {};
+    const sevs = new Set([...document.querySelectorAll('[data-filter-sev]:checked')].map((c) => c.value));
+    const onlyUndecided = document.querySelector('[data-filter-undecided]').checked;
+    for (const li of items) {
+      const choice = choiceOf(li);
+      if (choice) counts[choice]++;
+      if (choice) li.dataset.choice = choice; else delete li.dataset.choice;
+      const sec = li.closest('[data-section]').dataset.section;
+      perSection[sec] = perSection[sec] ?? [0, 0];
+      perSection[sec][1]++;
+      if (choice) perSection[sec][0]++;
+      li.hidden = !sevs.has(li.dataset.sev) || (onlyUndecided && !!choice);
+    }
+    for (const [sec, [done, all]] of Object.entries(perSection)) {
+      document.querySelector(`[data-count="${sec}"]`).textContent = `${done} / ${all}`;
+      const section = document.querySelector(`[data-section="${sec}"]`);
+      section.hidden = ![...section.querySelectorAll('[data-item]')].some((li) => !li.hidden);
+    }
+    const decided = counts.fix + counts.later + counts.skip + counts.discuss;
+    summary.innerHTML = `<b>${decided} / ${TOTAL}</b> decided · Fix now ${counts.fix} · Later ${counts.later} · Skip ${counts.skip} · Discuss ${counts.discuss}`;
+    preview.textContent = serialize();
+  }
+
+  // Drafts are a per-viewer convenience; the page works without storage.
+  function save() {
+    try {
+      const data = { general: general.value, items: {} };
+      for (const li of items) {
+        const choice = choiceOf(li);
+        const note = li.querySelector('[data-note]').value;
+        if (choice || note) data.items[li.id] = [choice, note];
+      }
+      localStorage.setItem(STORE_KEY, JSON.stringify(data));
+    } catch {}
+  }
+  function restore() {
+    try {
+      const data = JSON.parse(localStorage.getItem(STORE_KEY) || 'null');
+      if (!data) return;
+      general.value = data.general || '';
+      for (const [id, [choice, note]] of Object.entries(data.items || {})) {
+        const li = document.getElementById(id);
+        if (!li) continue;
+        if (choice) li.querySelector(`input[value="${choice}"]`).checked = true;
+        if (note) {
+          li.querySelector('[data-note]').value = note;
+          showNote(li, false);
+        }
+      }
+    } catch {}
+  }
+
+  async function copy(text) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch {
+      const ta = Object.assign(document.createElement('textarea'), { value: text });
+      ta.style.cssText = 'position:fixed;opacity:0';
+      document.body.append(ta);
+      ta.select();
+      const ok = document.execCommand('copy');
+      ta.remove();
+      return ok;
+    }
+  }
+
+  form.addEventListener('click', (e) => {
+    const toggle = e.target.closest('[data-note-toggle]');
+    if (toggle) {
+      const li = toggle.closest('[data-item]');
+      if (li.querySelector('[data-note]').hidden) showNote(li, true);
+      else hideNote(li);
+      return;
+    }
+    const bulkAll = e.target.closest('[data-bulk-all]');
+    if (bulkAll) {
+      for (const li of items) {
+        if (!choiceOf(li) && !li.hidden) li.querySelector(`input[value="${bulkAll.dataset.bulkAll}"]`).checked = true;
+      }
+      status.value = '';
+      refresh();
+      save();
+      return;
+    }
+    const bulk = e.target.closest('[data-bulk]');
+    if (bulk) {
+      const section = bulk.closest('[data-section]');
+      for (const li of section.querySelectorAll('[data-item]')) {
+        if (bulk.dataset.bulk === 'clear') {
+          li.querySelectorAll('input[type="radio"]').forEach((r) => (r.checked = false));
+        } else if (!choiceOf(li) && !li.hidden) {
+          li.querySelector(`input[value="${bulk.dataset.bulk}"]`).checked = true;
+        }
+      }
+      status.value = '';
+      refresh();
+      save();
+      return;
+    }
+    // Clicking the selected action again clears it.
+    const radio = radioFor(e.target);
+    if (radio && radio.dataset.wasChecked === 'true') {
+      radio.checked = false;
+      radio.dataset.wasChecked = 'false';
+      refresh();
+      save();
+    }
+  });
+  form.addEventListener('pointerdown', (e) => {
+    const radio = radioFor(e.target);
+    if (radio) radio.dataset.wasChecked = String(radio.checked);
+  });
+  form.addEventListener('change', (e) => {
+    if (e.target.matches('input[type="radio"][value="discuss"]')) {
+      const li = e.target.closest('[data-item]');
+      if (!noteOf(li)) showNote(li, false);
+    }
+  });
+  form.addEventListener('input', (e) => {
+    if (e.target.matches('[data-filter-sev], [data-filter-undecided]')) return;
+    status.value = '';
+    refresh();
+    save();
+  });
+  document.querySelectorAll('[data-filter-sev], [data-filter-undecided]').forEach((el) =>
+    el.addEventListener('change', refresh),
+  );
+  document.querySelector('[data-reset]').addEventListener('click', () => {
+    if (!confirm('Clear every decision and note on this page?')) return;
+    form.reset();
+    items.forEach((li) => hideNote(li));
+    try { localStorage.removeItem(STORE_KEY); } catch {}
+    status.value = '';
+    refresh();
+  });
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const ok = await copy(serialize());
+    status.value = ok ? 'Copied. Paste it into the audit thread.' : "Couldn't copy. Use the preview above.";
+    if (!ok) document.querySelector('details').open = true;
+  });
+
+  restore();
+  refresh();
+})();
+</script>
+</body>
+</html>

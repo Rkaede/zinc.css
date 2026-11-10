@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Code health: harbor-api</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="../src/lib/zinc.css" />
+    <script>
+      // ?mode=light|dark, ?accent=<name> and ?paper=beige set the theme hooks
+      const q = new URLSearchParams(location.search), d = document.documentElement.dataset;
+      if (/^(light|dark)$/.test(q.get("mode"))) d.mode = q.get("mode");
+      if (/^[a-z]+$/.test(q.get("accent") || "")) d.accent = q.get("accent");
+      if (q.get("paper") === "beige") d.paper = "beige";
+    </script>
+  </head>
+  <body>
+    <header>
+      <p>harbor-api · Deadwood 1.8.0 · 12 March 2026</p>
+      <h1>Code health</h1>
+      <p>Unused code and a few oversized handlers are the main signals. Nothing is broken: Deadwood found no unresolved imports, circular dependencies, layer violations or duplicate exports.</p>
+    </header>
+
+    <main>
+      <section>
+        <h2>At a glance</h2>
+        <dl>
+          <div><dt>Unused files and exports</dt><dd>64</dd></div>
+          <div><dt>Functions over threshold</dt><dd>31</dd></div>
+          <div><dt>Lines duplicated</dt><dd>5%</dd></div>
+          <div><dt>Security leads</dt><dd>14</dd></div>
+        </dl>
+        <p><small>From 12 workspaces, 41 entry points and 318 files.</small></p>
+      </section>
+
+      <section>
+        <h2>Do next</h2>
+        <ol>
+          <li><strong>Trace before deleting.</strong> Start with the oldest finding, the retired tide sync job:
+            <pre><code>deadwood unused --trace apps/worker/src/jobs/tide-sync.ts:TideSyncJob</code></pre>
+          </li>
+          <li><strong>Keep generated code out of the count.</strong> The OpenAPI types and the database client are regenerated on every build, so exclude them rather than editing them by hand.</li>
+          <li><strong>Move dependencies one package at a time.</strong> Most of the "unused" ones are declared in the wrong workspace; don't remove one that another workspace imports.</li>
+          <li><strong>Review the security leads</strong> in the webhook and file-export paths: how outbound URLs are built, where uploads are written, and what gets logged.</li>
+          <li><strong>Write a Deadwood config last,</strong> once you know which findings to ignore, warn on or fail the build for.</li>
+        </ol>
+        <aside>
+          <p><strong>These are leads, not verdicts.</strong> Deadwood reads the code without running it. Trace a finding before you delete the file, export or dependency it names.</p>
+        </aside>
+      </section>
+
+      <section>
+        <h2>Unused code</h2>
+        <p>22 files and 42 exports are unused. Over half are in <code>apps/api</code>, mostly route handlers left behind by the v1 to v2 migration, so confirm nothing still calls the v1 paths before deleting them.</p>
+        <details>
+          <summary>Findings by area</summary>
+          <table>
+            <thead><tr><th>Area</th><th>Unused files and exports</th></tr></thead>
+            <tbody>
+              <tr><td>apps/<wbr>api</td><td>35</td></tr>
+              <tr><td>apps/<wbr>worker</td><td>9</td></tr>
+              <tr><td>packages/<wbr>billing</td><td>6</td></tr>
+              <tr><td>packages/<wbr>schemas</td><td>4</td></tr>
+              <tr><td>packages/<wbr>notify</td><td>3</td></tr>
+              <tr><td>packages/<wbr>geo</td><td>3</td></tr>
+              <tr><td>tooling/<wbr>codegen</td><td>2</td></tr>
+              <tr><td>packages/<wbr>testkit</td><td>1</td></tr>
+              <tr><td>infra</td><td>1</td></tr>
+            </tbody>
+          </table>
+        </details>
+      </section>
+
+      <section>
+        <h2>Dependencies</h2>
+        <p>11 dependencies look unused where they are declared. Most are imported by a neighbouring workspace, so they belong in a different <code>package.json</code> and are not safe to remove.</p>
+        <details>
+          <summary>8 placement candidates</summary>
+          <table>
+            <thead><tr><th>Package</th><th>Declared in</th><th>Used in</th></tr></thead>
+            <tbody>
+              <tr><td>@harbor/schemas</td><td>packages/<wbr>notify/<wbr>package.json</td><td>apps/api, apps/worker, packages/billing</td></tr>
+              <tr><td>@harbor/logger</td><td>packages/<wbr>geo/<wbr>package.json</td><td>apps/api, apps/worker, packages/db</td></tr>
+              <tr><td>date-fns</td><td>packages/<wbr>billing/<wbr>package.json</td><td>apps/worker, packages/notify</td></tr>
+              <tr><td>zod</td><td>apps/<wbr>worker/<wbr>package.json</td><td>packages/schemas</td></tr>
+              <tr><td>p-retry</td><td>apps/<wbr>api/<wbr>package.json</td><td>apps/worker, packages/notify</td></tr>
+              <tr><td>@harbor/db</td><td>packages/<wbr>testkit/<wbr>package.json</td><td>apps/api, apps/worker, packages/billing</td></tr>
+              <tr><td>nanoid</td><td>packages/<wbr>schemas/<wbr>package.json</td><td>packages/db</td></tr>
+              <tr><td>undici</td><td>apps/<wbr>api/<wbr>package.json</td><td>packages/notify</td></tr>
+            </tbody>
+          </table>
+        </details>
+      </section>
+
+      <section>
+        <h2>Health</h2>
+        <p>31 functions are over a threshold: 4 critical, 9 high and 18 moderate. Average maintainability is 87.4. The largest functions are tests, the booking handlers and the invoice builder.</p>
+        <details>
+          <summary>Ten largest functions</summary>
+          <table>
+            <thead><tr><th>Location</th><th>Function</th><th>Lines</th></tr></thead>
+            <tbody>
+              <tr><td>apps/<wbr>api/<wbr>test/<wbr>bookings.test.ts:24</td><td>&lt;arrow&gt;</td><td>412</td></tr>
+              <tr><td>apps/<wbr>api/<wbr>src/<wbr>routes/<wbr>v2/<wbr>bookings/<wbr>create.ts:18</td><td>createBooking</td><td>286</td></tr>
+              <tr><td>packages/<wbr>billing/<wbr>src/<wbr>invoice/<wbr>build-invoice.ts:42</td><td>buildInvoice</td><td>241</td></tr>
+              <tr><td>packages/<wbr>billing/<wbr>test/<wbr>build-invoice.test.ts:11</td><td>&lt;arrow&gt;</td><td>229</td></tr>
+              <tr><td>apps/<wbr>worker/<wbr>src/<wbr>jobs/<wbr>reminders.ts:30</td><td>sendReminders</td><td>198</td></tr>
+              <tr><td>apps/<wbr>api/<wbr>src/<wbr>routes/<wbr>v2/<wbr>berths/<wbr>availability.ts:27</td><td>getAvailability</td><td>174</td></tr>
+              <tr><td>packages/<wbr>geo/<wbr>src/<wbr>tide-window.ts:15</td><td>tideWindow</td><td>163</td></tr>
+              <tr><td>apps/<wbr>worker/<wbr>test/<wbr>reminders.test.ts:19</td><td>&lt;arrow&gt;</td><td>158</td></tr>
+              <tr><td>apps/<wbr>api/<wbr>src/<wbr>routes/<wbr>v2/<wbr>webhooks/<wbr>dispatch.ts:22</td><td>dispatchWebhook</td><td>147</td></tr>
+              <tr><td>packages/<wbr>db/<wbr>src/<wbr>migrate.ts:9</td><td>&lt;arrow&gt;</td><td>131</td></tr>
+            </tbody>
+          </table>
+        </details>
+        <details>
+          <summary>Ten refactoring targets</summary>
+          <table>
+            <thead><tr><th>Location</th><th>Category</th><th>Recommendation</th></tr></thead>
+            <tbody>
+              <tr><td>apps/<wbr>api/<wbr>src/<wbr>routes/<wbr>v1/<wbr>index.ts</td><td>remove_dead_code</td><td>Remove 6 unused exports to reduce surface area (100% dead)</td></tr>
+              <tr><td>apps/<wbr>worker/<wbr>src/<wbr>jobs/<wbr>tide-sync.ts</td><td>remove_dead_code</td><td>Remove 3 unused exports to reduce surface area (100% dead)</td></tr>
+              <tr><td>apps/<wbr>api/<wbr>src/<wbr>routes/<wbr>v2/<wbr>bookings/<wbr>create.ts</td><td>extract_complex_functions</td><td>Extract createBooking (cognitive: 38) in 344-LOC file into smaller functions</td></tr>
+              <tr><td>packages/<wbr>billing/<wbr>src/<wbr>invoice/<wbr>build-invoice.ts</td><td>extract_complex_functions</td><td>Extract buildInvoice (cognitive: 29) in 302-LOC file into smaller functions</td></tr>
+              <tr><td>packages/<wbr>billing/<wbr>src/<wbr>tax.ts</td><td>remove_dead_code</td><td>Remove 2 unused exports to reduce surface area (50% dead)</td></tr>
+              <tr><td>packages/<wbr>schemas/<wbr>src/<wbr>legacy.ts</td><td>remove_dead_code</td><td>Remove 4 unused exports to reduce surface area (80% dead)</td></tr>
+              <tr><td>packages/<wbr>notify/<wbr>src/<wbr>sms.ts</td><td>remove_dead_code</td><td>Remove 3 unused exports to reduce surface area (75% dead)</td></tr>
+              <tr><td>apps/<wbr>worker/<wbr>src/<wbr>jobs/<wbr>reminders.ts</td><td>extract_complex_functions</td><td>Extract sendReminders (cognitive: 26) in 251-LOC file into smaller functions</td></tr>
+              <tr><td>packages/<wbr>geo/<wbr>src/<wbr>tide-window.ts</td><td>extract_complex_functions</td><td>Extract tideWindow (cognitive: 24) in 190-LOC file into smaller functions</td></tr>
+              <tr><td>packages/<wbr>db/<wbr>src/<wbr>client.ts</td><td>split_high_impact</td><td>Split high-impact file (88 LOC), 14 dependents amplify every change</td></tr>
+            </tbody>
+          </table>
+        </details>
+      </section>
+
+      <section>
+        <h2>Duplication</h2>
+        <p>1,612 duplicated lines across 37 files, in 13 clone groups. Five groups involve generated files; treat those as generator or exclusion decisions.</p>
+        <details>
+          <summary>Eight clone groups</summary>
+          <table>
+            <thead><tr><th>Fingerprint</th><th>Lines</th><th>Copies</th><th>Where</th></tr></thead>
+            <tbody>
+              <tr><td>dup:a1b2c3d4</td><td>31</td><td>3</td><td>apps/<wbr>api/<wbr>src/<wbr>routes/<wbr>v2/<wbr>bookings/<wbr>create.ts:44<br />apps/<wbr>api/<wbr>src/<wbr>routes/<wbr>v2/<wbr>bookings/<wbr>update.ts:29<br />apps/<wbr>api/<wbr>src/<wbr>routes/<wbr>v1/<wbr>bookings.ts:61</td></tr>
+              <tr><td>dup:b2c3d4e5</td><td>18</td><td>4</td><td>apps/<wbr>api/<wbr>src/<wbr>routes/<wbr>v2/<wbr>berths/<wbr>list.ts:12<br />apps/<wbr>api/<wbr>src/<wbr>routes/<wbr>v2/<wbr>marinas/<wbr>list.ts:12<br />apps/<wbr>api/<wbr>src/<wbr>routes/<wbr>v2/<wbr>guests/<wbr>list.ts:14</td></tr>
+              <tr><td>dup:c3d4e5f6</td><td>24</td><td>2</td><td>packages/<wbr>billing/<wbr>src/<wbr>invoice/<wbr>build-invoice.ts:120<br />packages/<wbr>billing/<wbr>src/<wbr>invoice/<wbr>credit-note.ts:38</td></tr>
+              <tr><td>dup:d4e5f6a7</td><td>12</td><td>5</td><td>apps/<wbr>worker/<wbr>src/<wbr>jobs/<wbr>reminders.ts:88<br />apps/<wbr>worker/<wbr>src/<wbr>jobs/<wbr>receipts.ts:41<br />apps/<wbr>worker/<wbr>src/<wbr>jobs/<wbr>tide-sync.ts:57</td></tr>
+              <tr><td>dup:e5f6a7b8</td><td>9</td><td>4</td><td>packages/<wbr>notify/<wbr>src/<wbr>email.ts:23<br />packages/<wbr>notify/<wbr>src/<wbr>sms.ts:19<br />packages/<wbr>notify/<wbr>src/<wbr>push.ts:21</td></tr>
+              <tr><td>dup:f6a7b8c9</td><td>40</td><td>2</td><td>tooling/<wbr>codegen/<wbr>out/<wbr>openapi-types.ts:310<br />tooling/<wbr>codegen/<wbr>out/<wbr>openapi-types.ts:892</td></tr>
+              <tr><td>dup:a7b8c9d0</td><td>15</td><td>3</td><td>apps/<wbr>api/<wbr>src/<wbr>routes/<wbr>v2/<wbr>webhooks/<wbr>dispatch.ts:64<br />apps/<wbr>api/<wbr>src/<wbr>routes/<wbr>v2/<wbr>webhooks/<wbr>retry.ts:22<br />apps/<wbr>worker/<wbr>src/<wbr>jobs/<wbr>webhook-retry.ts:30</td></tr>
+              <tr><td>dup:b8c9d0e1</td><td>20</td><td>3</td><td>packages/<wbr>testkit/<wbr>src/<wbr>seed-marina.ts:8<br />apps/<wbr>api/<wbr>test/<wbr>helpers.ts:15<br />apps/<wbr>worker/<wbr>test/<wbr>helpers.ts:12</td></tr>
+            </tbody>
+          </table>
+        </details>
+      </section>
+
+      <section>
+        <h2>Security</h2>
+        <p>14 leads, all medium, with 9 attack-surface traces. They are prompts for review, not confirmed vulnerabilities.</p>
+        <dl>
+          <dt>ssrf</dt><dd>7</dd>
+          <dt>path-traversal</dt><dd>4</dd>
+          <dt>open-redirect</dt><dd>2</dd>
+          <dt>secret-pii-log</dt><dd>1</dd>
+        </dl>
+        <details>
+          <summary>Ten representative leads</summary>
+          <table>
+            <thead><tr><th>Category</th><th>Location</th><th>Reachability</th></tr></thead>
+            <tbody>
+              <tr><td>ssrf</td><td>apps/<wbr>api/<wbr>src/<wbr>routes/<wbr>v2/<wbr>webhooks/<wbr>dispatch.ts:71</td><td>arg-level</td></tr>
+              <tr><td>ssrf</td><td>apps/<wbr>api/<wbr>src/<wbr>routes/<wbr>v2/<wbr>webhooks/<wbr>retry.ts:30</td><td>arg-level</td></tr>
+              <tr><td>ssrf</td><td>apps/<wbr>worker/<wbr>src/<wbr>jobs/<wbr>webhook-retry.ts:38</td><td>arg-level</td></tr>
+              <tr><td>ssrf</td><td>packages/<wbr>geo/<wbr>src/<wbr>tide-client.ts:19</td><td>module-level</td></tr>
+              <tr><td>path-traversal</td><td>apps/<wbr>api/<wbr>src/<wbr>routes/<wbr>v2/<wbr>exports/<wbr>download.ts:26</td><td>arg-level</td></tr>
+              <tr><td>path-traversal</td><td>apps/<wbr>api/<wbr>src/<wbr>routes/<wbr>v2/<wbr>uploads/<wbr>receive.ts:48</td><td>arg-level</td></tr>
+              <tr><td>path-traversal</td><td>apps/<wbr>worker/<wbr>src/<wbr>jobs/<wbr>exports.ts:63</td><td>module-level</td></tr>
+              <tr><td>open-redirect</td><td>packages/<wbr>auth/<wbr>src/<wbr>callback.ts:34</td><td>arg-level</td></tr>
+              <tr><td>open-redirect</td><td>packages/<wbr>auth/<wbr>src/<wbr>logout.ts:12</td><td>module-level</td></tr>
+              <tr><td>secret-pii-log</td><td>packages/<wbr>logger/<wbr>src/<wbr>request-log.ts:27</td><td>arg-level</td></tr>
+            </tbody>
+          </table>
+        </details>
+      </section>
+
+      <section>
+        <h2>Method</h2>
+        <dl>
+          <dt>Codebase root</dt><dd>~/<wbr>code/<wbr>harbor-api</dd>
+          <dt>Deadwood invocation</dt><dd>npx deadwood@latest, resolved to 1.8.0</dd>
+          <dt>Config status</dt><dd>No deadwood.config.json found; Deadwood ran with auto-detected framework plugins.</dd>
+          <dt>Detected plugins</dt><dd>eslint, prettier, typescript, vitest, fastify, drizzle, openapi-ts, docker</dd>
+          <dt>Workspaces</dt><dd>12 pnpm workspaces</dd>
+        </dl>
+        <details>
+          <summary>The 12 workspaces</summary>
+          <ul>
+            <li>@harbor/api <small>apps/api</small></li>
+            <li>@harbor/worker <small>apps/worker</small></li>
+            <li>@harbor/auth <small>packages/auth</small></li>
+            <li>@harbor/billing <small>packages/billing</small></li>
+            <li>@harbor/db <small>packages/db</small></li>
+            <li>@harbor/geo <small>packages/geo</small></li>
+            <li>@harbor/logger <small>packages/logger</small></li>
+            <li>@harbor/notify <small>packages/notify</small></li>
+            <li>@harbor/schemas <small>packages/schemas</small></li>
+            <li>@harbor/testkit <small>packages/testkit</small></li>
+            <li>@harbor/codegen <small>tooling/codegen</small></li>
+            <li>@harbor/infra <small>infra</small></li>
+          </ul>
+        </details>
+        <h3>Raw output</h3>
+        <ul>
+          <li><a href="https://ci.example.com/harbor-api/runs/412/unused.json">unused.json</a> <small>71 findings, 212 ms.</small></li>
+          <li><a href="https://ci.example.com/harbor-api/runs/412/health.json">health.json</a> <small>1,846 functions analysed.</small></li>
+          <li><a href="https://ci.example.com/harbor-api/runs/412/dupes.json">dupes.json</a> <small>5% duplicated lines.</small></li>
+          <li><a href="https://ci.example.com/harbor-api/runs/412/flags.json">flags.json</a> <small>0 flags detected.</small></li>
+          <li><a href="https://ci.example.com/harbor-api/runs/412/security.json">security.json</a> <small>14 leads.</small></li>
+          <li><a href="https://ci.example.com/harbor-api/runs/412/project.json">project.json</a> <small>Detected plugins and entry points.</small></li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>

@@ -19,8 +19,9 @@ the deliverable is one CSS file.
 showcase, no build-site tooling. The multi-page docs site (`src/website/`,
 `build-site.js`, plus the `build:site`/`preview:site` pnpm scripts) lives on a separate
 local-only `website` branch and is not present here. Check out `website` to work on the
-site or to see a stylesheet change against the curated showcase — `tests/` here (see
-below) covers QA, but `website`'s showcase is the polished, documented reference.
+site or to see a stylesheet change against the curated showcase — `tests/` and
+`examples/` here (see below) cover QA, but `website`'s showcase is the polished,
+documented reference.
 
 ## Layout
 
@@ -35,6 +36,10 @@ below) covers QA, but `website`'s showcase is the polished, documented reference
   exercise every variant/size/state of one part of the framework per file, for catching
   regressions while editing `src/lib/zinc.css`. `pnpm run dev` serves the repo and opens
   this folder.
+- `examples/` — whole realistic pages (reports, a dashboard, a triage board, forms),
+  for checking how the stylesheet holds up on a real page rather than one element at a
+  time. Not in the npm package. Their content is invented: never paste real
+  conversations, people, projects, emails or links into them.
 - `scripts/contrast.mjs` — `pnpm run contrast`: reads the color tokens from
   `src/lib/zinc.css` and prints a before/after WCAG contrast table for every accent in
   both modes (baseline: the `v0.0.0-pre.5` tag). It also checks the control borders

@@ -1,0 +1,655 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Recommendations for Lantern</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="../src/lib/zinc.css" />
+    <script>
+      // ?mode=light|dark, ?accent=<name> and ?paper=beige set the theme hooks
+      const q = new URLSearchParams(location.search), d = document.documentElement.dataset;
+      if (/^(light|dark)$/.test(q.get("mode"))) d.mode = q.get("mode");
+      if (/^[a-z]+$/.test(q.get("accent") || "")) d.accent = q.get("accent");
+      if (q.get("paper") === "beige") d.paper = "beige";
+    </script>
+  </head>
+  <body>
+    <header>
+      <p>Lantern 0.14 · from the team's research notes · 31 October 2026</p>
+      <h1>What Lantern should do next</h1>
+      <p>
+        Fix three problems in the default theme, then protect the fixes with snapshot tests of the
+        starter sites. The research notes produced 27 suggestions in all, and five are worth doing
+        first.
+      </p>
+    </header>
+
+    <main>
+      <section aria-labelledby="summary-heading">
+        <h2 id="summary-heading">First five</h2>
+          <ol>
+            <li>
+              <strong>Focus styles (#1).</strong> The default theme removes the outline from
+              <code>&lt;a&gt;</code>, <code>&lt;button&gt;</code> and <code>&lt;input&gt;</code>
+              and puts nothing in its place, so keyboard users lose track of where they are. Two of
+              the six people interviewed raised it without being asked.
+            </li>
+            <li>
+              <strong>Link contrast (#2).</strong> Four of the five bundled color schemes fail
+              4.5:1 for link text in at least one mode. Ember links on the light background are
+              2.91:1. One derived variable fixes all ten combinations.
+            </li>
+            <li>
+              <strong>Missing alt text (#3).</strong> 38% of the images on the sampled sites have
+              no alt text, and the build never mentions it. A build warning would catch the
+              problem where it starts.
+            </li>
+            <li>
+              <strong>Snapshot tests (#22).</strong> 3 starter sites × 2 modes × 5 color schemes =
+              30 snapshots. The CLI already has a test runner set up, so this is a small step.
+            </li>
+            <li>
+              <strong>Single-page reference (#26).</strong> Half of the support threads ask
+              something the docs already answer, just not where people looked. One searchable page
+              shipped with the package would settle most of them.
+            </li>
+          </ol>
+          <aside>
+            <p>
+              <strong>Suggested order.</strong> Do #1–3 in one pass, since they all touch the
+              default theme and its build checks. Then add the snapshot tests (#22) before changing
+              the theme again (#4, #5, #15). After that, every theme change can be checked against
+              the 30-snapshot baseline.
+            </p>
+          </aside>
+          <p><small>Effort: an afternoon for 1–3, about two days for 22 and 26 together. Most items below have a sketch.</small></p>
+      </section>
+
+      <section aria-labelledby="glance-heading">
+        <h2 id="glance-heading">All 27</h2>
+        <p>Grouped by area below. S is under an hour, M is a few hours.</p>
+        <details>
+          <summary>Index of all 27 suggestions</summary>
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Suggestion</th>
+              <th>Area</th>
+              <th>Effort</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td><a href="#s1">Visible focus styles in the default theme</a></td><td>A11y</td><td>S</td></tr>
+            <tr><td>2</td><td><a href="#s2"><code>--link</code> that meets contrast in every scheme</a></td><td>A11y</td><td>S</td></tr>
+            <tr><td>3</td><td><a href="#s3">Warn about images without alt text</a></td><td>A11y</td><td>S</td></tr>
+            <tr><td>4</td><td><a href="#s4">Skip link and landmarks in the base layout</a></td><td>A11y</td><td>S</td></tr>
+            <tr><td>5</td><td><a href="#s5">Set <code>lang</code> from the site config</a></td><td>A11y</td><td>S</td></tr>
+            <tr><td>6</td><td><a href="#s6">Cache parsed Markdown between builds</a></td><td>Speed</td><td>S</td></tr>
+            <tr><td>7</td><td><a href="#s7">Resize images in a worker pool</a></td><td>Speed</td><td>S</td></tr>
+            <tr><td>8</td><td><a href="#s8">Skip writes when the output hasn't changed</a></td><td>Speed</td><td>M</td></tr>
+            <tr><td>9</td><td><a href="#s9">Load highlighting grammars on demand</a></td><td>Speed</td><td>S</td></tr>
+            <tr><td>10</td><td><a href="#s10">Accept fewer date formats in front matter</a></td><td>Content</td><td>S</td></tr>
+            <tr><td>11</td><td><a href="#s11">Typed front matter per section</a></td><td>Content</td><td>M</td></tr>
+            <tr><td>12</td><td><a href="#s12">Template errors that point at the line</a></td><td>Content</td><td>S</td></tr>
+            <tr><td>13</td><td><a href="#s13">Named arguments for shortcodes</a></td><td>Content</td><td>S</td></tr>
+            <tr><td>14</td><td><a href="#s14">Permalinks that survive a title change</a></td><td>Content</td><td>S</td></tr>
+            <tr><td>15</td><td><a href="#s15">Wrap long lines in code blocks</a></td><td>Content</td><td>S</td></tr>
+            <tr><td>16</td><td><a href="#s16">Drafts that only the dev server shows</a></td><td>Content</td><td>S</td></tr>
+            <tr><td>17</td><td><a href="#s17">Keep the scroll position on reload</a></td><td>Dev server</td><td>S</td></tr>
+            <tr><td>18</td><td><a href="#s18">Show build errors in the browser</a></td><td>Dev server</td><td>M</td></tr>
+            <tr><td>19</td><td><a href="#s19">Plugin hooks named after build steps</a></td><td>Plugins</td><td>M</td></tr>
+            <tr><td>20</td><td><a href="#s20">Validate plugin options</a></td><td>Plugins</td><td>M</td></tr>
+            <tr><td>21</td><td><a href="#s21">Template helper audit</a></td><td>Plugins</td><td>M</td></tr>
+            <tr><td>22</td><td><a href="#s22">Snapshot tests for the starter sites</a></td><td>Tooling</td><td>M</td></tr>
+            <tr><td>23</td><td><a href="#s23">Profile one large build</a></td><td>Tooling</td><td>S</td></tr>
+            <tr><td>24</td><td><a href="#s24">One config loader instead of three</a></td><td>Tooling</td><td>S</td></tr>
+            <tr><td>25</td><td><a href="#s25">Check links in the release pipeline</a></td><td>Tooling</td><td>S</td></tr>
+            <tr><td>26</td><td><a href="#s26">Ship a single-page reference</a></td><td>Docs</td><td>M</td></tr>
+            <tr><td>27</td><td><a href="#s27">Keyboard pass on the theme's search</a></td><td>A11y</td><td>M</td></tr>
+          </tbody>
+        </table>
+        </details>
+      </section>
+
+      <section aria-labelledby="a11y-heading">
+        <h2 id="a11y-heading">Accessibility</h2>
+
+        <h3 id="s1">1. Visible focus styles in the default theme</h3>
+        <p>
+          The default theme's reset sets <code>outline: none</code> on links, buttons and form
+          fields and never adds a focus style back. Tabbing through a starter site shows no sign of
+          where focus is. In the notes, one theme author said they copy the reset into every new
+          theme, so the problem spreads past the default. A <code>:focus-visible</code> outline in
+          the theme's link color fixes it for keyboard users without showing rings on mouse clicks.
+        </p>
+        <details>
+          <summary>Sketch</summary>
+          <pre><code>:focus-visible {
+  outline: 2px solid var(--link); /* see #2 */
+  outline-offset: 2px;
+}
+/* and delete the outline: none line from reset.css */</code></pre>
+        </details>
+        <p><small>From <a href="https://notes.example.org/lantern/interview-02">interview 2</a> (a keyboard-only user) · <a href="https://notes.example.org/lantern/interview-05">interview 5</a> (a theme author who copies the reset)</small></p>
+
+        <h3 id="s2">2. <code>--link</code> that meets contrast in every scheme</h3>
+        <p>
+          Links use each scheme's <code>--brand</code> color as text. Measured with the WCAG
+          formula against the page background, light / dark:
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>Scheme</th>
+              <th>Today</th>
+              <th>With fix</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>harbor</td><td><strong>4.21</strong> / <strong>4.30</strong></td><td>5.62 / 7.05</td></tr>
+            <tr><td>ember</td><td><strong>2.91</strong> / 6.88</td><td>5.18 / 6.88</td></tr>
+            <tr><td>moss</td><td><strong>3.72</strong> / 8.40</td><td>5.04 / 8.40</td></tr>
+            <tr><td>dusk</td><td>5.10 / <strong>3.65</strong></td><td>5.10 / 6.71</td></tr>
+            <tr><td>slate</td><td>6.02 / 7.15</td><td>6.02 / 7.15</td></tr>
+          </tbody>
+        </table>
+        <p><small>Bold: below the 4.5:1 that body-size text needs.</small></p>
+        <p>
+          A variable built with relative color syntax caps the lightness per mode and keeps the
+          hue, so each scheme still looks like itself. Buttons are a separate problem: white text
+          on the ember button is 3.40:1, and the fix there is a darker button color, not a lighter
+          label.
+        </p>
+        <details>
+          <summary>Sketch</summary>
+          <pre><code>:root {
+  --link: oklch(from var(--brand) min(l, 0.52) c h);
+}
+@media (prefers-color-scheme: dark) {
+  :root { --link: oklch(from var(--brand) max(l, 0.72) c h); }
+}
+
+a { color: var(--link); }</code></pre>
+        </details>
+        <p><small>From <a href="https://notes.example.org/lantern/survey-2026">the 2026 survey</a> (eleven comments on hard-to-read links) · <a href="https://notes.example.org/lantern/support-118">support thread 118</a> (a site failed an accessibility review)</small></p>
+
+        <h3 id="s3">3. Warn about images without alt text</h3>
+        <p>
+          In the 40 sites the team sampled, 38% of images had an empty or missing alt attribute.
+          Most authors in the notes didn't know until someone told them. Lantern already parses
+          every image while it resolves paths, so it can count the missing ones for free and print
+          a warning at the end of the build. A setting turns it into an error for teams that want
+          the build to fail.
+        </p>
+        <details>
+          <summary>Sketch</summary>
+          <pre><code># lantern.toml
+[checks]
+missing_alt = "warn"   # "off", "warn" or "error"
+
+# build output
+⚠ 3 images have no alt text
+  content/posts/autumn-walk.md:14   photos/bridge.jpg
+  content/posts/autumn-walk.md:22   photos/ferry.jpg
+  content/about.md:8                team.png</code></pre>
+        </details>
+        <p><small>From <a href="https://notes.example.org/lantern/site-sample">the site sample</a> · <a href="https://notes.example.org/lantern/interview-04">interview 4</a> (a writer who learned about alt text from a reader)</small></p>
+
+        <h3 id="s4">4. Skip link and landmarks in the base layout</h3>
+        <p>
+          The base layout wraps everything in <code>&lt;div&gt;</code> elements, so screen-reader
+          users can't jump to the main content or the navigation. Using <code>&lt;header&gt;</code>,
+          <code>&lt;nav&gt;</code>, <code>&lt;main&gt;</code> and <code>&lt;footer&gt;</code>
+          costs nothing, and a skip link takes one line. Themes that extend the base layout get
+          both without changes. One person noted that the skip link must stay visible when it has
+          focus, or sighted keyboard users never find it.
+        </p>
+        <details>
+          <summary>Sketch</summary>
+          <pre><code>&lt;body&gt;
+  &lt;a href="#content" data-skip&gt;Skip to content&lt;/a&gt;
+  &lt;header&gt;{{ partial "site-header" }}&lt;/header&gt;
+  &lt;main id="content"&gt;{{ block "main" }}{{ end }}&lt;/main&gt;
+  &lt;footer&gt;{{ partial "site-footer" }}&lt;/footer&gt;
+&lt;/body&gt;</code></pre>
+        </details>
+        <p><small>From <a href="https://notes.example.org/lantern/interview-02">interview 2</a> · <a href="https://notes.example.org/lantern/support-087">support thread 87</a> (asks how to add landmarks without forking the theme)</small></p>
+
+        <h3 id="s5">5. Set <code>lang</code> from the site config</h3>
+        <p>
+          Every page is rendered with <code>&lt;html lang="en"&gt;</code>, whatever the site's
+          language. Screen readers then read French or German pages with English pronunciation.
+          The config already has a <code>language</code> key for date formatting, so the layout
+          can use it. Pages with their own <code>lang</code> in front matter should override it.
+        </p>
+        <details>
+          <summary>Sketch</summary>
+          <pre><code>&lt;html lang="{{ page.lang | default: site.language }}"&gt;</code></pre>
+        </details>
+        <p><small>From <a href="https://notes.example.org/lantern/support-131">support thread 131</a> (a bilingual site) · <a href="https://notes.example.org/lantern/interview-06">interview 6</a> (a translator who maintains two sites)</small></p>
+      </section>
+
+      <section aria-labelledby="speed-heading">
+        <h2 id="speed-heading">Build speed</h2>
+
+        <h3 id="s6">6. Cache parsed Markdown between builds</h3>
+        <p>
+          A full build of the largest site in the sample (4,200 pages) takes 41 seconds, and about
+          60% of that is parsing Markdown that didn't change. Keying a cache on each file's content
+          hash lets the next build skip those files. The cache can live in the existing
+          <code>.lantern/</code> folder, which is already ignored by the starter sites.
+        </p>
+        <details>
+          <summary>Sketch</summary>
+          <pre><code># lantern.toml
+[cache]
+markdown = true            # on by default once it's proven
+dir = ".lantern/cache"</code></pre>
+        </details>
+        <p><small>From <a href="https://notes.example.org/lantern/interview-01">interview 1</a> (a docs team with 4,200 pages) · <a href="https://notes.example.org/lantern/build-timings">build timings</a> · <a href="https://notes.example.org/lantern/retro-q3">the Q3 retro</a></small></p>
+
+        <h3 id="s7">7. Resize images in a worker pool</h3>
+        <p>
+          Image resizing runs on one thread, so a photo-heavy site spends most of its build waiting
+          on a single core. Moving it to a pool sized to the machine's cores cut a test build from
+          58 to 19 seconds on an eight-core laptop. It's a contained change, and the output is
+          byte-for-byte the same.
+        </p>
+        <p><small>From <a href="https://notes.example.org/lantern/interview-03">interview 3</a> (a photographer's portfolio) · <a href="https://notes.example.org/lantern/build-timings">build timings</a></small></p>
+
+        <h3 id="s8">8. Skip writes when the output hasn't changed</h3>
+        <p>
+          Lantern rewrites every file in <code>public/</code> on each build, even when the content
+          is identical. That wakes up file watchers, invalidates deploy caches and makes upload
+          tools send the whole site again. Comparing a hash of the new output with the file on
+          disk avoids all three. Two things to know first. The check needs the full list of output
+          files to delete stale ones, and watch mode doesn't always have it (see
+          <a href="#xc">C</a>). Also, timestamps in the output, such as a "built at" footer, will
+          defeat the check unless they're moved to one file.
+        </p>
+        <details>
+          <summary>Sketch</summary>
+          <pre><code>async function writeIfChanged(path, contents) {
+  const next = hash(contents);
+  if (previousHashes.get(path) === next) return false;
+  await fs.writeFile(path, contents);
+  previousHashes.set(path, next);
+  return true;
+}</code></pre>
+        </details>
+        <p><small>From <a href="https://notes.example.org/lantern/support-064">support thread 64</a> (every deploy uploads 3,000 files)</small></p>
+
+        <h3 id="s9">9. Load highlighting grammars on demand</h3>
+        <p>
+          The syntax highlighter loads all 190 grammars at startup, which adds about 800 ms to
+          every build and every dev-server restart. Most sites use three or four languages. Loading
+          a grammar the first time a code block asks for it removes the delay, and sites with no
+          code blocks never pay for it.
+        </p>
+        <details>
+          <summary>Sketch</summary>
+          <pre><code>const loaded = new Map();
+
+async function grammarFor(lang) {
+  if (!loaded.has(lang)) loaded.set(lang, import(`./grammars/${lang}.js`));
+  return loaded.get(lang);
+}</code></pre>
+        </details>
+        <p><small>From <a href="https://notes.example.org/lantern/build-timings">build timings</a> · <a href="https://notes.example.org/lantern/interview-01">interview 1</a> · <a href="https://notes.example.org/lantern/retro-q3">the Q3 retro</a></small></p>
+      </section>
+
+      <section aria-labelledby="content-heading">
+        <h2 id="content-heading">Content and templates</h2>
+
+        <h3 id="s10">10. Accept fewer date formats in front matter</h3>
+        <p>
+          The date parser accepts nine formats, including two where <code>03/04</code> can mean
+          March or April depending on the machine's locale. Three people in the notes had posts
+          appear in the wrong order after moving to a new laptop. Accepting ISO dates and one
+          long form would remove the guesswork, with a clear error for anything else.
+        </p>
+        <details>
+          <summary>Sketch</summary>
+          <pre><code>date: 2026-03-04            # ISO date
+date: 2026-03-04T09:30:00Z  # ISO date and time
+date: 4 March 2026          # long form</code></pre>
+        </details>
+        <p><small>From <a href="https://notes.example.org/lantern/support-099">support thread 99</a></small></p>
+
+        <h3 id="s11">11. Typed front matter per section</h3>
+        <p>
+          Front matter is free-form, so a typo like <code>tilte</code> passes silently and the page
+          renders without a title. Letting each content section declare the fields it expects, with
+          types and defaults, would catch these at build time. Several people asked for it, and two
+          had written their own checks as plugins. A schema is optional, so existing sites keep
+          working as they are.
+        </p>
+        <p><small>From <a href="https://notes.example.org/lantern/interview-05">interview 5</a> · <a href="https://notes.example.org/lantern/survey-2026">the 2026 survey</a> (the most requested feature)</small></p>
+
+        <h3 id="s12">12. Template errors that point at the line</h3>
+        <p>
+          When a template fails, the error names the compiled function and a line number in
+          generated code. People in the notes described guessing which template was at fault.
+          The compiler already keeps a source map, so the error can name the template file, the
+          line and the expression, with a few lines of context.
+        </p>
+        <details>
+          <summary>Sketch</summary>
+          <pre><code>✖ Template error in layouts/post.html:18
+   16 |   &lt;h1&gt;{{ page.title }}&lt;/h1&gt;
+   17 |   &lt;p&gt;{{ page.date | date: "long" }}&lt;/p&gt;
+ &gt; 18 |   {{ partial "author-card" page.autor }}
+      |                            ^^^^^^^^^^
+   page.autor is undefined. Did you mean page.author?</code></pre>
+        </details>
+        <p><small>From <a href="https://notes.example.org/lantern/interview-04">interview 4</a> · <a href="https://notes.example.org/lantern/support-052">support thread 52</a> (two hours to find a missing field)</small></p>
+
+        <h3 id="s13">13. Named arguments for shortcodes</h3>
+        <p>
+          Shortcodes take positional arguments, so <code>{{&lt; figure "a.jpg" "" "wide" &gt;}}</code>
+          means nothing without the docs open. Named arguments read on their own, and they let a
+          shortcode add options without breaking existing calls. Positional calls can keep working
+          for a few releases with a deprecation warning.
+        </p>
+        <details>
+          <summary>Sketch</summary>
+          <pre><code>{{&lt; figure src="harbor.jpg" alt="Boats at dawn" width="wide" &gt;}}
+{{&lt; note kind="warning" &gt;}}This step deletes the cache.{{&lt; /note &gt;}}</code></pre>
+        </details>
+        <p><small>From <a href="https://notes.example.org/lantern/interview-06">interview 6</a> · <a href="https://notes.example.org/lantern/support-073">support thread 73</a> · <a href="https://notes.example.org/lantern/retro-q3">the Q3 retro</a></small></p>
+
+        <h3 id="s14">14. Permalinks that survive a title change</h3>
+        <p>
+          The default permalink is built from the title, so fixing a typo in a title breaks every
+          link to the page. Building it from the file name instead keeps URLs stable. Sites that
+          want title-based URLs can still set the pattern, and a <code>slug</code> field overrides
+          both.
+        </p>
+        <details>
+          <summary>Sketch</summary>
+          <pre><code># lantern.toml
+[permalinks]
+posts = "/:year/:filename/"   # was "/:year/:title/"</code></pre>
+        </details>
+        <p><small>From <a href="https://notes.example.org/lantern/support-041">support thread 41</a></small></p>
+
+        <h3 id="s15">15. Wrap long lines in code blocks</h3>
+        <p>
+          The default theme lets inline code and URLs run off the side of the page. On a phone, one
+          long file path inside a table cell widens the whole page and adds a sideways scroll.
+          Wrapping inline code anywhere fixes it, and <code>anywhere</code> also lowers the cell's
+          minimum width, which <code>break-word</code> does not. Code blocks should keep their own
+          horizontal scroll, since wrapped code is harder to read.
+        </p>
+        <details>
+          <summary>Sketch</summary>
+          <pre><code>body { overflow-wrap: break-word; }
+:not(pre) > code { overflow-wrap: anywhere; }</code></pre>
+        </details>
+        <p><small>From <a href="https://notes.example.org/lantern/support-108">support thread 108</a> (and the reply suggesting <code>overflow-wrap: anywhere</code>)</small></p>
+
+        <h3 id="s16">16. Drafts that only the dev server shows</h3>
+        <p>
+          Drafts are skipped everywhere today, so authors set <code>draft: false</code> to preview
+          a post and sometimes forget to set it back. Showing drafts in the dev server, with a
+          banner, and leaving them out of production builds matches what people expected.
+        </p>
+        <details>
+          <summary>Sketch</summary>
+          <pre><code>lantern serve            # drafts shown, with a "Draft" banner
+lantern build            # drafts left out
+lantern build --drafts   # drafts included, for a staging site</code></pre>
+        </details>
+        <p><small>From <a href="https://notes.example.org/lantern/interview-04">interview 4</a></small></p>
+      </section>
+
+      <section aria-labelledby="server-heading">
+        <h2 id="server-heading">Dev server</h2>
+
+        <h3 id="s17">17. Keep the scroll position on reload</h3>
+        <p>
+          Live reload sends the browser back to the top of the page after every save. On a long
+          article, the author scrolls back down each time. Saving the scroll position before the
+          reload and restoring it afterwards takes a few lines in the injected client script.
+        </p>
+        <details>
+          <summary>Sketch</summary>
+          <pre><code>socket.addEventListener("message", () => {
+  sessionStorage.setItem("lantern:scroll", String(scrollY));
+  location.reload();
+});
+const y = sessionStorage.getItem("lantern:scroll");
+if (y) { scrollTo(0, Number(y)); sessionStorage.removeItem("lantern:scroll"); }</code></pre>
+        </details>
+        <p><small>From <a href="https://notes.example.org/lantern/interview-03">interview 3</a> · <a href="https://notes.example.org/lantern/interview-04">interview 4</a> · <a href="https://notes.example.org/lantern/survey-2026">the 2026 survey</a></small></p>
+
+        <h3 id="s18">18. Show build errors in the browser</h3>
+        <p>
+          When a rebuild fails, the dev server keeps serving the last good page and prints the
+          error in the terminal. Most authors had the terminal hidden, so they saw an unchanged page
+          and assumed the save hadn't happened. An overlay with the same message as the terminal,
+          sent over the existing reload socket, makes the failure obvious. It should close itself
+          once the next build succeeds.
+        </p>
+        <details>
+          <summary>Sketch</summary>
+          <pre><code>socket.addEventListener("message", (event) => {
+  const msg = JSON.parse(event.data);
+  if (msg.type === "error") showOverlay(msg.file, msg.line, msg.text);
+  if (msg.type === "reload") location.reload();
+});
+
+function showOverlay(file, line, text) {
+  const dialog = document.createElement("dialog");
+  const heading = document.createElement("h2");
+  const pre = document.createElement("pre");
+  heading.textContent = `${file}:${line}`;
+  pre.textContent = text;
+  dialog.append(heading, pre);
+  document.body.append(dialog);
+  dialog.showModal();
+}</code></pre>
+        </details>
+        <p><small>From <a href="https://notes.example.org/lantern/interview-02">interview 2</a> (lost ten minutes to a hidden error) · <a href="https://notes.example.org/lantern/interview-06">interview 6</a></small></p>
+      </section>
+
+      <section aria-labelledby="plugins-heading">
+        <h2 id="plugins-heading">Plugins</h2>
+
+        <h3 id="s19">19. Plugin hooks named after build steps</h3>
+        <p>
+          Plugins hook in through three events: <code>init</code>, <code>page</code> and
+          <code>done</code>. Anything that needs to run between reading content and rendering it
+          has to patch internals, and four of the plugins the team reviewed did. Naming hooks
+          after the real build steps gives those plugins a supported place to run. The old events
+          can map onto the new ones for a release or two.
+        </p>
+        <details>
+          <summary>Sketch</summary>
+          <pre><code>export default function readingTime() {
+  return {
+    name: "reading-time",
+    afterContentLoaded(pages) {
+      for (const page of pages) page.data.minutes = Math.ceil(page.words / 220);
+    },
+    beforeRender(page) { /* ... */ },
+    afterWrite(files) { /* ... */ },
+  };
+}</code></pre>
+        </details>
+        <p><small>From <a href="https://notes.example.org/lantern/plugin-review">the plugin review</a> · <a href="https://notes.example.org/lantern/interview-05">interview 5</a></small></p>
+
+        <h3 id="s20">20. Validate plugin options</h3>
+        <p>
+          A misspelled plugin option is ignored without a word, and the plugin falls back to its
+          default. Letting each plugin export a small schema means Lantern can reject unknown keys
+          and wrong types before the build starts, and name the plugin in the error. The same
+          schema can generate the options table in each plugin's docs.
+        </p>
+        <details>
+          <summary>Sketch</summary>
+          <pre><code>export const options = {
+  wordsPerMinute: { type: "number", default: 220 },
+  label:          { type: "string", default: "min read" },
+};
+
+// lantern.toml with a typo:
+// ✖ reading-time: unknown option "wordsPerMinite". Did you mean "wordsPerMinute"?</code></pre>
+        </details>
+        <p><small>From <a href="https://notes.example.org/lantern/support-090">support thread 90</a> · <a href="https://notes.example.org/lantern/plugin-review">the plugin review</a> · <a href="https://notes.example.org/lantern/interview-01">interview 1</a> · <a href="https://notes.example.org/lantern/retro-q3">the Q3 retro</a></small></p>
+
+        <h3 id="s21">21. Template helper audit</h3>
+        <p>Checked against the plugins people wrote for themselves, these helpers are missing today:</p>
+        <table>
+          <thead>
+            <tr><th>Helper</th><th>What it would give</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>readingTime</code></td><td>Minutes to read a page. Five separate plugins do this already.</td></tr>
+            <tr><td><code>toc</code></td><td>A table of contents built from the page's headings.</td></tr>
+            <tr><td><code>related</code></td><td>Other pages that share the most tags with this one.</td></tr>
+            <tr><td><code>excerpt</code></td><td>The first paragraph, or the text before a <code>&lt;!-- more --&gt;</code> marker.</td></tr>
+            <tr><td><code>image</code></td><td>Resized versions and a <code>srcset</code>. Exists only as a shortcode today.</td></tr>
+          </tbody>
+        </table>
+        <p><small>From <a href="https://notes.example.org/lantern/plugin-review">the plugin review</a> (31 community plugins)</small></p>
+      </section>
+
+      <section aria-labelledby="tooling-heading">
+        <h2 id="tooling-heading">Tooling and docs</h2>
+
+        <h3 id="s22">22. Snapshot tests for the starter sites</h3>
+        <p>
+          The release checklist asks someone to open each starter site in light and dark mode with
+          all five color schemes. That is 30 page views per release, and a focus-only problem like
+          #1 is easy to miss. Rendering each combination in a headless browser and comparing
+          screenshots automates it. Run it once more after a Tab press to capture focus styles.
+        </p>
+        <details>
+          <summary>Sketch</summary>
+          <pre><code>// test/visual.test.js
+import { test, expect } from "./browser.js";
+const sites = ["blog", "docs", "portfolio"];
+const schemes = ["harbor", "ember", "moss", "dusk", "slate"];
+
+for (const site of sites)
+  for (const mode of ["light", "dark"])
+    for (const scheme of schemes)
+      test(`${site} ${mode} ${scheme}`, async ({ page }) => {
+        await page.goto(`/starters/${site}/?mode=${mode}&amp;scheme=${scheme}`);
+        await expect(page).toMatchScreenshot({ fullPage: true });
+      });</code></pre>
+        </details>
+        <p><small>From <a href="https://notes.example.org/lantern/retro-q3">the Q3 retro</a> (a broken dark mode shipped in 0.12) · <a href="https://notes.example.org/lantern/release-checklist">the release checklist</a></small></p>
+
+        <h3 id="s23">23. Profile one large build</h3>
+        <p>
+          The timings in #6, #7 and #9 came from adding up log timestamps, which only shows the
+          steps Lantern already logs. A CPU profile of the 4,200-page docs site would show where
+          the rest of the 41 seconds goes, including time spent in plugins and in the template
+          engine. It takes one run with the runtime's built-in profiler. It may only confirm what
+          the logs say, but then you'll know.
+        </p>
+        <p><small>From <a href="https://notes.example.org/lantern/build-timings">build timings</a></small></p>
+
+        <h3 id="s24">24. One config loader instead of three</h3>
+        <p>This lookup appears in three places, with small differences:</p>
+        <pre><code>const file = findUp(["lantern.toml", "lantern.yaml", "lantern.json"], { cwd: root });</code></pre>
+        <p>
+          The CLI, the dev server and the plugin loader each find and parse the config on their
+          own, and the dev server doesn't read <code>lantern.json</code> at all. One shared loader,
+          called once and passed down, fixes that and gives a single place to add validation.
+        </p>
+        <p><small>From <a href="https://notes.example.org/lantern/support-115">support thread 115</a> (settings ignored by <code>lantern serve</code>)</small></p>
+
+        <h3 id="s25">25. Check links in the release pipeline</h3>
+        <p>
+          The docs site has 23 broken internal links, most from pages renamed in 0.13. A link
+          checker over the built docs takes under a minute and can fail the release when it finds
+          one. Checking external links is slower and flakier, so run that weekly and report rather
+          than fail.
+        </p>
+        <p><small>From <a href="https://notes.example.org/lantern/docs-audit">the docs audit</a> · <a href="https://notes.example.org/lantern/support-122">support thread 122</a> · <a href="https://notes.example.org/lantern/survey-2026">the 2026 survey</a> · <a href="https://notes.example.org/lantern/retro-q3">the Q3 retro</a></small></p>
+
+        <h3 id="s26">26. Ship a single-page reference</h3>
+        <p>
+          The docs are spread over 60 pages, and search covers titles only. Half of the support
+          threads in the notes ask about something the docs cover, usually on a page the person
+          didn't think to open. One generated page with every config key, CLI flag, template helper
+          and plugin hook, searchable with the browser's own find, would answer most of them. Ship
+          it in the package as well, so <code>lantern help --reference</code> opens the copy that
+          matches the installed version.
+        </p>
+        <p><small>From <a href="https://notes.example.org/lantern/support-summary">the support summary</a> · <a href="https://notes.example.org/lantern/interview-01">interview 1</a> · <a href="https://notes.example.org/lantern/interview-06">interview 6</a> · <a href="https://notes.example.org/lantern/docs-audit">the docs audit</a></small></p>
+
+        <h3 id="s27">27. Keyboard pass on the theme's search</h3>
+        <p>
+          The default theme's search opens a panel when you type in the box. The results can't be
+          reached with the arrow keys, Escape doesn't close the panel, and focus stays in the box
+          after it closes. The interview with a keyboard-only user walked through each of these.
+          Use that recording as the test script after any change to the search panel.
+        </p>
+        <p><small>From <a href="https://notes.example.org/lantern/interview-02">interview 2</a></small></p>
+      </section>
+
+      <section aria-labelledby="extra-heading">
+        <h2 id="extra-heading">Also spotted</h2>
+        <p>These four came up while checking the notes against the code. No note mentions them.</p>
+        <h3 id="xa">A. Feed dates use the build machine's time zone</h3>
+        <p>
+          The RSS and Atom feeds format dates in local time without an offset. A site built on a
+          laptop in one time zone and on a build server in another publishes two different dates
+          for the same post, and some feed readers show it twice. Reproduced on a fresh starter
+          site. Format feed dates in UTC with an explicit offset. The sitemap's
+          <code>lastmod</code> and the "updated" line in the default theme need the same change.
+        </p>
+
+        <h3 id="xb">B. One config format</h3>
+        <p>
+          Lantern reads TOML, YAML and JSON configs, and the docs show examples in all three. Many
+          of the support threads about config turn out to be format mistakes, not Lantern
+          mistakes. Pick one format for the docs and the starters, and keep reading the others.
+        </p>
+
+        <h3 id="xc">C. Watch mode misses files in new folders</h3>
+        <p>
+          The dev server watches the folders that existed when it started. A post saved in a new
+          folder under <code>content/</code> isn't built until the server restarts. Reproduced.
+          Either watch the content root recursively, or rescan the folder list whenever a folder
+          is created.
+        </p>
+
+        <h3 id="xd">D. Pin theme versions</h3>
+        <p>
+          Themes are installed from a URL with no version, so a site can look different after a
+          fresh clone. Recording the resolved version in a lock file, as packages already do, lets
+          a site rebuild exactly as it was.
+        </p>
+      </section>
+
+      <section aria-labelledby="done-heading">
+        <h2 id="done-heading">Already done</h2>
+        <p>Several ideas from the notes are already in Lantern:</p>
+        <ul>
+          <li>Clean URLs without <code>.html</code> and automatic redirects for moved pages (<a href="https://notes.example.org/lantern/support-012">support thread 12</a>, <a href="https://notes.example.org/lantern/interview-03">interview 3</a>)</li>
+          <li>A dark-mode toggle that remembers the reader's choice and respects the system setting (<a href="https://notes.example.org/lantern/survey-2025">the 2025 survey</a>)</li>
+          <li>Responsive images with <code>srcset</code> for images in Markdown, and a global setting for reduced motion (<a href="https://notes.example.org/lantern/interview-01">interview 1</a>)</li>
+          <li>Taxonomy pages for tags and categories without extra templates (<a href="https://notes.example.org/lantern/plugin-review">the plugin review</a>)</li>
+        </ul>
+        <p><small>Left out: requests for a visual editor, a hosted service, comments and analytics. Those notes describe a different product, not a static-site generator.</small></p>
+      </section>
+
+      <section aria-labelledby="method-heading">
+        <h2 id="method-heading">Method</h2>
+        <p>
+          I read the team's research notes: six interview transcripts, 140 support threads, 212
+          survey responses and the Q3 retro. 61 notes described a concrete problem, and I checked
+          each one against the Lantern 0.14 source. Three of the 27 suggestions, plus two extras
+          found along the way, are defects I measured or reproduced on a fresh starter site.
+        </p>
+      </section>
+    </main>
+  </body>
+</html>

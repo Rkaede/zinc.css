@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Decisions: shared drive cleanup</title>
+    <link rel="stylesheet" href="../src/lib/zinc.css" />
+    <script>
+      // ?mode=light|dark, ?accent=<name> and ?paper=beige set the theme hooks
+      const q = new URLSearchParams(location.search), d = document.documentElement.dataset;
+      if (/^(light|dark)$/.test(q.get("mode"))) d.mode = q.get("mode");
+      if (/^[a-z]+$/.test(q.get("accent") || "")) d.accent = q.get("accent");
+      if (q.get("paper") === "beige") d.paper = "beige";
+    </script>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Decisions for the shared drive cleanup</h1>
+        <p>The Marigold Studio drive holds 14,600 files in 2,310 folders. Most of the bulk is raw video (61% of the space) and old exports kept in <code>_final</code> folders. Your answers decide what we archive, keep and delete.</p>
+      </header>
+
+      <form data-form="questions" data-form-id="drive-cleanup">
+
+        <fieldset>
+          <legend>How should finished client projects be handled?<abbr title="required">*</abbr></legend>
+          <p>In a sample of 80 project folders, about 25% belong to clients we haven't worked with in three years, and 10–15% are pitches that never went ahead. Anything deleted from the drive is gone for good after 30 days in the bin.</p>
+          <label><input type="radio" name="projects" value="archive" required>
+            <span><strong>Archive them, don't delete</strong>
+            <small>Recommended. Each folder moves to the archive with a short note, and searches skip the archive unless you ask. Nothing is lost.</small></span></label>
+          <label><input type="radio" name="projects" value="archive-delete">
+            <span><strong>Archive them, then delete the dead pitches</strong>
+            <small>We list the pitches that never went ahead, you confirm them, and those folders are deleted.</small></span></label>
+          <label><input type="radio" name="projects" value="none">
+            <span><strong>Leave them where they are</strong>
+            <small>Rely on folder names and search alone.</small></span></label>
+        </fieldset>
+
+        <fieldset>
+          <legend>What happens to raw video footage?</legend>
+          <p>It takes up 410 GB of the 670 GB drive, and the total has doubled since spring. Every re-edit adds new exports next to the old ones.</p>
+          <label><input type="radio" name="footage" value="cold">
+            <span><strong>Move it to cold storage, keep the edits</strong>
+            <small>Recommended. Raw clips go to the cheaper archive tier, and the final cuts in <code>Exports</code> stay on the drive.</small></span></label>
+          <label><input type="radio" name="footage" value="cold-prune">
+            <span><strong>Move it to cold storage and delete old exports</strong>
+            <small>Frees about 450 GB, but removes every export except the last one in each project, and can't be undone after 30 days.</small></span></label>
+          <label><input type="radio" name="footage" value="own-drive">
+            <span><strong>Move video to its own drive</strong>
+            <small>The main drive stays small, and the video team looks after <code>Footage</code> on its own.</small></span></label>
+          <label><input type="radio" name="footage" value="keep">
+            <span><strong>Keep everything where it is</strong>
+            <small>No change. The drive keeps growing with each shoot.</small></span></label>
+        </fieldset>
+
+        <fieldset>
+          <legend>How many versions of each design file should we keep?</legend>
+          <p>The drive holds 9,400 design files, and about 3,200 of them are numbered versions like <code>logo_v7_FINAL2</code>. The version sent to the client is always kept.</p>
+          <label><input type="radio" name="versions" value="last3">
+            <span><strong>The last three versions</strong>
+            <small>Recommended. Older versions move to the archive with their project.</small></span></label>
+          <label><input type="radio" name="versions" value="final">
+            <span><strong>Only the final version</strong>
+            <small>Just the file sent to the client, with its linked images and fonts.</small></span></label>
+          <label><input type="radio" name="versions" value="all">
+            <span><strong>Every version</strong>
+            <small>Same as today. Project folders stay about four times larger.</small></span></label>
+        </fieldset>
+
+        <fieldset>
+          <legend>What should every kept project folder get?</legend>
+          <p>Pick as many as apply. The checked ones are what we recommend.</p>
+          <label><input type="checkbox" name="extras" value="summary" checked>
+            <span><strong>One-line description</strong></span></label>
+          <label><input type="checkbox" name="extras" value="tags" checked>
+            <span><strong>Tags from a fixed list</strong></span></label>
+          <label><input type="checkbox" name="extras" value="kind" checked>
+            <span><strong>Project type</strong>
+            <small>Branding, packaging, website, campaign, editorial, illustration, pitch or internal.</small></span></label>
+          <label><input type="checkbox" name="extras" value="status" checked>
+            <span><strong>Status: active, finished or on hold</strong></span></label>
+          <label><input type="checkbox" name="extras" value="year" checked>
+            <span><strong>Year the project ended</strong></span></label>
+          <label><input type="checkbox" name="extras" value="previews" checked>
+            <span><strong>Preview images</strong>
+            <small>For folders whose work only opens in design apps. Saved as small images that anyone can view.</small></span></label>
+          <label><input type="checkbox" name="extras" value="contacts" checked>
+            <span><strong>Client contact and invoice links</strong>
+            <small>Connects each folder to its invoices (214 in all) and the client's main contact.</small></span></label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Which categories should the new top level have?</legend>
+          <p>Categories come from a fixed list so they stay consistent. The checked ones cover most of the drive.</p>
+          <label><input type="checkbox" name="categories" value="clients" checked>
+            <span><strong>Client projects</strong><small>Active and finished work</small></span></label>
+          <label><input type="checkbox" name="categories" value="pitches" checked>
+            <span><strong>Pitches and proposals</strong></span></label>
+          <label><input type="checkbox" name="categories" value="brand" checked>
+            <span><strong>Studio brand and templates</strong></span></label>
+          <label><input type="checkbox" name="categories" value="assets" checked>
+            <span><strong>Shared assets</strong><small>Fonts, stock photos, icons</small></span></label>
+          <label><input type="checkbox" name="categories" value="footage" checked>
+            <span><strong>Photo and video</strong></span></label>
+          <label><input type="checkbox" name="categories" value="admin" checked>
+            <span><strong>Contracts and admin</strong></span></label>
+          <label><input type="checkbox" name="categories" value="hiring">
+            <span><strong>Hiring and portfolios</strong></span></label>
+          <label><input type="checkbox" name="categories" value="events">
+            <span><strong>Events and workshops</strong></span></label>
+          <label><input type="checkbox" name="categories" value="training">
+            <span><strong>Training and onboarding</strong></span></label>
+          <label><input type="checkbox" name="categories" value="personal">
+            <span><strong>Personal and side projects</strong></span></label>
+          <label for="categories-other">Other categories</label>
+          <input type="text" id="categories-other" name="categories-other" placeholder="e.g. awards, press">
+        </fieldset>
+
+        <fieldset>
+          <legend>Which teams will use the drive most?</legend>
+          <p>We'll shape the folder names around these teams.</p>
+          <label for="teams">Team names</label>
+          <input type="text" id="teams" name="teams" placeholder="e.g. design, video, accounts">
+        </fieldset>
+
+        <fieldset>
+          <legend>Who should do the sorting, and how?</legend>
+          <p>It's a one-off pass over about 2,300 folders, then only new projects each month.</p>
+          <label><input type="radio" name="sorting" value="pair">
+            <span><strong>Two people, one afternoon a week</strong>
+            <small>Recommended. A designer and a producer work through it together over about six weeks.</small></span></label>
+          <label><input type="radio" name="sorting" value="leads">
+            <span><strong>Each team lead sorts their own folders</strong>
+            <small>Faster, but folder names will differ from team to team.</small></span></label>
+          <label><input type="radio" name="sorting" value="contractor">
+            <span><strong>A contractor</strong>
+            <small>Done in two weeks, but they won't know which projects matter.</small></span></label>
+          <label><input type="radio" name="sorting" value="clear-out">
+            <span><strong>A studio-wide clear-out day</strong>
+            <small>Everyone sorts at once. Quick, but hard to keep consistent, and easy to delete the wrong thing.</small></span></label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Where should the archive live?</legend>
+          <p>Clients still ask for archived work a few times a year, so it has to be easy to get back.</p>
+          <label><input type="radio" name="archive" value="archive-drive">
+            <span><strong>A separate archive drive, indexed on the main one</strong>
+            <small>Recommended. Each archived project leaves a small <code>where-it-went.txt</code> on the main drive. The archive itself is read-only.</small></span></label>
+          <label><input type="radio" name="archive" value="same-drive">
+            <span><strong>An Archive folder on the same drive</strong>
+            <small>Just one place, but the drive stays full and slow to sync.</small></span></label>
+          <label><input type="radio" name="archive" value="disks">
+            <span><strong>External disks in the office</strong>
+            <small>The cheapest option, but the work is lost if the disks are.</small></span></label>
+        </fieldset>
+
+        <fieldset>
+          <legend>How should people find old work?</legend>
+          <label><input type="radio" name="finding" value="names">
+            <span><strong>Folder names and tags now, a catalog later if needed</strong>
+            <small>Recommended. With descriptions and tags, 2,300 folders is small enough to search by name.</small></span></label>
+          <label><input type="radio" name="finding" value="spreadsheet">
+            <span><strong>A shared spreadsheet catalog now</strong>
+            <small>One row per project, but someone has to keep it up to date.</small></span></label>
+          <label><input type="radio" name="finding" value="asset-manager">
+            <span><strong>A separate asset manager</strong>
+            <small>Searchable previews of every file. That's another tool to pay for and learn.</small></span></label>
+        </fieldset>
+
+        <fieldset>
+          <legend>How should people get to archived files?</legend>
+          <p>Pick as many as apply.</p>
+          <label><input type="checkbox" name="access" value="shortcuts" checked>
+            <span><strong>Shortcuts in each team's folder</strong>
+            <small>Recommended. Works for everyone, because the shortcuts sit where people already look.</small></span></label>
+          <label><input type="checkbox" name="access" value="request">
+            <span><strong>Ask the studio manager</strong>
+            <small>One person restores archived work on request.</small></span></label>
+          <label><input type="checkbox" name="access" value="client-links">
+            <span><strong>Download links for clients</strong>
+            <small>More setup, but clients can fetch their own finished work.</small></span></label>
+          <label><input type="checkbox" name="access" value="handover">
+            <span><strong>A handover pack per project</strong>
+            <small>For example, a zip of the final files and fonts, sent when a project closes.</small></span></label>
+        </fieldset>
+
+        <fieldset>
+          <legend>When should the cleanup repeat?</legend>
+          <label><input type="radio" name="schedule" value="quarterly">
+            <span><strong>Every quarter, from a checklist</strong>
+            <small>Recommended. Someone works through the list at the start of each quarter, and only new or closed projects need attention.</small></span></label>
+          <label><input type="radio" name="schedule" value="auto">
+            <span><strong>Automatically, by a rule</strong>
+            <small>Folders untouched for a year move to the archive. Nobody checks what moves.</small></span></label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Which changes should the drive settings get?</legend>
+          <p>These need admin access to the drive, so the studio manager would make them separately.</p>
+          <label><input type="checkbox" name="settings" value="numbers" checked>
+            <span><strong>Put project numbers in folder names</strong>
+            <small>The number for each of the 41 open projects is only on its invoice today.</small></span></label>
+          <label><input type="checkbox" name="settings" value="permissions" checked>
+            <span><strong>Separate client folders from internal ones</strong></span></label>
+          <label><input type="checkbox" name="settings" value="sync" checked>
+            <span><strong>Stop syncing the footage folder to laptops</strong>
+            <small>Every laptop downloads each new clip and fills its disk.</small></span></label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Anything else we should know?</legend>
+          <label for="notes">Notes, constraints, or examples</label>
+          <textarea id="notes" name="notes" placeholder="Optional"></textarea>
+        </fieldset>
+
+        <footer>
+          <button type="submit">Copy answers</button>
+          <button type="reset">Start over</button>
+        </footer>
+      </form>
+    </main>
+  <script>
+// Behaviour for <form data-form="questions"> pages.
+//
+// - Submit ("Copy answers") validates required questions, then copies a
+//   plain-text Q/A summary to the clipboard for pasting back into the chat.
+// - Answers are kept as a draft in localStorage, so a reload loses nothing.
+// - Typing in an "Other" field selects its choice; <output for="x"> mirrors x.
+// - A <details> preview of the copied text is appended after the form.
+(() => {
+  const form = document.querySelector('form[data-form="questions"]');
+  if (!form) return;
+  const formId = form.dataset.formId || location.pathname.split("/").pop();
+  const title = (document.querySelector("h1")?.textContent || document.title).replace(/\s+/g, " ").trim();
+  const storeKey = "questions:" + formId;
+  const CHOICE = 'input[type="radio"], input[type="checkbox"]:not([role="switch"])';
+
+  // Visible text of a node, minus nested fields, descriptions and the * marker.
+  const text = (el) => {
+    const clone = el.cloneNode(true);
+    clone.querySelectorAll("input, textarea, select, abbr, small").forEach((n) => n.remove());
+    return clone.textContent.replace(/\s+/g, " ").trim();
+  };
+
+  function answersFor(fs) {
+    const out = [];
+    fs.querySelectorAll(CHOICE).forEach((input) => {
+      if (!input.checked) return;
+      const label = input.closest("label");
+      const strong = label?.querySelector("strong");
+      let answer = strong ? text(strong) : label ? text(label) : input.value;
+      const other = label?.querySelector('span input:not([type="radio"]):not([type="checkbox"]), span textarea');
+      if (other && other.value.trim()) answer += ": " + other.value.trim();
+      out.push(answer);
+    });
+    fs.querySelectorAll('input[role="switch"]').forEach((sw) => out.push(sw.checked ? "Yes" : "No"));
+    fs.querySelectorAll('input[type="range"]').forEach((r) => out.push(`${r.value} / ${r.max || 100}`));
+    fs.querySelectorAll("select").forEach((s) => {
+      const picked = [...s.selectedOptions].filter((o) => o.value).map((o) => o.textContent.trim());
+      out.push(...picked);
+    });
+    fs.querySelectorAll('textarea, input:not([type]), input[type="text"], input[type="email"], input[type="url"], input[type="number"], input[type="date"], input[type="time"]').forEach((f) => {
+      if (f.closest("label span")) return; // "Other" fields are folded into their choice above
+      if (f.value.trim()) out.push(f.value.trim());
+    });
+    return out;
+  }
+
+  function serialize() {
+    const lines = [`## Answers: ${title}`, `form: ${formId}`, ""];
+    form.querySelectorAll(":scope > fieldset").forEach((fs, i) => {
+      const legend = fs.querySelector(":scope > legend");
+      const answers = answersFor(fs);
+      lines.push(`${i + 1}. ${legend ? text(legend) : "Question"}`);
+      if (answers.length === 0) lines.push("   → (no answer)");
+      answers.forEach((a) => lines.push(`   → ${a.replace(/\n/g, "\n     ")}`));
+      lines.push("");
+    });
+    return lines.join("\n").trimEnd() + "\n";
+  }
+
+  async function copy(str) {
+    try {
+      await navigator.clipboard.writeText(str);
+      return true;
+    } catch {
+      const ta = Object.assign(document.createElement("textarea"), { value: str });
+      ta.style.cssText = "position:fixed;opacity:0";
+      document.body.append(ta);
+      ta.select();
+      const ok = document.execCommand("copy");
+      ta.remove();
+      return ok;
+    }
+  }
+
+  // Draft persistence: a per-viewer convenience; the page works without it.
+  const named = () => [...form.elements].filter((e) => e.name);
+  function save() {
+    try {
+      const data = named().map((e) => [e.name, e.value, e.type === "radio" || e.type === "checkbox" ? e.checked : null]);
+      localStorage.setItem(storeKey, JSON.stringify(data));
+    } catch {}
+  }
+  function restore() {
+    try {
+      const data = JSON.parse(localStorage.getItem(storeKey) || "null");
+      if (!Array.isArray(data)) return;
+      const els = named();
+      data.forEach(([name, value, checked]) => {
+        const el = els.find((e) => e.name === name && (checked === null || e.value === value));
+        if (!el) return;
+        if (checked === null) el.value = value;
+        else el.checked = checked;
+      });
+    } catch {}
+  }
+
+  // Status line in the footer, and the preview after the form.
+  const footer = form.querySelector(":scope > footer");
+  let status = footer?.querySelector("output");
+  if (footer && !status) {
+    status = document.createElement("output");
+    status.setAttribute("aria-live", "polite");
+    footer.append(status);
+  }
+  const details = document.createElement("details");
+  details.innerHTML = "<summary>Preview what gets copied</summary><pre><code></code></pre>";
+  form.after(details);
+  const preview = details.querySelector("code");
+
+  function refresh() {
+    form.querySelectorAll("output[for]").forEach((o) => {
+      const src = document.getElementById(o.htmlFor[0]);
+      if (src) o.value = src.value;
+    });
+    preview.textContent = serialize();
+  }
+
+  form.addEventListener("input", (e) => {
+    const t = e.target;
+    const choice = t.closest("label span") && t.closest("label")?.querySelector(":scope > input");
+    if (choice && t.value) choice.checked = true;
+    if (status) status.value = "";
+    refresh();
+    save();
+  });
+  form.addEventListener("reset", () => {
+    try { localStorage.removeItem(storeKey); } catch {}
+    if (status) status.value = "";
+    setTimeout(refresh);
+  });
+  // Native validation runs before submit fires, so required questions are enforced.
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const ok = await copy(serialize());
+    if (status) status.value = ok ? "Copied. Paste it into the chat." : "Couldn't copy. Use the preview below instead.";
+    if (!ok) details.open = true;
+  });
+
+  restore();
+  refresh();
+})();
+</script>
+</body>
+</html>

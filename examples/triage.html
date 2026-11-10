@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="A review of 30 saved research links against the Pantry recipe planner, with 9 feature ideas to triage and a searchable audit of every link.">
+<title>Pantry feature triage</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../src/lib/zinc.css" />
+<script>
+  // ?mode=light|dark, ?accent=<name> and ?paper=beige set the theme hooks
+  const q = new URLSearchParams(location.search), d = document.documentElement.dataset;
+  if (/^(light|dark)$/.test(q.get("mode"))) d.mode = q.get("mode");
+  if (/^[a-z]+$/.test(q.get("accent") || "")) d.accent = q.get("accent");
+  if (q.get("paper") === "beige") d.paper = "beige";
+</script>
+</head>
+<body>
+<header>
+<nav aria-label="Report sections"><ul>
+<li><a href="#features">Triage 9 features</a></li>
+<li><a href="#roadmap">Sequence</a></li>
+<li><a href="#baseline">Already built</a></li>
+<li><a href="#deferred">Out of scope</a></li>
+<li><a href="#audit">Link audit</a></li>
+<li><button id="print-report" type="button" data-variant="secondary" data-size="sm">Print</button></li>
+</ul></nav>
+</header>
+<main id="top">
+<header>
+<p><small>Link research · 4 November 2026 · <code>main @ a1b2c3d</code></small></p>
+<h1>Features worth adding to Pantry</h1>
+<p>The strongest opportunity is to make the week plan <strong>easy to change, shop from and cook from</strong>. These 9 proposals build on Pantry’s existing planner and shopping list, each with a starting scope and evidence from the team’s saved research links.</p>
+</header>
+
+<section aria-labelledby="glance-heading">
+<h2 id="glance-heading">At a glance</h2>
+<dl>
+<div><dt>Links screened</dt><dd>30</dd></div>
+<div><dt>Feature opportunities</dt><dd>9</dd></div>
+<div><dt>Worth doing now</dt><dd>5</dd></div>
+<div><dt>Links needing more context</dt><dd>4</dd></div>
+</dl>
+<p><small>Of the 9, 5 are marked now, 2 next and 2 explore.</small></p>
+</section>
+
+<section aria-labelledby="direction-heading">
+<h2 id="direction-heading">Direction</h2>
+<article><header><h3>Make the week plan the one place that drives everything else.</h3></header><p>Start by making a plan <strong>easy to change</strong>, then let it produce a tidy shopping list and a cook mode that works at the bench. Shared plans and cost estimates come once the plan itself is dependable.</p><ol><li><strong>Plan</strong> the week and move meals freely.</li><li><strong>Shop</strong> from one merged, ordered list.</li><li><strong>Cook</strong> one step at a time.</li></ol><footer>Everything here runs in the existing web app; only shared plans need new server storage.</footer></article><h3>The five strongest opportunities</h3><ol><li><p><a href="#F01">Drag recipes between days in the week planner</a><br>Plans change mid-week. Today the only way to move a meal is to clear the slot and search for the recipe again.</p></li><li><p><a href="#F02">Merge matching ingredients on the shopping list</a><br>Duplicate lines are the most common complaint in the saved research, and the ingredient database already has the IDs needed to fix it.</p></li><li><p><a href="#F03">Add a step-by-step cook mode with timers</a><br>Recipes are read at the bench with messy hands. The current recipe page is built for browsing, not cooking.</p></li><li><p><a href="#F04">Suggest recipes from what is already in the pantry</a><br>Wasting less food was the most common reason the saved links gave for planning meals at all.</p></li><li><p><a href="#F05">Scale servings and convert units</a><br>Small, self-contained and requested often. The unit families that F02 relies on make it cheap.</p></li></ol>
+<aside><strong>Basis:</strong> all 30 links saved to the team’s research board, with articles read in full where the page was still available. This is a feature screen, not a usability study. 3 links were saved as partial captures. <a href="#method">Review scope and limits</a>.</aside>
+</section>
+
+<section id="features">
+<h2>Triage</h2>
+<p>Mark each proposal <strong>Do</strong>, <strong>Defer</strong> or <strong>Don’t do</strong>. Your choices save in this browser. When you are done, press <strong>Copy results</strong> and paste the text into the planning thread. Priority and effort are editorial judgements, and saved links are inspiration rather than proven demand.</p>
+<noscript><p>Triage, search and filters need JavaScript. Every proposal and its evidence stays readable without it.</p></noscript>
+<menu aria-label="Filter">
+<li><label>Search <input id="feature-search" type="search" placeholder="e.g. timers, aisles, share"></label></li>
+<li><label>Priority <select id="priority-filter"><option value="">All</option><option>Now</option><option>Next</option><option>Explore</option></select></label></li>
+<li><label>Area <select id="category-filter"><option value="">All</option><option>Plan</option><option>Shop</option><option>Cook</option><option>Share</option></select></label></li>
+<li><label>Your call <select id="decision-filter"><option value="">All</option><option value="do">Do</option><option value="defer">Defer</option><option value="skip">Don’t do</option><option value="undecided">Undecided</option></select></label></li>
+<li><button type="button" id="reset-features" data-variant="ghost" data-size="sm">Clear</button></li>
+</menu>
+<p><small id="feature-count" aria-live="polite">9 of 9 features</small></p>
+
+<section id="F01" data-feature data-priority="Now" data-category="Plan">
+<h3>Drag recipes between days in the week planner</h3>
+<p><small><strong>Now</strong> · Plan · Effort M · Extend planner · F01</small></p>
+<p>Move a planned meal to another day without deleting it and adding it again.</p>
+<p><strong>First version.</strong> Drag a recipe card onto another day or meal slot, with a keyboard alternative (a <strong>Move to…</strong> menu). Swapping two meals is one action, and the shopping list updates without a reload.</p>
+<menu data-decision-group>
+<li><span role="radiogroup" aria-label="Your call on F01"><label><input type="radio" name="d-F01" value="do"><span>Do</span></label><label><input type="radio" name="d-F01" value="defer"><span>Defer</span></label><label><input type="radio" name="d-F01" value="skip"><span>Don’t do</span></label><label><input type="radio" name="d-F01" value="" checked><span>Undecided</span></label></span></li>
+<li><input type="text" name="n-F01" aria-label="Note on F01" placeholder="Note"></li>
+</menu>
+<details data-feature-details><summary>Why, how it fits, evidence</summary>
+<h4>Why this priority</h4><p>Plans change mid-week. Today the only way to move a meal is to clear the slot and search for the recipe again.</p>
+<h4>Implementation · Web app</h4><p>Move plan entries in place instead of deleting and re-adding them, and rebuild the shopping list from the plan rather than patching it.</p><p>Pointer dragging needs keyboard and touch paths. Announce each move to screen readers.</p>
+<h4>What exists on main</h4><p><strong><code>src/planner/week-view.tsx:42</code></strong><br>Each day renders its slots, but a slot can only be cleared, not moved. <small><a href="https://example.com/pantry/src/planner/week-view.tsx">Open current file</a></small></p><pre><code> 42  export function DaySlots({ day, entries }: DayProps) {
+ 43    return MEALS.map((meal) =&gt; (
+ 44      &lt;SlotCard
+ 45        key={meal}
+ 46        entry={entries[meal]}
+ 47        onClear={() =&gt; clearSlot(day.id, meal)}
+ 48      /&gt;
+ 49    ));
+ 50  }</code></pre><p><strong><code>src/planner/plan-store.ts:18</code></strong><br>Plan entries are keyed by day and meal, so a move is currently a delete plus a fresh add. <small><a href="https://example.com/pantry/src/planner/plan-store.ts">Open current file</a></small></p><pre><code> 18  export function clearSlot(day: DayId, meal: Meal) {
+ 19    setPlan((plan) =&gt; {
+ 20      const { [meal]: _removed, ...rest } = plan[day];
+ 21      return { ...plan, [day]: rest };
+ 22    });
+ 23  }</code></pre><p><small>Excerpts are from the reviewed commit; the file links may show newer changes.</small></p>
+<h4>Link evidence</h4><ul><li><a href="https://example.com/drag-and-drop-meal-planner-g" target="_blank" rel="noopener noreferrer">Rafaela Moss</a> <small>2 Nov 2026 · <a href="https://example.org/saved/link-001">saved copy</a></small><br>A planner that added dragging saw people move meals far more often than add them.</li><li><a href="https://example.org/keyboard-alternative-to-drag" target="_blank" rel="noopener noreferrer">Tomas Ekwueme</a> <small>30 Oct 2026 · <a href="https://example.org/saved/link-002">saved copy</a></small><br>Argues for a “Move to…” menu as the non-drag path.</li></ul>
+</details>
+</section>
+<section id="F02" data-feature data-priority="Now" data-category="Shop">
+<h3>Merge matching ingredients on the shopping list</h3>
+<p><small><strong>Now</strong> · Shop · Effort M · Extend list · F02</small></p>
+<p>Show one line for 600 g of onions instead of three lines from three recipes.</p>
+<p><strong>First version.</strong> Combine items that share an ingredient and a unit family, with a tap-to-expand breakdown by recipe. Items in incompatible units (two cans and 400 g) stay on separate lines rather than being guessed.</p>
+<menu data-decision-group>
+<li><span role="radiogroup" aria-label="Your call on F02"><label><input type="radio" name="d-F02" value="do"><span>Do</span></label><label><input type="radio" name="d-F02" value="defer"><span>Defer</span></label><label><input type="radio" name="d-F02" value="skip"><span>Don’t do</span></label><label><input type="radio" name="d-F02" value="" checked><span>Undecided</span></label></span></li>
+<li><input type="text" name="n-F02" aria-label="Note on F02" placeholder="Note"></li>
+</menu>
+<details data-feature-details><summary>Why, how it fits, evidence</summary>
+<h4>Why this priority</h4><p>Duplicate lines are the most common complaint in the saved research, and the ingredient database already has the IDs needed to fix it.</p>
+<h4>Implementation · Web app</h4><p>A pure merge function over list items, keyed by ingredient and unit family, that keeps the source recipes on each merged line.</p><p>Conversion is the risky part. Start with mass and volume, and never convert count units.</p>
+<h4>What exists on main</h4><p><strong><code>src/shopping/build-list.ts:27</code></strong><br>The list gets one line per recipe ingredient, with no merging. <small><a href="https://example.com/pantry/src/shopping/build-list.ts">Open current file</a></small></p><pre><code> 27  for (const entry of planEntries(plan)) {
+ 28    const recipe = recipes.get(entry.recipeId);
+ 29    if (!recipe) continue;
+ 30    for (const item of recipe.ingredients) {
+ 31      list.push({ ...item, from: recipe.title });
+ 32    }
+ 33  }
+ 34  return list;</code></pre><p><strong><code>src/ingredients/units.ts:9</code></strong><br>Unit families already exist and can bound the merge. <small><a href="https://example.com/pantry/src/ingredients/units.ts">Open current file</a></small></p><pre><code>  9  export const UNIT_FAMILIES = {
+ 10    mass: [&#x27;g&#x27;, &#x27;kg&#x27;, &#x27;oz&#x27;, &#x27;lb&#x27;],
+ 11    volume: [&#x27;ml&#x27;, &#x27;l&#x27;, &#x27;tsp&#x27;, &#x27;tbsp&#x27;, &#x27;cup&#x27;],
+ 12    count: [&#x27;each&#x27;, &#x27;can&#x27;, &#x27;bunch&#x27;, &#x27;clove&#x27;],
+ 13  } as const;</code></pre><p><small>Excerpts are from the reviewed commit; the file links may show newer changes.</small></p>
+<h4>Link evidence</h4><ul><li><a href="https://example.com/combine-duplicate-grocery-it" target="_blank" rel="noopener noreferrer">Priya Lindqvist</a> <small>28 Oct 2026 · <a href="https://example.org/saved/link-003">saved copy</a></small><br>Merging duplicates was the most requested change in a comparable list app.</li><li><a href="https://example.com/unit-families-for-ingredient" target="_blank" rel="noopener noreferrer">Jun Abernathy</a> <small>21 Oct 2026 · <a href="https://example.org/saved/link-004">saved copy</a></small><br>Convert only within a unit family; never guess cups to grams.</li></ul>
+</details>
+</section>
+<section id="F03" data-feature data-priority="Now" data-category="Cook">
+<h3>Add a step-by-step cook mode with timers</h3>
+<p><small><strong>Now</strong> · Cook · Effort S–M · New capability · F03</small></p>
+<p>Show one step at a time in large type, and start timers from the step itself.</p>
+<p><strong>First version.</strong> Full-screen steps with large next and back targets and arrow-key support. Keep the screen awake where the browser allows it, and offer a timer when a step mentions a duration such as “simmer for 10 minutes”.</p>
+<menu data-decision-group>
+<li><span role="radiogroup" aria-label="Your call on F03"><label><input type="radio" name="d-F03" value="do"><span>Do</span></label><label><input type="radio" name="d-F03" value="defer"><span>Defer</span></label><label><input type="radio" name="d-F03" value="skip"><span>Don’t do</span></label><label><input type="radio" name="d-F03" value="" checked><span>Undecided</span></label></span></li>
+<li><input type="text" name="n-F03" aria-label="Note on F03" placeholder="Note"></li>
+</menu>
+<details data-feature-details><summary>Why, how it fits, evidence</summary>
+<h4>Why this priority</h4><p>Recipes are read at the bench with messy hands. The current recipe page is built for browsing, not cooking.</p>
+<h4>Implementation · Web app</h4><p>A new route that reuses the parsed steps. Keep-awake sits behind a feature check, and timers survive a reload.</p><p>Duration detection only offers a timer; it never starts one on its own.</p>
+<h4>What exists on main</h4><p><strong><code>src/recipes/recipe-page.tsx:61</code></strong><br>Steps render as one long list on the browsing page. <small><a href="https://example.com/pantry/src/recipes/recipe-page.tsx">Open current file</a></small></p><pre><code> 61  &lt;ol&gt;
+ 62    {recipe.steps.map((step) =&gt; &lt;li key={step.id}&gt;{step.text}&lt;/li&gt;)}
+ 63  &lt;/ol&gt;</code></pre><p><strong><code>src/recipes/parse-steps.ts:12</code></strong><br>Steps are already split and given stable IDs, which cook mode can reuse. <small><a href="https://example.com/pantry/src/recipes/parse-steps.ts">Open current file</a></small></p><pre><code> 12  export function parseSteps(raw: string): Step[] {
+ 13    return raw
+ 14      .split(/\n{2,}/)
+ 15      .map((text, i) =&gt; ({ id: `s${i + 1}`, text: text.trim() }))
+ 16      .filter((step) =&gt; step.text.length &gt; 0);
+ 17  }</code></pre><p><small>Excerpts are from the reviewed commit; the file links may show newer changes.</small></p>
+<h4>Link evidence</h4><ul><li><a href="https://example.org/cook-mode-one-step-per-scree" target="_blank" rel="noopener noreferrer">Odette Ferreira</a> <small>17 Oct 2026 · <a href="https://example.org/saved/link-005">saved copy</a></small><br>One step per screen held up in testing with messy hands.</li><li><a href="https://example.com/keeping-the-screen-awake-whi" target="_blank" rel="noopener noreferrer">Mateo Halvorsen</a> <small>12 Oct 2026 · <a href="https://example.org/saved/link-006">saved copy</a></small><br>Covers keeping the screen on and releasing it when the tab is hidden.</li><li><a href="https://example.com/accessible-kitchen-timers" target="_blank" rel="noopener noreferrer">Petra Quinn</a> <small>15 Jun 2026 · <a href="https://example.org/saved/link-024">saved copy</a></small><br>Timer accessibility: visible countdown, sound, a large stop target.</li></ul>
+</details>
+</section>
+<section id="F04" data-feature data-priority="Now" data-category="Plan">
+<h3>Suggest recipes from what is already in the pantry</h3>
+<p><small><strong>Now</strong> · Plan · Effort M · New capability · F04</small></p>
+<p>Rank recipes by how many of their ingredients are already at home.</p>
+<p><strong>First version.</strong> Let people tick off what they have, then sort the recipe library by missing ingredients and show what's missing on each card. Expiry dates stay out of the first version.</p>
+<menu data-decision-group>
+<li><span role="radiogroup" aria-label="Your call on F04"><label><input type="radio" name="d-F04" value="do"><span>Do</span></label><label><input type="radio" name="d-F04" value="defer"><span>Defer</span></label><label><input type="radio" name="d-F04" value="skip"><span>Don’t do</span></label><label><input type="radio" name="d-F04" value="" checked><span>Undecided</span></label></span></li>
+<li><input type="text" name="n-F04" aria-label="Note on F04" placeholder="Note"></li>
+</menu>
+<details data-feature-details><summary>Why, how it fits, evidence</summary>
+<h4>Why this priority</h4><p>Wasting less food was the most common reason the saved links gave for planning meals at all.</p>
+<h4>Implementation · Web app</h4><p>Keep a pantry list of ingredient IDs. Scoring is a set difference per recipe, which is fast enough in the browser for a library of a few thousand recipes.</p><p>Treat salt, oil and water as assumed staples so they don't flatten the ranking.</p>
+<h4>What exists on main</h4><p><strong><code>src/library/sort-recipes.ts:8</code></strong><br>The library sorts by date, title and cooking time only. <small><a href="https://example.com/pantry/src/library/sort-recipes.ts">Open current file</a></small></p><pre><code>  8  export const SORTS = {
+  9    newest: (a: Recipe, b: Recipe) =&gt; b.created - a.created,
+ 10    title: (a: Recipe, b: Recipe) =&gt; a.title.localeCompare(b.title),
+ 11    quickest: (a: Recipe, b: Recipe) =&gt; a.minutes - b.minutes,
+ 12  };</code></pre><p><strong><code>src/ingredients/types.ts:4</code></strong><br>Ingredients have stable IDs that a pantry list can reference. <small><a href="https://example.com/pantry/src/ingredients/types.ts">Open current file</a></small></p><pre><code>  4  export type Ingredient = {
+  5    id: string;
+  6    name: string;
+  7    plural?: string;
+  8    unitFamily: &#x27;mass&#x27; | &#x27;volume&#x27; | &#x27;count&#x27;;
+  9  };</code></pre><p><small>Excerpts are from the reviewed commit; the file links may show newer changes.</small></p>
+<h4>Link evidence</h4><ul><li><a href="https://example.com/cook-from-what-you-already-h" target="_blank" rel="noopener noreferrer">Aisha Brennan</a> <small>9 Oct 2026 · <a href="https://example.org/saved/link-007">saved copy</a></small><br>Sorting by missing ingredients reduced food waste in one team&#x27;s data.</li><li><a href="https://example.org/staples-should-not-count-as" target="_blank" rel="noopener noreferrer">Wren Castellano</a> <small>3 Oct 2026 · <a href="https://example.org/saved/link-008">saved copy</a></small><br>Staples should be assumed, or every recipe ranks the same.</li></ul>
+</details>
+</section>
+<section id="F05" data-feature data-priority="Now" data-category="Cook">
+<h3>Scale servings and convert units</h3>
+<p><small><strong>Now</strong> · Cook · Effort S · Extend recipe · F05</small></p>
+<p>Cook for six from a recipe written for four, in metric or imperial.</p>
+<p><strong>First version.</strong> A servings stepper on the recipe page that scales quantities, rounds to sensible kitchen amounts and offers a metric or imperial toggle. Scaled amounts carry through to the shopping list.</p>
+<menu data-decision-group>
+<li><span role="radiogroup" aria-label="Your call on F05"><label><input type="radio" name="d-F05" value="do"><span>Do</span></label><label><input type="radio" name="d-F05" value="defer"><span>Defer</span></label><label><input type="radio" name="d-F05" value="skip"><span>Don’t do</span></label><label><input type="radio" name="d-F05" value="" checked><span>Undecided</span></label></span></li>
+<li><input type="text" name="n-F05" aria-label="Note on F05" placeholder="Note"></li>
+</menu>
+<details data-feature-details><summary>Why, how it fits, evidence</summary>
+<h4>Why this priority</h4><p>Small, self-contained and requested often. The unit families that F02 relies on make it cheap.</p>
+<h4>Implementation · Web app</h4><p>Scale at render time from the stored quantity, and never write scaled values back to the recipe.</p><p>The rounding rules matter more than the maths: 1.33 eggs should read as one large egg, with a note.</p>
+<h4>What exists on main</h4><p><strong><code>src/recipes/ingredient-line.tsx:15</code></strong><br>Quantities print exactly as stored, with no scaling. <small><a href="https://example.com/pantry/src/recipes/ingredient-line.tsx">Open current file</a></small></p><pre><code> 15  export function IngredientLine({ item }: { item: RecipeIngredient }) {
+ 16    const { name } = useIngredient(item.ingredientId);
+ 17    return &lt;li&gt;{item.quantity} {item.unit} {name}&lt;/li&gt;;
+ 18  }</code></pre><p><strong><code>src/recipes/types.ts:22</code></strong><br>Each recipe stores its base serving count, so a scale factor is easy to derive. <small><a href="https://example.com/pantry/src/recipes/types.ts">Open current file</a></small></p><pre><code> 22  export type Recipe = {
+ 23    id: string;
+ 24    title: string;
+ 25    serves: number;
+ 26    steps: Step[];
+ 27  };</code></pre><p><small>Excerpts are from the reviewed commit; the file links may show newer changes.</small></p>
+<h4>Link evidence</h4><ul><li><a href="https://example.com/unit-families-for-ingredient" target="_blank" rel="noopener noreferrer">Jun Abernathy</a> <small>21 Oct 2026 · <a href="https://example.org/saved/link-004">saved copy</a></small><br>The same unit families make scaling and conversion safe.</li><li><a href="https://example.com/rounding-scaled-quantities" target="_blank" rel="noopener noreferrer">Leon Achterberg</a> <small>29 Sep 2026 · <a href="https://example.org/saved/link-009">saved copy</a></small><br>Round scaled amounts to something measurable, and say so.</li></ul>
+</details>
+</section>
+<section id="F06" data-feature data-priority="Next" data-category="Share">
+<h3>Share a week plan with the household</h3>
+<p><small><strong>Next</strong> · Share · Effort M · New capability · F06</small></p>
+<p>Send a read-only link so everyone knows what's for dinner.</p>
+<p><strong>First version.</strong> Create a hard-to-guess link to a read-only week view and its shopping list, and let people revoke it in one click. Editing together waits until accounts exist.</p>
+<menu data-decision-group>
+<li><span role="radiogroup" aria-label="Your call on F06"><label><input type="radio" name="d-F06" value="do"><span>Do</span></label><label><input type="radio" name="d-F06" value="defer"><span>Defer</span></label><label><input type="radio" name="d-F06" value="skip"><span>Don’t do</span></label><label><input type="radio" name="d-F06" value="" checked><span>Undecided</span></label></span></li>
+<li><input type="text" name="n-F06" aria-label="Note on F06" placeholder="Note"></li>
+</menu>
+<details data-feature-details><summary>Why, how it fits, evidence</summary>
+<h4>Why this priority</h4><p>One person usually makes the plan, but several people cook from it and shop for it.</p>
+<h4>Implementation · Web app and server</h4><p>Store a snapshot of the plan on the server behind a random token. There is no live sync in the first version.</p><p>A shared plan can reveal routines and allergies, so sharing must be explicit and easy to undo.</p>
+<h4>What exists on main</h4><p><strong><code>src/planner/plan-storage.ts:31</code></strong><br>Plans live only in the browser&#x27;s local storage. <small><a href="https://example.com/pantry/src/planner/plan-storage.ts">Open current file</a></small></p><pre><code> 31  const KEY = &#x27;pantry.plan.v2&#x27;;
+ 32  
+ 33  export function savePlan(plan: Plan) {
+ 34    localStorage.setItem(KEY, JSON.stringify(plan));
+ 35  }</code></pre><p><strong><code>src/api/routes.ts:14</code></strong><br>The server stores recipes but has no plan or share routes. <small><a href="https://example.com/pantry/src/api/routes.ts">Open current file</a></small></p><pre><code> 14  export const routes = {
+ 15    &#x27;GET /api/recipes&#x27;: listRecipes,
+ 16    &#x27;POST /api/recipes&#x27;: createRecipe,
+ 17    &#x27;POST /api/recipes/import&#x27;: importFromUrl,
+ 18  };</code></pre><p><small>Excerpts are from the reviewed commit; the file links may show newer changes.</small></p>
+<h4>Link evidence</h4><ul><li><a href="https://example.com/read-only-shared-meal-plans" target="_blank" rel="noopener noreferrer">Hana Osei</a> <small>22 Sep 2026 · <a href="https://example.org/saved/link-010">saved copy</a></small><br>A read-only weekly link was a team&#x27;s most loved feature.</li><li><a href="https://example.com/live-co-editing-of-lists" target="_blank" rel="noopener noreferrer">Ines Dubois</a> <small>29 Jun 2026 · <a href="https://example.org/saved/link-022">saved copy</a></small><br>Live co-editing needs conflict handling; start read-only.</li></ul>
+</details>
+</section>
+<section id="F07" data-feature data-priority="Next" data-category="Shop">
+<h3>Group the shopping list by aisle</h3>
+<p><small><strong>Next</strong> · Shop · Effort S · Extend list · F07</small></p>
+<p>Order items the way a shop is laid out.</p>
+<p><strong>First version.</strong> Group items under a fixed set of aisles (produce, dairy, pantry, frozen and so on) taken from the ingredient database, with a per-item override that is remembered.</p>
+<menu data-decision-group>
+<li><span role="radiogroup" aria-label="Your call on F07"><label><input type="radio" name="d-F07" value="do"><span>Do</span></label><label><input type="radio" name="d-F07" value="defer"><span>Defer</span></label><label><input type="radio" name="d-F07" value="skip"><span>Don’t do</span></label><label><input type="radio" name="d-F07" value="" checked><span>Undecided</span></label></span></li>
+<li><input type="text" name="n-F07" aria-label="Note on F07" placeholder="Note"></li>
+</menu>
+<details data-feature-details><summary>Why, how it fits, evidence</summary>
+<h4>Why this priority</h4><p>Cheap once F02 lands, and it makes the list quicker to use in the shop.</p>
+<h4>Implementation · Web app</h4><p>Add an aisle field to ingredients with a default mapping, and store overrides per household.</p><p>Avoid store-specific layouts; they vary too much to maintain.</p>
+<h4>What exists on main</h4><p><strong><code>src/shopping/list-view.tsx:33</code></strong><br>The list is sorted alphabetically, and ingredients have no aisle field yet. <small><a href="https://example.com/pantry/src/shopping/list-view.tsx">Open current file</a></small></p><pre><code> 33  const sorted = items.slice().sort((a, b) =&gt; a.name.localeCompare(b.name));
+ 34  return &lt;ul&gt;{sorted.map((item) =&gt; &lt;ListItem key={item.key} item={item} /&gt;)}&lt;/ul&gt;;</code></pre><p><small>Excerpts are from the reviewed commit; the file links may show newer changes.</small></p>
+<h4>Link evidence</h4><ul><li><a href="https://example.org/shopping-lists-in-aisle-orde" target="_blank" rel="noopener noreferrer">Felix Marchetti</a> <small>15 Sep 2026 · <a href="https://example.org/saved/link-011">saved copy</a></small><br>A fixed aisle order shortened shops in a small trial.</li></ul>
+</details>
+</section>
+<section id="F08" data-feature data-priority="Explore" data-category="Cook">
+<h3>Import a recipe from a photo of a cookbook page</h3>
+<p><small><strong>Explore</strong> · Cook · Effort L · Feasibility check · F08</small></p>
+<p>Turn a photographed page into an editable draft recipe.</p>
+<p><strong>First version.</strong> A spike: photograph or upload a page, extract a draft, and require a review of every field before saving. Measure accuracy on twenty real pages before committing.</p>
+<menu data-decision-group>
+<li><span role="radiogroup" aria-label="Your call on F08"><label><input type="radio" name="d-F08" value="do"><span>Do</span></label><label><input type="radio" name="d-F08" value="defer"><span>Defer</span></label><label><input type="radio" name="d-F08" value="skip"><span>Don’t do</span></label><label><input type="radio" name="d-F08" value="" checked><span>Undecided</span></label></span></li>
+<li><input type="text" name="n-F08" aria-label="Note on F08" placeholder="Note"></li>
+</menu>
+<details data-feature-details><summary>Why, how it fits, evidence</summary>
+<h4>Why this priority</h4><p>Exciting and often saved, but accuracy and copyright questions are still open.</p>
+<h4>Implementation · Feasibility check</h4><p>Text recognition could run on the server or through an outside service. Either way the result is a draft, never a saved recipe.</p><p>Imported recipes stay private to the person who imported them.</p>
+<h4>What exists on main</h4><p><strong><code>src/recipes/import-url.ts:20</code></strong><br>Import only reads structured data from web pages. <small><a href="https://example.com/pantry/src/recipes/import-url.ts">Open current file</a></small></p><pre><code> 20  export async function importFromUrl(url: string): Promise&lt;RecipeDraft&gt; {
+ 21    const page = await fetchPage(url);
+ 22    const data = findRecipeJson(page);
+ 23    if (!data) throw new ImportError(&#x27;No recipe data on this page&#x27;);
+ 24    return toDraft(data);
+ 25  }</code></pre><p><strong><code>src/recipes/recipe-form.tsx:48</code></strong><br>The recipe form already takes a draft, so a photo import can feed it. <small><a href="https://example.com/pantry/src/recipes/recipe-form.tsx">Open current file</a></small></p><pre><code> 48  &lt;label&gt;
+ 49    Title
+ 50    &lt;input name=&quot;title&quot; required defaultValue={draft.title} /&gt;
+ 51  &lt;/label&gt;</code></pre><p><small>Excerpts are from the reviewed commit; the file links may show newer changes.</small></p>
+<h4>Link evidence</h4><ul><li><a href="https://example.com/import-a-recipe-from-a-web-a" target="_blank" rel="noopener noreferrer">Bram Oyelaran</a> <small>19 Aug 2026 · <a href="https://example.org/saved/link-015">saved copy</a></small><br>Pantry&#x27;s own URL import sets the quality bar.</li><li><a href="https://example.org/text-recognition-on-printed" target="_blank" rel="noopener noreferrer">Kofi Lindgren</a> <small>4 Aug 2026 · <a href="https://example.org/saved/link-017">saved copy</a></small><br>Photo import handled ingredient lists well but struggled with fractions and columns.</li></ul>
+</details>
+</section>
+<section id="F09" data-feature data-priority="Explore" data-category="Shop">
+<h3>Estimate the cost of a week&#x27;s plan</h3>
+<p><small><strong>Explore</strong> · Shop · Effort M · New capability · F09</small></p>
+<p>Show a rough total before the shop.</p>
+<p><strong>First version.</strong> Let people enter prices for the things they buy often, and show an estimate labelled “based on your prices”. No price scraping.</p>
+<menu data-decision-group>
+<li><span role="radiogroup" aria-label="Your call on F09"><label><input type="radio" name="d-F09" value="do"><span>Do</span></label><label><input type="radio" name="d-F09" value="defer"><span>Defer</span></label><label><input type="radio" name="d-F09" value="skip"><span>Don’t do</span></label><label><input type="radio" name="d-F09" value="" checked><span>Undecided</span></label></span></li>
+<li><input type="text" name="n-F09" aria-label="Note on F09" placeholder="Note"></li>
+</menu>
+<details data-feature-details><summary>Why, how it fits, evidence</summary>
+<h4>Why this priority</h4><p>Useful, but only as good as the prices people enter, so it needs a small test first.</p>
+<h4>Implementation · Web app</h4><p>Store prices per household, ingredient and unit, and total them over the merged list from F02.</p><p>Show how many items have no price, so the estimate never looks more certain than it is.</p>
+<h4>What exists on main</h4><p><strong><code>src/shopping/list-totals.ts:5</code></strong><br>The list summary counts items but has no notion of price. <small><a href="https://example.com/pantry/src/shopping/list-totals.ts">Open current file</a></small></p><pre><code>  5  export function listSummary(items: ListItem[]) {
+  6    const done = items.filter((item) =&gt; item.checked).length;
+  7    return `${done} of ${items.length} items`;
+  8  }</code></pre><p><strong><code>src/shopping/build-list.ts:27</code></strong><br>List lines carry the recipe they came from, which a cost breakdown can reuse. <small><a href="https://example.com/pantry/src/shopping/build-list.ts">Open current file</a></small></p><pre><code> 27  for (const entry of planEntries(plan)) {
+ 28    const recipe = recipes.get(entry.recipeId);
+ 29    if (!recipe) continue;
+ 30    for (const item of recipe.ingredients) {
+ 31      list.push({ ...item, from: recipe.title });
+ 32    }
+ 33  }
+ 34  return list;</code></pre><p><small>Excerpts are from the reviewed commit; the file links may show newer changes.</small></p>
+<h4>Link evidence</h4><ul><li><a href="https://example.com/estimating-grocery-costs-fro" target="_blank" rel="noopener noreferrer">Elodie Park</a> <small>28 Jul 2026 · <a href="https://example.org/saved/link-018">saved copy</a></small><br>People will price their regular items, not everything.</li></ul>
+</details>
+</section>
+<p id="feature-empty" hidden>No features match these filters.</p>
+<p><small><strong>Effort:</strong> S = one component or a pure function; M = stored state across several components; L = a new pipeline or an outside service. These are relative estimates, not delivery dates. “Now” marks first-wave candidates, not a plan to ship all 5 together.</small></p>
+</section>
+
+<section id="results" aria-labelledby="results-heading">
+<h2 id="results-heading">Results</h2>
+<p>This is the text <strong>Copy results</strong> puts on your clipboard.</p>
+<textarea id="results-text" readonly rows="12" aria-label="Triage results" spellcheck="false"></textarea>
+</section>
+
+<section id="roadmap"><h2>Sequence</h2><p><strong>Fix the weekly loop, then widen it.</strong> Value ranking and build order differ. Start with one complete path from plan to plate, and add shared and server-side features after that path is solid.</p><ol><li><strong>Fix the weekly loop</strong><p>Move meals, merge the list and scale recipes. Each is contained and improves something people already use every week.</p><p><a href="#F01">F01 · Moving meals</a> · <a href="#F02">F02 · Merged list</a> · <a href="#F05">F05 · Scaling</a></p></li><li><strong>Help at the bench</strong><p>Add cook mode and pantry suggestions, so the plan is useful after the shop as well as before it.</p><p><a href="#F03">F03 · Cook mode</a> · <a href="#F04">F04 · Pantry suggestions</a></p></li><li><strong>Bring the household in</strong><p>Share a read-only plan and order the list by aisle. Sharing is the first feature that needs the server.</p><p><a href="#F06">F06 · Shared plans</a> · <a href="#F07">F07 · Aisles</a></p></li><li><strong>Test the bigger bets</strong><p>Run small spikes on photo import and cost estimates before committing to either.</p><p><a href="#F08">F08 · Photo import</a> · <a href="#F09">F09 · Cost estimate</a></p></li></ol><aside><strong>Shared foundations:</strong> ingredient IDs on every list line → unit families with base quantities → plan entries with stable IDs. These support merging, scaling and pricing, and later leftovers. Keep the current local storage for plans until sharing needs the server.</aside></section>
+<section id="baseline"><h2>Already built</h2><p><strong>Avoid rebuilding what Pantry already has.</strong> The review compares against the committed <code>main</code> branch, not the marketing page. Source excerpts below are copied from that commit so they stay stable if working files change.</p><table><thead><tr><th>Capability</th><th>What exists</th></tr></thead><tbody><tr><th scope="row">Recipe library and tags<br><small><a href="https://example.com/pantry/src/library/recipe-list.tsx"><code>src/library/recipe-list.tsx:20</code></a></small></th><td>Recipes can be searched and filtered by tag. Pantry suggestions (F04) add a new sort, not a new library.</td></tr><tr><th scope="row">Week planner grid<br><small><a href="https://example.com/pantry/src/planner/week-view.tsx"><code>src/planner/week-view.tsx:42</code></a></small></th><td>Seven days of breakfast, lunch and dinner slots already exist. Moving meals between slots is the main addition.</td></tr><tr><th scope="row">Shopping list from a plan<br><small><a href="https://example.com/pantry/src/shopping/build-list.ts"><code>src/shopping/build-list.ts:27</code></a></small></th><td>A plan already produces a list. Merging, aisles and prices build on it.</td></tr><tr><th scope="row">Import from a web address<br><small><a href="https://example.com/pantry/src/recipes/import-url.ts"><code>src/recipes/import-url.ts:20</code></a></small></th><td>Structured-data import works for most recipe sites. Photo import would be a second source for the same draft form.</td></tr></tbody></table><details><summary>Show source excerpts</summary><p><strong>Recipe library and tags</strong> · <code>src/library/recipe-list.tsx:20</code></p><pre><code> 20  const visible = recipes.filter((recipe) =&gt;
+ 21    activeTags.every((tag) =&gt; recipe.tags.includes(tag)),
+ 22  );</code></pre><p><strong>Week planner grid</strong> · <code>src/planner/week-view.tsx:42</code></p><pre><code> 42  export function DaySlots({ day, entries }: DayProps) {
+ 43    return MEALS.map((meal) =&gt; (
+ 44      &lt;SlotCard
+ 45        key={meal}
+ 46        entry={entries[meal]}
+ 47        onClear={() =&gt; clearSlot(day.id, meal)}
+ 48      /&gt;
+ 49    ));
+ 50  }</code></pre><p><strong>Shopping list from a plan</strong> · <code>src/shopping/build-list.ts:27</code></p><pre><code> 27  for (const entry of planEntries(plan)) {
+ 28    const recipe = recipes.get(entry.recipeId);
+ 29    if (!recipe) continue;
+ 30    for (const item of recipe.ingredients) {
+ 31      list.push({ ...item, from: recipe.title });
+ 32    }
+ 33  }
+ 34  return list;</code></pre><p><strong>Import from a web address</strong> · <code>src/recipes/import-url.ts:20</code></p><pre><code> 20  export async function importFromUrl(url: string): Promise&lt;RecipeDraft&gt; {
+ 21    const page = await fetchPage(url);
+ 22    const data = findRecipeJson(page);
+ 23    if (!data) throw new ImportError(&#x27;No recipe data on this page&#x27;);
+ 24    return toDraft(data);
+ 25  }</code></pre></details><aside><strong>Existing work in progress:</strong> the checkout has an unfinished change that stores ingredient quantities in metric base units. It is not a backlog item, but F02, F05 and F09 should build on it rather than around it.</aside></section>
+<section id="deferred"><h2>Out of scope</h2><p><strong>Useful signals that should stay outside this release.</strong> Some links point to good product ideas that need a different storage or business model. Others are general cooking interest rather than feature requests.</p><h3>Grocery delivery and store integrations</h3><p>Sending a list to a delivery service needs partner agreements and product matching for every store. Revisit once merged lists (F02) are reliable.</p><p><a href="https://example.org/notes/grocery-ordering" target="_blank" rel="noopener noreferrer">Notes on grocery ordering services ↗</a></p><h3>Calorie counting and diet programmes</h3><p>Per-serving nutrition is plausible later, but tracking intake turns Pantry into a health app with different expectations and risks.</p><p><a href="https://example.com/nutrition-labels-per-serving" target="_blank" rel="noopener noreferrer">Saved nutrition label example ↗</a></p><h3>Live co-editing of plans and lists</h3><p>Two people editing at once needs accounts, presence and conflict handling. A read-only link answers most of the need first.</p><p><a href="#F06">Read-only sharing proposal →</a></p><h3>Native mobile apps</h3><p>Keep improving the web app on phones. Cook mode and offline lists cover the main reasons people asked for an app.</p><h3>General cooking interest</h3><p>Sourdough, knives, coffee, gardening and restaurant reviews were saved because the team likes food, not because they imply Pantry features.</p></section>
+<section id="method"><h2>Method</h2><p><strong>Every saved link has a recorded disposition.</strong> The audit below preserves the screening trail. Several candidate links can support the same idea, and an existing or deferred link can still inform an extension. Counts are not votes or estimates of demand.</p><h3>What was reviewed</h3><p>All <strong>30 saved links</strong> were screened from an export of the team’s research board. Where a page was still online, the full article was read; otherwise the saved excerpt was used.</p><p>Videos were not transcribed, and images were looked at only when the caption pointed to them.</p><h3>What the review establishes</h3><p><strong>27 complete + 3 partial captures.</strong> “Complete” refers to how the link was saved, not to how deeply it was reviewed. <strong>4 links remain insufficient</strong> for a feature recommendation, usually because the meaning depends on an image or video that was not saved.</p><p>The board export was taken on 4 November 2026. Code findings come from reading the source, not from testing the live app.</p>
+<table><thead><tr><th>Disposition</th><th>Links</th></tr></thead><tbody><tr><th>Candidate</th><td>12</td></tr><tr><th>Already present</th><td>3</td></tr><tr><th>Deferred</th><td>6</td></tr><tr><th>Outside scope</th><td>5</td></tr><tr><th>More context needed</th><td>4</td></tr></tbody></table><p><strong>Candidate:</strong> contains a potentially useful product signal; several may map to one feature.</p><p><strong>Already present:</strong> Pantry already has the core capability; an extension may still be useful.</p><p><strong>Deferred:</strong> relevant, but without a recommended near-term feature.</p><p><strong>Outside scope:</strong> no justified Pantry feature after screening.</p><p><strong>More context needed:</strong> the saved text does not support a reliable reading.</p>
+<section id="audit"><h3>Search the links</h3><menu aria-label="Filter the links"><li><label>Search <input type="search" id="audit-search" placeholder="Author, topic, text or link ID"></label></li><li><label>Disposition <select id="disposition-filter"><option value="">All dispositions</option><option value="candidate">Candidate</option><option value="existing">Already present</option><option value="defer">Deferred</option><option value="unrelated">Outside scope</option><option value="insufficient">More context needed</option></select></label></li><li><label>Capture <select id="archive-status-filter"><option value="">All capture statuses</option><option value="complete">Complete</option><option value="partial">Partial</option></select></label></li><li><button type="button" id="reset-audit" data-variant="ghost" data-size="sm">Clear</button></li></menu><p><span id="audit-match-count" aria-live="polite">30 of 30 saved links</span><br><span>16 links cited directly in feature cards</span><br></p><ol id="audit-body"><li>The full audit loads when JavaScript is enabled.</li></ol><nav aria-label="Audit pages"><p id="audit-page-status" aria-live="polite"></p><button type="button" id="audit-prev" data-variant="secondary" data-size="sm" disabled>← Previous</button> <button type="button" id="audit-next" data-variant="secondary" data-size="sm">Next →</button></nav></section>
+
+<details><summary>Review files, baseline and attribution notes</summary><p>Baseline: <code>a1b2c3d</code> on <code>main</code>. Embedded excerpts use this commit; “Open current file” links can show newer changes. The report is self-contained for reading and filtering; the saved copies need access to the team’s research board.</p><p>Feature scopes and priorities are this review’s adaptations of the sources. Evidence notes paraphrase the relevant point of each link and do not treat trial results or claims in those articles as verified facts.</p><p><a href="https://example.org/pantry-research/export.json">Board export</a> · <a href="https://example.org/pantry-research/screening-notes">Screening notes</a> · <a href="https://example.org/pantry-research/code-review">Code review notes</a></p></details>
+</section>
+
+<section><h2>Next</h2><p><strong>Make next week’s plan easier to change than to abandon.</strong> The first release should let someone move a meal, get one clean shopping list and scale a recipe for guests. That is a coherent improvement to what Pantry already does well. Cook mode, sharing and pantry suggestions all become more valuable once the plan itself is dependable.</p></section>
+<footer data-triage-bar>
+<output id="triage-summary" aria-live="polite">0 do · 0 defer · 0 don’t do · 9 undecided</output>
+<button type="button" id="copy-results" data-size="sm">Copy results</button>
+<button type="button" id="reset-triage" data-variant="secondary" data-size="sm">Clear all</button>
+<output id="copy-status" aria-live="polite"></output>
+</footer>
+</main>
+<footer><p><small>Pantry · 4 November 2026 · 30 screened links · 16 directly cited links · main a1b2c3d</small></p></footer>
+<script type="application/json" id="review-data">{"audit":[{"id":"link-001","author":"Rafaela Moss","date":"2 Nov 2026","url":"https://example.com/drag-and-drop-meal-planner-g","local":"https://example.org/saved/link-001","topic":"Drag-and-drop meal planner grid","reason":"","disposition":"candidate","status":"complete","text":"We finally let people drag dinner from Tuesday to Thursday. Weekly planner use doubled the week it shipped.\n\nThe surprise: people move meals far more often than they add new ones.","features":["F01"]},{"id":"link-002","author":"Tomas Ekwueme","date":"30 Oct 2026","url":"https://example.org/keyboard-alternative-to-drag","local":"https://example.org/saved/link-002","topic":"Keyboard alternative to drag and drop","reason":"","disposition":"candidate","status":"complete","text":"Every drag interaction needs a non-drag path. A plain “Move to…” menu works for keyboards, switch users and anyone on a trackpad.","features":["F01"]},{"id":"link-003","author":"Priya Lindqvist","date":"28 Oct 2026","url":"https://example.com/combine-duplicate-grocery-it","local":"https://example.org/saved/link-003","topic":"Combine duplicate grocery items","reason":"","disposition":"candidate","status":"complete","text":"Three recipes, three lines of onions. Merging them was the single most requested change in our list app last year.","features":["F02"]},{"id":"link-004","author":"Jun Abernathy","date":"21 Oct 2026","url":"https://example.com/unit-families-for-ingredient","local":"https://example.org/saved/link-004","topic":"Unit families for ingredient conversion","reason":"","disposition":"candidate","status":"complete","text":"Group units into families (mass, volume, count) and only ever convert inside a family. Cups to grams needs density data; don't guess.","features":["F02","F05"]},{"id":"link-005","author":"Odette Ferreira","date":"17 Oct 2026","url":"https://example.org/cook-mode-one-step-per-scree","local":"https://example.org/saved/link-005","topic":"Cook mode: one step per screen","reason":"","disposition":"candidate","status":"complete","text":"Large type, one step at a time, big next and back targets. Testers cooked with flour on their hands and never touched the scroll bar.","features":["F03"]},{"id":"link-006","author":"Mateo Halvorsen","date":"12 Oct 2026","url":"https://example.com/keeping-the-screen-awake-whi","local":"https://example.org/saved/link-006","topic":"Keeping the screen awake while cooking","reason":"","disposition":"candidate","status":"complete","text":"A short write-up on asking the browser to keep the screen on while a recipe is open, and releasing it when the tab is hidden.","features":["F03"]},{"id":"link-007","author":"Aisha Brennan","date":"9 Oct 2026","url":"https://example.com/cook-from-what-you-already-h","local":"https://example.org/saved/link-007","topic":"Cook from what you already have","reason":"","disposition":"candidate","status":"complete","text":"Sort recipes by how few things you need to buy. We saw people throw away less food within a month.","features":["F04"]},{"id":"link-008","author":"Wren Castellano","date":"3 Oct 2026","url":"https://example.org/staples-should-not-count-as","local":"https://example.org/saved/link-008","topic":"Staples should not count as missing","reason":"","disposition":"candidate","status":"complete","text":"If salt, oil and water count as missing ingredients, every recipe looks equally hard. Treat a short list of staples as always at home.","features":["F04"]},{"id":"link-009","author":"Leon Achterberg","date":"29 Sep 2026","url":"https://example.com/rounding-scaled-quantities","local":"https://example.org/saved/link-009","topic":"Rounding scaled quantities","reason":"","disposition":"candidate","status":"complete","text":"Scaling a recipe by 1.5 gives you 1.5 eggs and 0.375 teaspoons. Round to amounts a person can measure, and say when you rounded.","features":["F05"]},{"id":"link-010","author":"Hana Osei","date":"22 Sep 2026","url":"https://example.com/read-only-shared-meal-plans","local":"https://example.org/saved/link-010","topic":"Read-only shared meal plans","reason":"","disposition":"candidate","status":"complete","text":"Our most loved feature is the least clever one: a link to this week's dinners that the whole house can open.","features":["F06"]},{"id":"link-011","author":"Felix Marchetti","date":"15 Sep 2026","url":"https://example.org/shopping-lists-in-aisle-orde","local":"https://example.org/saved/link-011","topic":"Shopping lists in aisle order","reason":"","disposition":"candidate","status":"complete","text":"Sorting the list by aisle cut the average shop by about ten minutes in our small trial. A fixed set of aisles was good enough.","features":["F07"]},{"id":"link-012","author":"Imogen Vasquez","date":"8 Sep 2026","url":"https://example.com/cook-once-eat-twice","local":"https://example.org/saved/link-012","topic":"Cook once, eat twice","reason":"Worth revisiting once meals can be moved (F01) and scaled (F05).","disposition":"candidate","status":"complete","text":"Plan a big Sunday dinner and put the leftovers on Tuesday. The plan should know they're the same pot.","features":[]},{"id":"link-013","author":"Dov Kaminski","date":"1 Sep 2026","url":"https://example.com/tag-recipes-by-diet","local":"https://example.org/saved/link-013","topic":"Tag recipes by diet","reason":"Pantry already filters the library by tag.","disposition":"existing","status":"complete","text":"Let people filter the recipe library by vegetarian, gluten-free and dairy-free.","features":[]},{"id":"link-014","author":"Sunniva Clarke","date":"26 Aug 2026","url":"https://example.org/printable-recipe-cards","local":"https://example.org/saved/link-014","topic":"Printable recipe cards","reason":"The print view already covers this.","disposition":"existing","status":"complete","text":"A clean, ink-friendly print layout for a single recipe.","features":[]},{"id":"link-015","author":"Bram Oyelaran","date":"19 Aug 2026","url":"https://example.com/import-a-recipe-from-a-web-a","local":"https://example.org/saved/link-015","topic":"Import a recipe from a web address","reason":"URL import exists; it sets the bar for the photo import spike.","disposition":"existing","status":"complete","text":"Paste a link, get an editable recipe. Most recipe sites publish structured data you can read.","features":["F08"]},{"id":"link-017","author":"Kofi Lindgren","date":"4 Aug 2026","url":"https://example.org/text-recognition-on-printed","local":"https://example.org/saved/link-017","topic":"Text recognition on printed cookbook pages","reason":"","disposition":"defer","status":"complete","text":"We tested photo import on fifty cookbook pages. Ingredients came through well; fractions and two-column layouts did not.","features":["F08"]},{"id":"link-018","author":"Elodie Park","date":"28 Jul 2026","url":"https://example.com/estimating-grocery-costs-fro","local":"https://example.org/saved/link-018","topic":"Estimating grocery costs from receipts","reason":"","disposition":"defer","status":"complete","text":"People will type in prices for the twenty things they always buy. Nobody will type in prices for everything.","features":["F09"]},{"id":"link-019","author":"Ravi Sorensen","date":"20 Jul 2026","url":"https://example.com/offline-first-shopping-lists","local":"https://example.org/saved/link-019","topic":"Offline-first shopping lists","reason":"Worth doing, but it touches storage for the whole app.","disposition":"defer","status":"complete","text":"Shops have bad reception. Lists should open and tick off with no connection at all.","features":[]},{"id":"link-022","author":"Ines Dubois","date":"29 Jun 2026","url":"https://example.com/live-co-editing-of-lists","local":"https://example.org/saved/link-022","topic":"Live co-editing of lists","reason":"","disposition":"defer","status":"complete","text":"Two people editing one list at once needs conflict handling. Start with a read-only link and see if anyone asks for more.","features":["F06"]},{"id":"link-023","author":"Arlo Nakamura","date":"22 Jun 2026","url":"https://example.org/reminders-to-defrost","local":"https://example.org/saved/link-023","topic":"Reminders to defrost","reason":"","disposition":"defer","status":"partial","text":"A morning nudge: take the chicken out for tonight.","features":[]},{"id":"link-024","author":"Petra Quinn","date":"15 Jun 2026","url":"https://example.com/accessible-kitchen-timers","local":"https://example.org/saved/link-024","topic":"Accessible kitchen timers","reason":"","disposition":"defer","status":"complete","text":"Timers need a visible countdown, a sound and a way to stop them that doesn't need a precise tap.","features":["F03"]},{"id":"link-025","author":"Cyrus Belmonte","date":"8 Jun 2026","url":"https://example.com/kitchen-renovation-ideas","local":"https://example.org/saved/link-025","topic":"Kitchen renovation ideas","reason":"","disposition":"unrelated","status":"complete","text":"Twelve small kitchens with clever storage.","features":[]},{"id":"link-026","author":"Mirela Santos","date":"1 Jun 2026","url":"https://example.org/restaurant-review-roundup","local":"https://example.org/saved/link-026","topic":"Restaurant review roundup","reason":"","disposition":"unrelated","status":"complete","text":"The best new places to eat this month.","features":[]},{"id":"link-028","author":"Talia Rasmussen","date":"18 May 2026","url":"https://example.com/sourdough-starter-troublesho","local":"https://example.org/saved/link-028","topic":"Sourdough starter troubleshooting","reason":"","disposition":"unrelated","status":"complete","text":"Why your starter smells like nail polish, and what to do about it.","features":[]},{"id":"link-029","author":"Benedikt Ola","date":"11 May 2026","url":"https://example.org/coffee-grinder-comparison","local":"https://example.org/saved/link-029","topic":"Coffee grinder comparison","reason":"","disposition":"unrelated","status":"partial","text":"Burr or blade: a long comparison with tasting notes.","features":[]},{"id":"link-032","author":"Noor Hellstrom","date":"20 Apr 2026","url":"https://example.org/wine-pairing-chart","local":"https://example.org/saved/link-032","topic":"Wine pairing chart","reason":"","disposition":"unrelated","status":"complete","text":"A one-page chart of classic food and wine pairings.","features":[]},{"id":"link-033","author":"Ezra Mbeki","date":"13 Apr 2026","url":"https://example.com/screenshot-of-a-planner-with","local":"https://example.org/saved/link-033","topic":"Screenshot of a planner with no caption","reason":"","disposition":"insufficient","status":"partial","text":"","features":[]},{"id":"link-034","author":"Saoirse Amadi","date":"","url":"https://example.org/link-with-no-description","local":"https://example.org/saved/link-034","topic":"Link with no description","reason":"","disposition":"insufficient","status":"complete","text":"https://example.org/p/8841","features":[]},{"id":"link-035","author":"Casimir Ndlovu","date":"30 Mar 2025","url":"https://example.com/untitled","local":"https://example.org/saved/link-035","topic":"","reason":"","disposition":"insufficient","status":"complete","text":"See the second picture.","features":[]},{"id":"link-036","author":"Yusra Pemberton","date":"16 Mar 2025","url":"https://example.com/short-video-no-transcript","local":"https://example.org/saved/link-036","topic":"Short video, no transcript","reason":"The meaning depends on a video that was not saved.","disposition":"insufficient","status":"complete","text":"This, but for meal planning.","features":[]}],"featureTitles":{"F01":"Drag recipes between days in the week planner","F02":"Merge matching ingredients on the shopping list","F03":"Add a step-by-step cook mode with timers","F04":"Suggest recipes from what is already in the pantry","F05":"Scale servings and convert units","F06":"Share a week plan with the household","F07":"Group the shopping list by aisle","F08":"Import a recipe from a photo of a cookbook page","F09":"Estimate the cost of a week's plan"},"counts":{"defer":6,"candidate":12,"unrelated":5,"insufficient":4,"existing":3},"ref":"a1b2c3d","featureCount":9}</script>
+<script>
+(() => {
+  const KEY = 'pantry-features-triage-v1';
+  const FORM_ID = 'pantry-features';
+  const cards = [...document.querySelectorAll('[data-feature]')];
+  const $ = (id) => document.getElementById(id);
+  const search = $('feature-search');
+  const priority = $('priority-filter');
+  const category = $('category-filter');
+  const decision = $('decision-filter');
+  const resultsText = $('results-text');
+  const status = $('copy-status');
+  const titleOf = (card) => card.querySelector('h3').textContent.trim();
+  const decisions = { do: 'DO', defer: 'DEFER', skip: "DON'T DO" };
+
+  let state = {};
+  try {
+    state = JSON.parse(localStorage.getItem(KEY)) || {};
+  } catch {}
+
+  function save() {
+    for (const id of Object.keys(state)) if (!state[id].d && !state[id].n) delete state[id];
+    try {
+      localStorage.setItem(KEY, JSON.stringify(state));
+    } catch {}
+  }
+
+  function applyState() {
+    for (const card of cards) {
+      const saved = state[card.id] || { d: '', n: '' };
+      card.querySelector(`input[type="radio"][value="${saved.d}"]`).checked = true;
+      card.querySelector('input[type="text"]').value = saved.n;
+      card.dataset.decision = saved.d;
+    }
+  }
+
+  function buildResults() {
+    const lines = [`Pantry feature triage · form: ${FORM_ID} · main @ a1b2c3d`];
+    const line = (card) => {
+      const note = (state[card.id]?.n || '').trim();
+      return `- ${card.id} ${titleOf(card)}${note ? ` — ${note}` : ''}`;
+    };
+    for (const [value, label] of Object.entries(decisions)) {
+      const items = cards.filter((c) => state[c.id]?.d === value);
+      lines.push('', `${label} (${items.length})`, ...items.map(line));
+    }
+    const open = cards.filter((c) => !state[c.id]?.d);
+    lines.push('', `UNDECIDED (${open.length}): ${open.map((c) => c.id).join(', ') || 'none'}`);
+    const noted = open.filter((c) => (state[c.id]?.n || '').trim());
+    if (noted.length) lines.push('', 'Notes on undecided:', ...noted.map(line));
+    const compact = Object.fromEntries(cards.filter((c) => state[c.id]?.d).map((c) => [c.id, state[c.id].d]));
+    lines.push('', `data: ${JSON.stringify(compact)}`);
+    return lines.join('\n');
+  }
+
+  function update() {
+    const n = (value) => cards.filter((c) => (state[c.id]?.d || '') === value).length;
+    $('triage-summary').textContent = `${n('do')} do · ${n('defer')} defer · ${n('skip')} don’t do · ${n('')} undecided`;
+    resultsText.value = buildResults();
+  }
+
+  const haystack = new WeakMap();
+  const textOf = (card) => {
+    if (!haystack.has(card)) haystack.set(card, card.textContent.toLowerCase());
+    return haystack.get(card);
+  };
+
+  function filterFeatures() {
+    const q = search.value.trim().toLowerCase();
+    let shown = 0;
+    for (const card of cards) {
+      const d = state[card.id]?.d || '';
+      const match =
+        (!q || textOf(card).includes(q)) &&
+        (!priority.value || card.dataset.priority === priority.value) &&
+        (!category.value || card.dataset.category === category.value) &&
+        (!decision.value || (decision.value === 'undecided' ? !d : d === decision.value));
+      card.hidden = !match;
+      if (match) shown++;
+    }
+    $('feature-count').textContent = `${shown} of ${cards.length} features`;
+    $('feature-empty').hidden = shown > 0;
+  }
+
+  function clearFilters() {
+    search.value = priority.value = category.value = decision.value = '';
+    filterFeatures();
+  }
+
+  $('features').addEventListener('change', (event) => {
+    const target = event.target;
+    if (!target.name?.startsWith('d-')) return;
+    const id = target.name.slice(2);
+    (state[id] ||= { d: '', n: '' }).d = target.value;
+    $(id).dataset.decision = target.value;
+    save();
+    update();
+  });
+  $('features').addEventListener('input', (event) => {
+    const target = event.target;
+    if (!target.name?.startsWith('n-')) return;
+    (state[target.name.slice(2)] ||= { d: '', n: '' }).n = target.value;
+    save();
+    update();
+  });
+
+  for (const control of [search, priority, category, decision]) {
+    control.addEventListener(control === search ? 'input' : 'change', filterFeatures);
+  }
+  $('reset-features').addEventListener('click', clearFilters);
+
+  document.addEventListener('click', (event) => {
+    const link = event.target.closest('a[href^="#F"]');
+    if (!link) return;
+    const card = $(link.getAttribute('href').slice(1));
+    if (card?.hidden) {
+      clearFilters();
+      card.scrollIntoView();
+    }
+  });
+
+  $('copy-results').addEventListener('click', async () => {
+    const text = buildResults();
+    let ok = false;
+    try {
+      await navigator.clipboard.writeText(text);
+      ok = true;
+    } catch {
+      resultsText.select();
+      try {
+        ok = document.execCommand('copy');
+      } catch {}
+    }
+    status.textContent = ok ? 'Copied. Paste it into the planning thread.' : 'Copy failed. Select the text under “Results”.';
+    clearTimeout(status.timer);
+    status.timer = setTimeout(() => (status.textContent = ''), 4000);
+  });
+
+  $('reset-triage').addEventListener('click', () => {
+    if (!confirm('Clear every Do, Defer, Don’t do choice and note?')) return;
+    state = {};
+    save();
+    applyState();
+    update();
+  });
+
+  $('print-report').addEventListener('click', () => window.print());
+  let printed = [];
+  window.addEventListener('beforeprint', () => {
+    printed = [...document.querySelectorAll('[data-feature-details]')].filter((d) => !d.open);
+    printed.forEach((d) => (d.open = true));
+  });
+  window.addEventListener('afterprint', () => printed.forEach((d) => (d.open = false)));
+
+  applyState();
+  update();
+  filterFeatures();
+})();
+
+</script>
+<script>
+(() => {
+  const data = JSON.parse(document.getElementById('review-data').textContent);
+  const $ = (id) => document.getElementById(id);
+  const auditSearch = $('audit-search');
+  const disposition = $('disposition-filter');
+  const auditStatus = $('archive-status-filter');
+  const auditBody = $('audit-body');
+  const pageStatus = $('audit-page-status');
+  const previous = $('audit-prev');
+  const next = $('audit-next');
+  const pageSize = 10;
+  let page = 0;
+  const esc = (value) =>
+    String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+  const labels = {
+    candidate: 'Candidate',
+    existing: 'Already present',
+    defer: 'Deferred',
+    unrelated: 'Outside scope',
+    insufficient: 'More context needed',
+  };
+  const searchable = data.audit.map((row) => ({
+    ...row,
+    haystack: [row.id, row.author, row.topic, row.text, row.reason].join(' ').toLowerCase(),
+  }));
+
+  function renderAuditRow(row) {
+    const meta = [row.date || 'Date unavailable', labels[row.disposition]];
+    if (row.status === 'partial') meta.push('Partial capture');
+    const text = esc(row.text || 'No text was saved with this link. The page was checked where it was still available.').replaceAll('\n', '<br>');
+    const features = row.features
+      .map((id) => `<a href="#${esc(id)}">${esc(id)} · ${esc(data.featureTitles[id])}</a>`)
+      .join(' · ');
+    return (
+      `<li><p><a href="${esc(row.url)}" target="_blank" rel="noopener noreferrer">${esc(row.author)}</a> · <small>${meta.map(esc).join(' · ')}</small></p>` +
+      `<details><summary>${esc(row.topic || 'No usable text')}</summary><p>${text}</p>` +
+      `<p><strong>Review:</strong> ${esc(row.reason || 'Screened for relevance to Pantry.')}</p>` +
+      `<p><small>${esc(row.id)} · <a href="${esc(row.local)}">Open saved copy</a></small></p></details>` +
+      (features ? `<p><small>${features}</small></p>` : '') +
+      '</li>'
+    );
+  }
+
+  function renderAudit() {
+    const q = auditSearch.value.trim().toLowerCase();
+    const matched = searchable.filter(
+      (row) =>
+        (!q || row.haystack.includes(q)) &&
+        (!disposition.value || row.disposition === disposition.value) &&
+        (!auditStatus.value || row.status === auditStatus.value),
+    );
+    const pages = Math.max(1, Math.ceil(matched.length / pageSize));
+    page = Math.min(page, pages - 1);
+    const shown = matched.slice(page * pageSize, (page + 1) * pageSize);
+    auditBody.start = page * pageSize + 1;
+    auditBody.innerHTML = shown.map(renderAuditRow).join('') || '<li>No links match these filters.</li>';
+    pageStatus.textContent = matched.length
+      ? `${page * pageSize + 1}–${Math.min((page + 1) * pageSize, matched.length)} of ${matched.length.toLocaleString()} links · page ${page + 1} / ${pages}`
+      : '0 links';
+    previous.disabled = page === 0;
+    next.disabled = page >= pages - 1;
+    $('audit-match-count').textContent = `${matched.length.toLocaleString()} of ${data.audit.length.toLocaleString()} saved links`;
+  }
+
+  for (const control of [auditSearch, disposition, auditStatus]) {
+    control.addEventListener(control === auditSearch ? 'input' : 'change', () => {
+      page = 0;
+      renderAudit();
+    });
+  }
+  previous.addEventListener('click', () => {
+    page--;
+    renderAudit();
+  });
+  next.addEventListener('click', () => {
+    page++;
+    renderAudit();
+  });
+  $('reset-audit').addEventListener('click', () => {
+    auditSearch.value = disposition.value = auditStatus.value = '';
+    page = 0;
+    renderAudit();
+  });
+  renderAudit();
+})();
+
+</script>
+</body>
+</html>
