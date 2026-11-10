@@ -1,17 +1,25 @@
 /* ==========================================================================
-   zinc.css — a classless CSS framework for semantic HTML
+   zinc.css — a classless stylesheet for semantic HTML
    --------------------------------------------------------------------------
-   Bold, high-contrast, one bright accent. Auto light/dark + 5 accent themes.
-   Drop in one stylesheet and write plain markup — no classes, no build step.
+   One column of text on one left edge. Section labels sit in the margin,
+   marks (bullets, numbers, chevrons, quote bars) hang outside the edge, and
+   tinted blocks bleed past it so the words inside stay on it. No boxes
+   around content, no shadows, no web fonts, no images. Colour is kept for
+   state: what is focused, checked or chosen.
 
    Theme hooks (optional, set on <html>):
      data-mode="light|dark"              override the system color scheme
-     data-accent="electric|hot|amber|forest|violet"   pick the accent
+     data-accent="electric|forest|violet"   pick the accent
+     data-paper="beige"                  green-beige paper instead of the
+                                         white page (on <html> or <body>; see
+                                         "Beige paper" after the accents)
 
    Optional variant hooks (attributes, never classes):
      [data-variant="secondary|outline|ghost|danger"]   on buttons & links
      [data-size="sm|lg"]                                on buttons & links
      [data-form="questions"]                            on <form>
+     [role="list"]        on <ul>/<ol>: a list of entries, no markers
+     [role="radiogroup"]  around <label><input type="radio"><span>: segments
 
    Tunable design tokens (override on :root):
      --accent  --radius  --width  --gutter  --font-sans …
@@ -20,70 +28,106 @@
 :root {
   color-scheme: light dark;
 
-  /* type ------------------------------------------------------------------ */
-  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system,
-    "Segoe UI", Helvetica, Arial, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  /* type: the reader's own system faces, so nothing loads but this file --- */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas,
+    "Liberation Mono", monospace;
   --font-display: var(--font-sans);
 
+  /* four sizes, two weights */
+  --size-title: clamp(1.75rem, 1.45rem + 1.5vw, 2.25rem);
+  --size-lede: 1.25rem;
+  --size-body: 1.0625rem;
+  --size-small: 0.9375rem;
+  --leading: 1.6;
+
   /* shape ----------------------------------------------------------------- */
-  --radius: 6px;
+  --radius: 8px;
   --radius-lg: 12px;
   --radius-pill: 999px;
 
-  /* layout ---------------------------------------------------------------- */
-  --width: 72rem;
-  --gutter: clamp(1.25rem, 4vw, 2.5rem);
+  /* layout: --width is the measure, the width of the text column. On a wide
+     screen a page with sections gains a margin (--rail) for their labels. */
+  --width: 42rem;
+  /* running text stops a little short of it, at about 75 characters */
+  --measure: 38rem;
+  --gutter: clamp(1.25rem, 5vw, 2.5rem);
+  --rail: 11rem;
+  --rail-gap: 3rem;
+  /* how far a tinted block reaches past the text edge on each side */
+  --bleed: 1.25rem;
+  --section-gap: 4rem;
 
   /* motion ---------------------------------------------------------------- */
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
 
   /* accent (default: electric) -------------------------------------------
-     Each accent is a light-dark(light, dark) pair. The light shade is deep
-     enough for white text and 4.5:1 on the light neutrals; the dark shade is
-     bright enough for 4.5:1 on the dark neutrals, with dark text on top.
-     light-dark() follows the used color-scheme: the system's, or the one
-     data-mode pins below. Set --accent to one color to use it in both modes,
-     or to light-dark(a, b) for a shade per mode. */
-  --accent: light-dark(#1d5ce0, #5e97ff);
-  --on-accent: light-dark(#ffffff, #0c0c0d);
+     A light-dark(light, dark) pair. It marks state only: focus, checked
+     controls, chosen options, progress. Links and buttons stay ink. */
+  --accent: light-dark(#3559c7, #93aaff);
+  --on-accent: light-dark(#ffffff, #101311);
   --accent-press: color-mix(in srgb, var(--accent) 86%, #000);
-  --accent-soft: color-mix(in srgb, var(--accent) 10%, transparent);
-  --accent-faint: color-mix(in srgb, var(--accent) 7%, transparent);
+  --accent-soft: color-mix(in srgb, var(--accent) 12%, transparent);
+  --accent-faint: color-mix(in srgb, var(--accent) 6%, transparent);
 
-  /* danger: a light-dark(light, dark) pair like the accents, for destructive
-     buttons, invalid fields and the required marker */
-  --danger: light-dark(#d1242f, #ff6369);
-  --on-danger: light-dark(#ffffff, #0c0c0d);
+  --danger: light-dark(#b93a2c, #f2877a);
+  --on-danger: light-dark(#ffffff, #101311);
   --danger-press: color-mix(in srgb, var(--danger) 86%, #000);
 
-  /* neutrals — light ------------------------------------------------------ */
-  --bg: #faf9f7;
+  /* neutrals — light: a white page. Fields and choice cards are white too,
+     so their outlines carry them; the pale green-grey of the beige paper
+     fills the notes and code blocks. --------------------------------------- */
+  --bg: #ffffff;
   --surface: #ffffff;
-  --surface-alt: #f1efea;
-  --text: #131210;
-  --muted: #6c6a64;
-  --line: #e4e1da;
-  /* control boundaries (form fields, checkbox, radio, switch and range
-     tracks) need 3:1 against the page; --line stays for decorative rules */
-  --line-strong: #85827b;
-  --ink: #131210;
-  --shadow: 0 1px 2px rgba(19, 18, 16, 0.05), 0 14px 30px -18px rgba(19, 18, 16, 0.28);
+  --surface-alt: #f1f3ee;
+  --text: #1c201d;
+  --muted: #616862;
+  --line: #e4e7e0;
+  /* the outline of choice cards and of the spotlight card: a step firmer
+     than a rule, because no tone sets them off from a white page. It carries
+     its own dark value, so the dark blocks below don't set it. */
+  --line-card: light-dark(#d9ddd5, #343936);
+  /* control boundaries need 3:1 against the page; --line is for rules */
+  --line-strong: #818882;
+  --ink: #1c201d;
+  --on-ink: var(--bg);
+  /* the only shadow, for the one thing that floats: the dialog */
+  --shadow: 0 1px 2px rgba(28, 32, 29, 0.06), 0 24px 60px -24px rgba(28, 32, 29, 0.3);
 
-  /* code panel (constant, both modes) ------------------------------------ */
-  --code-bg: #18181b;
-  --code-text: #ededf0;
+  /* derived: a wash of ink for soft fills (secondary buttons, hovers) */
+  --tint: color-mix(in srgb, var(--text) 7%, transparent);
+  --tint-strong: color-mix(in srgb, var(--text) 12%, transparent);
+  --ink-press: color-mix(in srgb, var(--ink) 82%, var(--bg));
+
+  /* code follows the mode: a pale well in light, a soft one in dark */
+  --code-bg: light-dark(#f1f3ee, #1d201e);
+  --code-text: light-dark(#1c201d, #e4e7e2);
 
   accent-color: var(--accent);
   caret-color: var(--accent);
 }
 
-/* accent themes: light-dark(light shade, dark shade) -------------------- */
-:root[data-accent="electric"] { --accent: light-dark(#1d5ce0, #5e97ff); --on-accent: light-dark(#ffffff, #0c0c0d); }
-:root[data-accent="hot"]      { --accent: light-dark(#c2185b, #ff2d78); --on-accent: light-dark(#ffffff, #0c0c0d); }
-:root[data-accent="amber"]    { --accent: light-dark(#9a5800, #f59e0b); --on-accent: light-dark(#ffffff, #1c1407); }
-:root[data-accent="forest"]   { --accent: light-dark(#13763a, #34c76a); --on-accent: light-dark(#ffffff, #0c0c0d); }
-:root[data-accent="violet"]   { --accent: light-dark(#7c3aed, #a586ff); --on-accent: light-dark(#ffffff, #0c0c0d); }
+/* accent themes: light-dark(light shade, dark shade), all a little dusty -- */
+:root[data-accent="electric"] { --accent: light-dark(#3559c7, #93aaff); --on-accent: light-dark(#ffffff, #101311); }
+:root[data-accent="forest"]   { --accent: light-dark(#2b6e4b, #7fc79d); --on-accent: light-dark(#ffffff, #101311); }
+:root[data-accent="violet"]   { --accent: light-dark(#6a4fc4, #b4a3f7); --on-accent: light-dark(#ffffff, #101311); }
+
+/* Beige paper -----------------------------------------------------------
+   data-paper="beige" on <html> or <body>. All tokens live on :root, and
+   :has() lets a <body> attribute reach it, so the page background,
+   color-scheme and every token follow either placement. The selector is
+   :root-weight (:where() adds none), so the dark blocks below still win the
+   neutrals in dark mode. On paper, tone sets the cards off, so --line-card
+   falls back to --line (in dark too); the <article> rule (end of file) is
+   the only other thing that differs by paper. */
+:root:where([data-paper="beige"], :has(> body[data-paper="beige"])) {
+  --bg: #f3f5f0;
+  --surface-alt: #e7eae3;
+  --line: #dfe3db;
+  --line-card: var(--line);
+  --code-bg: light-dark(#e7eae3, #1d201e);
+}
 
 /* a forced mode pins color-scheme too, so light-dark() accents and native
    controls (scrollbars, pickers) follow data-mode rather than the system */
@@ -93,15 +137,15 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-mode="light"]) {
     color-scheme: dark;
-    --bg: #0c0c0d;
-    --surface: #161618;
-    --surface-alt: #1e1e21;
-    --text: #f4f3f0;
-    --muted: #a3a19a;
-    --line: #2a2a2e;
-    --line-strong: #706e69;
-    --ink: #f4f3f0;
-    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 18px 40px -20px rgba(0, 0, 0, 0.75);
+    --bg: #141615;
+    --surface: #1d201e;
+    --surface-alt: #252926;
+    --text: #e4e7e2;
+    --muted: #9ba09a;
+    --line: #2a2e2b;
+    --line-strong: #6e746f;
+    --ink: #e4e7e2;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 24px 60px -24px rgba(0, 0, 0, 0.8);
     --accent-press: color-mix(in srgb, var(--accent) 82%, #fff);
     --danger-press: color-mix(in srgb, var(--danger) 82%, #fff);
   }
@@ -109,15 +153,15 @@
 /* dark neutrals — manual override -------------------------------------- */
 :root[data-mode="dark"] {
   color-scheme: dark;
-  --bg: #0c0c0d;
-  --surface: #161618;
-  --surface-alt: #1e1e21;
-  --text: #f4f3f0;
-  --muted: #a3a19a;
-  --line: #2a2a2e;
-  --line-strong: #706e69;
-  --ink: #f4f3f0;
-  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 18px 40px -20px rgba(0, 0, 0, 0.75);
+  --bg: #141615;
+  --surface: #1d201e;
+  --surface-alt: #252926;
+  --text: #e4e7e2;
+  --muted: #9ba09a;
+  --line: #2a2e2b;
+  --line-strong: #6e746f;
+  --ink: #e4e7e2;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 24px 60px -24px rgba(0, 0, 0, 0.8);
   --accent-press: color-mix(in srgb, var(--accent) 82%, #fff);
   --danger-press: color-mix(in srgb, var(--danger) 82%, #fff);
 }
@@ -131,25 +175,27 @@
 html {
   -webkit-text-size-adjust: 100%;
   background: var(--bg);
-  scrollbar-color: var(--muted) transparent;
+  scrollbar-color: var(--line-strong) transparent;
 }
 
 body {
   font-family: var(--font-sans);
-  font-size: clamp(1rem, 0.965rem + 0.18vw, 1.0625rem);
-  line-height: 1.65;
+  font-size: var(--size-body);
+  line-height: var(--leading);
   color: var(--text);
   background: var(--bg);
-  max-width: var(--width);
+  max-width: calc(var(--width) + 2 * var(--gutter));
   margin-inline: auto;
-  padding: var(--gutter);
+  padding: clamp(2.5rem, 9vh, 6rem) var(--gutter) clamp(4rem, 12vh, 7rem);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  font-kerning: normal;
+  hanging-punctuation: first;
 }
 
-::selection { background: var(--accent); color: var(--on-accent); }
+::selection { background: color-mix(in srgb, var(--accent) 24%, transparent); }
 
-/* focus ring: solid accent, at least 4.5:1 on --bg and --surface. Only links
+/* focus ring: solid accent, at least 3:1 on --bg and --surface. Only links
    get rounded corners here, so other elements keep their own radius. */
 :focus-visible {
   outline: 2px solid var(--accent);
@@ -158,6 +204,9 @@ body {
 :where(a):focus-visible { border-radius: 3px; }
 
 [hidden] { display: none !important; }
+
+/* a link to a place on the page lands with some air above it */
+[id] { scroll-margin-block-start: 2rem; }
 
 /* reduced motion: every animation and transition ends at once, including on
    pseudo-elements (the switch thumb and summary marker animate there).
@@ -182,148 +231,247 @@ body {
   }
 }
 
-/* section rhythm — top-level document sections read as distinct tiers, set
-   off by a hairline so a new <section> is a stronger break than an inner
-   <h3> subsection. Scoped to direct children of <main>: nested sections and
-   the heading scale stay untouched. The first section (right after the page
-   <header>) gets no rule; siblings after it do, with symmetric space around
-   the line and the leading heading's own top margin reset to avoid doubling. */
-main > section + section {
-  margin-block-start: 3rem;
-  padding-block-start: 3rem;
-  border-block-start: 1px solid var(--line);
+/* page header: an optional line of context, the title, then the answer.
+   The first paragraph after the title is the lede, a size up, because it is
+   the one thing every reader should take away. */
+:is(body, main) > header { margin-block-end: var(--section-gap); }
+:is(body, main) > header > :last-child:not(dialog) { margin-block-end: 0; }
+:is(body, main) > header > p { color: var(--muted); max-inline-size: 36rem; }
+:is(body, main) > header > h1 + p {
+  font-size: var(--size-lede);
+  line-height: 1.5;
+  color: var(--text);
 }
-main > section + section > :first-child { margin-block-start: 0; }
+:is(body, main) > header > p:first-child:has(+ h1) {
+  font-size: var(--size-small);
+  margin-block-end: 0.85rem;
+}
+:is(body, main) > header > nav { margin-block-end: 3.5rem; }
+/* a body header that holds only a nav is a top bar, not the page header */
+body > header:has(> nav:only-child) { margin-block-end: 3.5rem; }
+body > header > nav:only-child { margin-block-end: 0; }
+
+/* section rhythm: top-level sections are set apart by space alone */
+:is(main, main > form) > * + :is(section, nav), :is(main, main > form) > :is(section, nav) + * { margin-block-start: var(--section-gap); }
+/* sections inside a section (one per proposal, say) get a smaller gap */
+main > section > section + section { margin-block-start: 3rem; }
+/* (a dialog written last in a container must keep its centering margins,
+   so every "last child" reset in this file skips it) */
+:is(main, main > form) > :is(section, nav) > :last-child:not(dialog) { margin-block-end: 0; }
 
 /* ==========================================================================
    Typography
    ========================================================================== */
-/* type floor: nothing under 14px (0.875rem); secondary reading text (small,
-   figcaption, caption, labels, footer) sits at 15px (0.9375rem) */
+/* type floor: nothing under 14px (0.875rem) */
 h1, h2, h3, h4, h5, h6 {
-  font-weight: 700;
-  line-height: 1.08;
-  letter-spacing: -0.025em;
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.011em;
   text-wrap: balance;
   color: var(--text);
 }
-h1 { font-size: clamp(2.4rem, 1.7rem + 3vw, 3.9rem); letter-spacing: -0.04em; }
-h2 { font-size: clamp(1.8rem, 1.4rem + 1.7vw, 2.55rem); letter-spacing: -0.032em; }
-h3 { font-size: clamp(1.3rem, 1.15rem + 0.7vw, 1.65rem); }
-h4 { font-size: 1.2rem; }
-h5 { font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.1em; }
-h6 { font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.14em; color: var(--muted); }
+h1 { font-size: var(--size-title); line-height: 1.12; letter-spacing: -0.026em; }
+h2 { font-size: 1.375rem; line-height: 1.2; letter-spacing: -0.018em; }
+h3 { font-size: var(--size-body); }
+h4 { font-size: var(--size-small); }
+h5 { font-size: var(--size-small); color: var(--muted); }
+h6 { font-size: 0.875rem; color: var(--muted); }
 
-:where(h1, h2, h3, h4, h5, h6) { margin-block-end: 0.5em; }
-:where(h2) { margin-block-start: 1.7em; }
-:where(h3) { margin-block-start: 1.4em; }
-:where(header > h1, header > h2, header > h3, header > h4, header > h5, header > h6) {
+:where(h1, h2, h3, h4, h5, h6) { margin-block-end: 0.4em; }
+:where(h1) { margin-block-end: 0.45em; }
+:where(h2) { margin-block-start: 2.4em; margin-block-end: 0.7em; }
+:where(h3) { margin-block-start: 2.2em; }
+:where(h4, h5, h6) { margin-block-start: 1.6em; }
+:where(header, section, article, aside, details, dialog, li, fieldset, form, td, th) > :where(h1, h2, h3, h4, h5, h6):first-child {
   margin-block-start: 0;
 }
+:where(h3, h4, h5, h6) + :where(table, dl) { margin-block-start: 0.85rem; }
 
-:where(p, ul, ol, dl, blockquote, pre, table, figure, hr, details, fieldset, address, video, audio) {
-  margin-block-end: 1.2rem;
+:where(p, ul, ol, dl, menu, blockquote, pre, table, figure, hr, details, fieldset, address, video, audio, progress, meter) {
+  margin-block-end: 1.1rem;
 }
 
 p { text-wrap: pretty; }
-small { font-size: 0.9375rem; color: var(--muted); }
-strong, b { font-weight: 700; }
+/* prose keeps to the measure; tables, lists of entries and blocks may use the
+   whole column */
+:where(p, li, blockquote, figcaption) { max-inline-size: var(--measure); }
+:where(td, th, dd, aside, article, dialog, footer, label, summary, :is(ul, ol)[role="list"] > li, menu > li) :where(p, li),
+:where(:is(ul, ol)[role="list"] > li, menu > li) { max-inline-size: none; }
+small { font-size: var(--size-small); color: var(--muted); }
+strong, b { font-weight: 600; }
 em, i, cite { font-style: italic; }
-address { font-style: normal; }
+address { font-style: normal; color: var(--muted); }
 
-/* links: accent text plus a 60% underline, so color is never the only cue;
-   hover completes the underline */
+/* links are ink, with a hairline underline; the accent arrives on hover.
+   The underline is the cue, so color is never the only one. */
 a {
-  color: var(--accent);
+  color: inherit;
   text-decoration: underline;
-  text-decoration-thickness: 0.1em;
-  text-underline-offset: 0.18em;
-  text-decoration-color: color-mix(in srgb, currentColor 60%, transparent);
+  text-decoration-thickness: max(1px, 0.06em);
+  text-underline-offset: 0.22em;
+  text-decoration-color: color-mix(in srgb, currentColor 38%, transparent);
   transition: text-decoration-color 0.15s ease, color 0.15s ease;
 }
 /* hover styles are for fine pointers only: touch browsers keep :hover stuck
    after a tap */
 @media (hover: hover) and (pointer: fine) {
-  a:hover { text-decoration-color: currentColor; }
+  a:hover { color: var(--accent); text-decoration-color: currentColor; }
 }
 
 mark {
-  background: var(--accent);
-  color: var(--on-accent);
-  padding: 0.05em 0.28em;
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: inherit;
+  padding: 0.08em 0.3em;
   border-radius: 4px;
 }
-ins { background: var(--accent-soft); text-decoration: none; padding: 0 0.2em; border-radius: 3px; }
+ins { background: var(--accent-soft); text-decoration: none; padding: 0.08em 0.25em; border-radius: 4px; }
+/* a highlight or code span that wraps keeps its padding and corners on
+   both lines */
+mark, ins, code { -webkit-box-decoration-break: clone; box-decoration-break: clone; }
 del { color: var(--muted); }
-abbr[title] { text-decoration: underline dotted; text-underline-offset: 0.2em; cursor: help; }
+abbr[title] { text-decoration: underline dotted; text-decoration-color: var(--line-strong); text-underline-offset: 0.22em; cursor: help; }
 sub, sup { font-size: 0.72em; line-height: 0; }
 
 /* lists ------------------------------------------------------------------ */
-ul, ol { padding-inline-start: 1.4em; }
-li { margin-block: 0.35em; }
-li::marker { color: var(--accent); font-weight: 700; }
-ul ul, ul ol, ol ul, ol ol { margin-block: 0.35em; }
+ul, ol, menu { padding-inline-start: 1.3em; }
+li { margin-block: 0.3em; }
+li::marker { color: var(--muted); }
+ol > li::marker { font-variant-numeric: tabular-nums; }
+ul ul, ul ol, ol ul, ol ol { margin-block: 0.3em; }
 
-dl { display: grid; grid-template-columns: minmax(7rem, auto) 1fr; gap: 0.5rem 1.5rem; }
-dt { font-weight: 600; color: var(--text); }
-dd { margin: 0; color: var(--muted); }
+/* entry list: <ul role="list"> or <ol role="list"> is a list of entries (a
+   message, a finding, a task), each with its own lines of text and controls.
+   No markers and no indent; a hairline between entries, and more room around
+   an entry than inside it. */
+:is(ul, ol)[role="list"] { list-style: none; padding-inline-start: 0; }
+:is(ul, ol)[role="list"] > li {
+  margin: 0;
+  padding-block: 1.05rem;
+  border-block-end: 1px solid var(--line);
+}
+:is(ul, ol)[role="list"] > li:first-child { padding-block-start: 0; }
+:is(ul, ol)[role="list"] > li:nth-last-child(1 of :not([hidden])) { padding-block-end: 0; border-block-end: 0; }
+:is(ul, ol)[role="list"] > li > :where(p, ul, ol, dl) { margin-block-end: 0.45rem; }
+:is(ul, ol)[role="list"] > li > :nth-last-child(1 of :not([hidden])):not(dialog) { margin-block-end: 0; }
+
+/* toolbar: <menu><li> is a wrapping row of controls */
+menu {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1.25rem;
+  padding: 0;
+}
+menu > li { margin: 0; }
+menu > li > label { margin: 0; }
+/* a label that wraps a field puts the two on one line, and the field takes
+   only the width it needs */
+menu > li > label:has(> :is(input:not([type="checkbox"], [type="radio"]), select)) {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--muted);
+  font-weight: 400;
+}
+menu > li :is(input:not([type="checkbox"], [type="radio"]), select) { width: auto; padding-block: 0.3rem; font-size: var(--size-small); }
+menu > li select { padding-inline-end: 2rem; }
+/* a text or search field takes the room the other controls leave */
+menu > li:has(input:is([type="text"], [type="search"])) { flex: 1 1 13rem; }
+menu > li input:is([type="text"], [type="search"]) { flex: 1; width: 100%; min-inline-size: 0; }
+
+/* fact sheet: <dl> of <dt>/<dd> pairs is a two-column list of facts, ruled
+   like a table. */
+dl {
+  display: grid;
+  grid-template-columns: fit-content(42%) minmax(0, 1fr);
+  font-size: var(--size-small);
+  line-height: 1.5;
+}
+dt { color: var(--muted); padding: 0.6rem 2rem 0.6rem 0; border-block-end: 1px solid var(--line); }
+dd { margin: 0; padding-block: 0.6rem; border-block-end: 1px solid var(--line); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; min-inline-size: 0; }
+dl > :is(dt, dd):nth-last-child(-n + 2):not(dt:nth-last-child(2) ~ dt) { border-block-end: 0; }
+dl > dt:first-child, dl > dt:first-child + dd { padding-block-start: 0; }
+
+/* key figures: a <dl> whose pairs are wrapped in <div> is a row of headline
+   numbers. The value leads, the label sits under it. Keep it to four. */
+dl:has(> div) {
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: 1.75rem 2rem;
+  margin-block-end: 1.5rem;
+}
+dl > div { display: flex; flex-direction: column-reverse; justify-content: flex-end; gap: 0.3rem; }
+dl > div > dt { padding: 0; border: 0; font-size: var(--size-small); line-height: 1.4; }
+dl > div > dd {
+  padding: 0;
+  border: 0;
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  /* proportional figures: a headline number is read, not compared in a column */
+  font-variant-numeric: normal;
+  color: var(--text);
+  overflow-wrap: normal;
+}
 
 /* blockquote ------------------------------------------------------------- */
 blockquote {
-  border-inline-start: 4px solid var(--accent);
-  padding: 0.4rem 0 0.4rem 1.4rem;
-  font-size: 1.18rem;
-  line-height: 1.5;
+  border-inline-start: 2px solid var(--line-strong);
+  padding-inline-start: 1.25rem;
   color: var(--text);
 }
-blockquote p { margin: 0 0 0.6rem; }
-blockquote cite { display: block; font-size: 0.875rem; font-style: normal; color: var(--muted); font-weight: 600; }
+blockquote p { margin: 0 0 0.5rem; }
+blockquote > :last-child { margin-block-end: 0; }
+blockquote cite { display: block; font-size: var(--size-small); font-style: normal; color: var(--muted); }
 blockquote cite::before { content: "— "; }
 
 hr {
   border: none;
-  height: 2px;
+  height: 1px;
   background: var(--line);
-  margin-block: 2rem;
+  margin-block: 2.5rem;
 }
 
 /* code ------------------------------------------------------------------- */
 code, kbd, samp, pre { font-family: var(--font-mono); }
 code {
-  font-size: max(0.875em, 0.875rem);
-  background: var(--surface-alt);
-  color: var(--text);
-  border: 1px solid var(--line);
-  padding: 0.12em 0.42em;
+  font-size: max(0.86em, 0.875rem);
+  background: var(--tint);
+  color: inherit;
+  padding: 0.1em 0.34em;
   border-radius: 5px;
+  /* a long path breaks rather than running out of its line */
+  overflow-wrap: break-word;
 }
 pre {
   background: var(--code-bg);
   color: var(--code-text);
-  padding: 1.15rem 1.3rem;
+  padding: 1rem var(--bleed);
   border-radius: var(--radius-lg);
   overflow-x: auto;
-  line-height: 1.55;
+  line-height: 1.6;
   font-size: 0.875rem;
   tab-size: 2;
 }
 pre code {
   background: none;
-  border: none;
   padding: 0;
   font-size: inherit;
   color: inherit;
+  overflow-wrap: normal;
 }
 kbd {
   font-size: max(0.8em, 0.875rem);
   background: var(--surface);
   color: var(--text);
   border: 1px solid var(--line);
-  border-bottom-width: 2px;
+  border-block-end-color: var(--line-strong);
   border-radius: 5px;
-  padding: 0.12em 0.45em;
+  padding: 0.08em 0.4em;
 }
-samp { font-size: max(0.875em, 0.875rem); }
+samp { font-size: max(0.86em, 0.875rem); }
 
 /* ==========================================================================
    Media
@@ -332,36 +480,64 @@ img, picture, svg, video, canvas { max-width: 100%; height: auto; }
 img, video { display: block; border-radius: var(--radius); }
 svg { fill: currentColor; }
 
-figure { text-align: center; }
-figure img, figure video { margin-inline: auto; }
-figcaption { font-size: 0.9375rem; color: var(--muted); margin-top: 0.6rem; }
+figure { text-align: start; }
+figcaption { font-size: var(--size-small); color: var(--muted); margin-top: 0.6rem; }
 
 /* ==========================================================================
    Tables
    ========================================================================== */
+/* a table sits on the text edge: the first column has no left padding and
+   the last no right, so its rules run exactly the width of the column */
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.95rem;
+  font-size: var(--size-small);
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
 }
-caption { caption-side: bottom; color: var(--muted); font-size: 0.9375rem; padding-top: 0.75rem; text-align: left; }
-th, td { padding: 0.5rem 1rem; text-align: left; vertical-align: top; }
+caption { caption-side: bottom; color: var(--muted); font-size: var(--size-small); padding-top: 0.75rem; text-align: start; }
+th, td { padding: 0.6rem 1.5rem 0.6rem 0; text-align: start; vertical-align: top; }
+:is(th, td):last-child { padding-inline-end: 0; }
+td { overflow-wrap: break-word; }
+/* phone: a cell may break inside a word, so a table of paths still fits */
+@media (max-width: 40rem) {
+  th, td { padding-inline-end: 1rem; }
+  td, tbody th, :is(td, tbody th) code { overflow-wrap: anywhere; }
+}
+th { font-weight: 600; }
 thead th {
   font-size: 0.875rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  font-weight: 500;
   color: var(--muted);
-  border-bottom: 2px solid var(--ink);
+  padding-block: 0 0.5rem;
+  border-bottom: 1px solid var(--line-strong);
   white-space: nowrap;
+  vertical-align: bottom;
 }
 tbody th, tbody td { border-bottom: 1px solid var(--line); }
+tbody th { font-weight: 500; }
 tbody tr:last-child > :where(th, td) { border-bottom: none; }
-tfoot th, tfoot td { border-top: 2px solid var(--ink); font-weight: 600; }
+tfoot th, tfoot td { border-top: 1px solid var(--line-strong); font-weight: 600; }
 
 /* ==========================================================================
    Forms
    ========================================================================== */
-label { display: block; font-weight: 600; font-size: 0.9375rem; margin-bottom: 0.4rem; }
+label { display: block; font-weight: 500; font-size: var(--size-small); margin-bottom: 0.4rem; }
+/* a field's label keeps its distance from the control above it, and so
+   does a group or a row of buttons */
+:where(input, select, textarea, fieldset, progress, meter) + label { margin-top: 1.15rem; }
+:where(input, select, textarea, label) + :where(fieldset, p, menu) { margin-top: 1.5rem; }
+/* a label that wraps a checkbox, radio or switch reads as body text.
+   :where() keeps it at label specificity, so choice cards override it. */
+label:where(:has(> input:is([type="checkbox"], [type="radio"]))) {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: var(--size-body);
+  font-weight: 400;
+  line-height: 1.45;
+  margin-bottom: 0.5rem;
+}
 
 :is(
   input[type="text"], input[type="email"], input[type="password"],
@@ -370,11 +546,13 @@ label { display: block; font-weight: 600; font-size: 0.9375rem; margin-bottom: 0
   input[type="month"], input[type="week"], input[type="time"], input:not([type])
 ), textarea, select {
   font: inherit;
+  font-size: var(--size-body);
+  line-height: 1.5rem;
   width: 100%;
-  padding: 0.62rem 0.8rem;
+  padding: 0.55rem 0.8rem;
   color: var(--text);
   background: var(--surface);
-  border: 1.5px solid var(--line-strong);
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
@@ -401,7 +579,7 @@ textarea { min-height: 6.5rem; resize: vertical; line-height: 1.55; }
 :is(input, textarea, select):user-invalid { border-color: var(--danger); }
 :user-invalid:where(:not([type="checkbox"], [type="radio"])):focus-visible {
   border-color: var(--danger);
-  box-shadow: 0 0 0 1px var(--danger), 0 0 0 4px color-mix(in srgb, var(--danger) 22%, transparent);
+  box-shadow: 0 0 0 1px var(--danger), 0 0 0 4px color-mix(in srgb, var(--danger) 18%, transparent);
 }
 
 /* select chevron --------------------------------------------------------- */
@@ -409,9 +587,9 @@ select {
   appearance: none;
   -webkit-appearance: none;
   padding-right: 2.3rem;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='%2385827b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='%23818882' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 0.85rem center;
+  background-position: right 0.8rem center;
   background-size: 0.85rem;
 }
 select[multiple] { background-image: none; padding-right: 0.8rem; }
@@ -420,12 +598,12 @@ select[multiple] { background-image: none; padding-right: 0.8rem; }
 input[type="checkbox"]:not([role="switch"]), input[type="radio"] {
   appearance: none;
   -webkit-appearance: none;
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 1.2rem;
+  height: 1.2rem;
   flex: 0 0 auto;
   display: inline-grid;
   place-content: center;
-  border: 1.5px solid var(--line-strong);
+  border: 1px solid var(--line-strong);
   background: var(--surface);
   cursor: pointer;
   vertical-align: -0.22em;
@@ -437,16 +615,16 @@ input[type="checkbox"]:not([role="switch"]):checked,
 input[type="radio"]:checked { background: var(--accent); border-color: var(--accent); }
 input[type="checkbox"]:not([role="switch"]):checked::after {
   content: "";
-  width: 0.34rem;
-  height: 0.62rem;
+  width: 0.32rem;
+  height: 0.6rem;
   border: solid var(--on-accent);
-  border-width: 0 2.5px 2.5px 0;
+  border-width: 0 2px 2px 0;
   transform: translateY(-1px) rotate(45deg);
 }
 input[type="radio"]:checked::after {
   content: "";
-  width: 0.55rem;
-  height: 0.55rem;
+  width: 0.48rem;
+  height: 0.48rem;
   border-radius: 50%;
   background: var(--on-accent);
 }
@@ -456,8 +634,8 @@ input[type="checkbox"][role="switch"] {
   appearance: none;
   -webkit-appearance: none;
   position: relative;
-  width: 2.7rem;
-  height: 1.55rem;
+  width: 2.5rem;
+  height: 1.5rem;
   flex: 0 0 auto;
   border-radius: 999px;
   background: var(--line-strong);
@@ -471,17 +649,17 @@ input[type="checkbox"][role="switch"]::after {
   top: 50%;
   left: 3px;
   transform: translate(0, -50%);
-  width: 1.15rem;
-  height: 1.15rem;
+  width: 1.125rem;
+  height: 1.125rem;
   border-radius: 50%;
   background: #fff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
   transition: transform 0.2s var(--ease-out);
 }
 input[type="checkbox"][role="switch"]:checked { background: var(--accent); }
-/* the thumb slides with transform, off the layout path: 1.55rem is the
-   2.7rem track minus the 1.15rem thumb, less the 3px inset on each side */
-input[type="checkbox"][role="switch"]:checked::after { transform: translate(calc(1.55rem - 6px), -50%); }
+/* the thumb slides with transform, off the layout path: 1.375rem is the
+   2.5rem track minus the 1.125rem thumb, less the 3px inset on each side */
+input[type="checkbox"][role="switch"]:checked::after { transform: translate(calc(1.375rem - 6px), -50%); }
 
 /* range ------------------------------------------------------------------ */
 input[type="range"] {
@@ -491,105 +669,108 @@ input[type="range"] {
   background: transparent;
   cursor: pointer;
 }
-input[type="range"]::-webkit-slider-runnable-track { height: 6px; border-radius: 999px; background: var(--line-strong); }
-input[type="range"]::-moz-range-track { height: 6px; border-radius: 999px; background: var(--line-strong); }
+input[type="range"]::-webkit-slider-runnable-track { height: 4px; border-radius: 999px; background: var(--line-strong); }
+input[type="range"]::-moz-range-track { height: 4px; border-radius: 999px; background: var(--line-strong); }
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 19px; height: 19px;
-  margin-top: -6.5px;
+  width: 18px; height: 18px;
+  margin-top: -7px;
   border-radius: 50%;
   background: var(--accent);
-  border: 2px solid var(--surface);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  border: 2px solid var(--bg);
 }
 input[type="range"]::-moz-range-thumb {
-  width: 19px; height: 19px;
+  width: 18px; height: 18px;
   border-radius: 50%;
   background: var(--accent);
-  border: 2px solid var(--surface);
+  border: 2px solid var(--bg);
 }
 
 /* color + file ----------------------------------------------------------- */
 input[type="color"] {
   width: 3rem; height: 2.5rem; padding: 0.25rem;
-  border: 1.5px solid var(--line-strong);
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius);
   background: var(--surface);
   cursor: pointer;
 }
 input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
-input[type="color"]::-webkit-color-swatch { border: none; border-radius: 3px; }
+input[type="color"]::-webkit-color-swatch { border: none; border-radius: 4px; }
 
-input[type="file"] { font: inherit; color: var(--muted); max-width: 100%; }
+input[type="file"] { font: inherit; font-size: var(--size-small); color: var(--muted); max-width: 100%; }
 input[type="file"]::file-selector-button {
-  font: inherit; font-weight: 600;
+  font: inherit; font-weight: 500;
   margin-right: 0.85rem;
-  padding: 0.5rem 0.9rem;
+  padding: 0.45rem 0.9rem;
   color: var(--text);
-  background: var(--surface);
-  border: 1.5px solid var(--ink);
+  background: var(--tint);
+  border: 1px solid transparent;
   border-radius: var(--radius);
   cursor: pointer;
   transition: background 0.15s ease;
 }
 @media (hover: hover) and (pointer: fine) {
-  input[type="file"]:not(:disabled)::file-selector-button:hover { background: var(--surface-alt); }
+  input[type="file"]:not(:disabled)::file-selector-button:hover { background: var(--tint-strong); }
 }
 
-/* fieldset --------------------------------------------------------------- */
+/* fieldset: an unboxed group, headed by its legend ------------------------ */
 fieldset {
-  border: 1.5px solid var(--line);
-  border-radius: var(--radius-lg);
-  padding: 1.2rem 1.3rem;
+  border: 0;
+  padding: 0;
+  min-inline-size: 0;
 }
-legend { font-weight: 700; padding-inline: 0.5rem; letter-spacing: -0.01em; }
+legend { font-weight: 600; padding: 0; margin-block-end: 0.6rem; }
 
 /* choice cards ------------------------------------------------------------
    A <label> wrapping a radio/checkbox plus a <span> becomes a tappable card:
      <label><input type="radio" name="x"> <span><strong>Title</strong>
        <small>Optional description</small></span></label>
-   Plain <label><input> text</label> is untouched. Base selector is kept at
-   label-level specificity via :where() so the state rules below win cleanly. */
-label:where(:has(> input[type="radio"], > input[type="checkbox"]:not([role="switch"])):has(> span)) {
+   Plain <label><input> text</label> is untouched, and so are labels directly
+   inside [role="radiogroup"], which are segments (see Buttons). Base selector
+   is kept at label-level specificity via :where() so the state rules below
+   win cleanly. A card is a control, so it keeps an outline. */
+label:where(:has(> input[type="radio"], > input[type="checkbox"]:not([role="switch"])):has(> span):not([role="radiogroup"] > label)) {
   display: flex;
-  gap: 0.85rem;
+  gap: 0.8rem;
   align-items: flex-start;
   margin: 0;
-  padding: 0.9rem 1rem;
-  font-size: 1rem;
+  padding: 0.8rem 0.95rem;
+  font-size: var(--size-body);
   font-weight: 400;
   line-height: 1.45;
   background: var(--surface);
-  border: 1.5px solid var(--line);
+  border: 1px solid var(--line-card);
   border-radius: var(--radius);
   cursor: pointer;
-  transition: border-color 0.12s ease, background 0.12s ease;
+  transition: border-color 0.12s ease, background 0.12s ease, box-shadow 0.12s ease;
 }
-label:where(:has(> input[type="radio"], > input[type="checkbox"]:not([role="switch"])):has(> span)) > input { margin-top: 0.1rem; }
-label:where(:has(> input[type="radio"], > input[type="checkbox"]:not([role="switch"])):has(> span)) > span { flex: 1; display: grid; gap: 0.2rem; }
-label:where(:has(> input[type="radio"], > input[type="checkbox"]:not([role="switch"])):has(> span)) small { line-height: 1.45; }
-label:where(:has(> input[type="radio"], > input[type="checkbox"]:not([role="switch"])):has(> span)) > span > input { margin-top: 0.35rem; }
+label:where(:has(> input[type="radio"], > input[type="checkbox"]:not([role="switch"])):has(> span):not([role="radiogroup"] > label)) > input { margin-top: 0.1rem; }
+label:where(:has(> input[type="radio"], > input[type="checkbox"]:not([role="switch"])):has(> span):not([role="radiogroup"] > label)) > span { flex: 1; display: grid; gap: 0.15rem; }
+label:where(:has(> input[type="radio"], > input[type="checkbox"]:not([role="switch"])):has(> span):not([role="radiogroup"] > label)) strong { font-weight: 500; }
+label:where(:has(> input[type="radio"], > input[type="checkbox"]:not([role="switch"])):has(> span):not([role="radiogroup"] > label)) small { line-height: 1.45; }
+label:where(:has(> input[type="radio"], > input[type="checkbox"]:not([role="switch"])):has(> span):not([role="radiogroup"] > label)) > span > input { margin-top: 0.4rem; }
 @media (hover: hover) and (pointer: fine) {
-  label:where(:has(> input[type="radio"], > input[type="checkbox"]:not([role="switch"])):has(> span)):where(:not(:has(> input:disabled))):hover {
-    border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+  label:where(:has(> input[type="radio"], > input[type="checkbox"]:not([role="switch"])):has(> span):not([role="radiogroup"] > label)):where(:not(:has(> input:disabled))):hover {
+    border-color: var(--line-strong);
   }
 }
-label:where(:has(> input[type="radio"], > input[type="checkbox"]:not([role="switch"])):has(> span)):has(> input:checked) {
+label:where(:has(> input[type="radio"], > input[type="checkbox"]:not([role="switch"])):has(> span):not([role="radiogroup"] > label)):has(> input:checked) {
   border-color: var(--accent);
-  background: var(--accent-faint);
+  box-shadow: 0 0 0 1px var(--accent);
+  background: color-mix(in srgb, var(--accent) 5%, var(--surface));
 }
 /* the card carries the focus ring, not the input inside it */
-label:where(:has(> input[type="radio"], > input[type="checkbox"]:not([role="switch"])):has(> span)):has(> input:focus-visible) {
+label:where(:has(> input[type="radio"], > input[type="checkbox"]:not([role="switch"])):has(> span):not([role="radiogroup"] > label)):has(> input:focus-visible) {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
-label:where(:has(> input[type="radio"], > input[type="checkbox"]:not([role="switch"])):has(> span)) > input:focus-visible { outline: none; }
-label:where(:has(> input[type="radio"], > input[type="checkbox"]:not([role="switch"])):has(> span)):has(> input:disabled) {
+label:where(:has(> input[type="radio"], > input[type="checkbox"]:not([role="switch"])):has(> span):not([role="radiogroup"] > label)) > input:focus-visible { outline: none; }
+label:where(:has(> input[type="radio"], > input[type="checkbox"]:not([role="switch"])):has(> span):not([role="radiogroup"] > label)):has(> input:disabled) {
   opacity: 0.55;
   cursor: default;
 }
-label:where(:has(> input[type="radio"], > input[type="checkbox"]:not([role="switch"])):has(> span)) > input:disabled { opacity: 1; }
+label:where(:has(> input[type="radio"], > input[type="checkbox"]:not([role="switch"])):has(> span):not([role="radiogroup"] > label)) > input:disabled { opacity: 1; }
 
 /* question forms ----------------------------------------------------------
    <form data-form="questions">: one <fieldset> per question, <legend> is the
@@ -599,51 +780,48 @@ form[data-form="questions"] { counter-reset: question; }
 form[data-form="questions"] > fieldset {
   counter-increment: question;
   display: grid;
-  gap: 0.6rem;
-  margin: 0 0 2.25rem;
-  padding: 2rem 0 0;
-  border: 0;
-  border-top: 1.5px solid var(--line);
-  border-radius: 0;
+  gap: 0.5rem;
+  margin: 0 0 3.25rem;
 }
 form[data-form="questions"] > fieldset > legend {
   float: left; /* pulls the legend into the grid flow */
   width: 100%;
-  margin-bottom: 0.15rem;
-  padding: 0;
-  font-size: 1.3rem;
-  line-height: 1.3;
+  margin-bottom: 0.1rem;
+  font-size: 1.1875rem;
+  line-height: 1.35;
+  letter-spacing: -0.012em;
   text-wrap: pretty;
 }
 form[data-form="questions"] > fieldset > legend::before {
   content: counter(question);
-  display: inline-grid;
-  place-content: center;
-  width: 1.75rem;
-  height: 1.75rem;
-  margin-right: 0.65rem;
-  vertical-align: 0.12em;
-  font-family: var(--font-mono);
-  font-size: 0.875rem;
-  color: var(--on-accent);
-  background: var(--accent);
-  border-radius: 50%;
+  margin-inline-end: 0.6rem;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
 }
-form[data-form="questions"] > fieldset:has(:user-invalid) > legend::before { background: var(--danger); color: var(--on-danger); }
-form[data-form="questions"] > fieldset > p { margin: 0 0 0.4rem; color: var(--muted); }
+form[data-form="questions"] > fieldset:has(:user-invalid) > legend::before { color: var(--danger); font-weight: 600; }
+form[data-form="questions"] > fieldset > p { margin: 0 0 0.4rem; color: var(--muted); font-size: var(--size-small); line-height: 1.55; }
+form[data-form="questions"] > fieldset > label:not(:has(> span)) { margin-block: 0.2rem 0; }
 form[data-form="questions"] abbr[title="required"] { margin-left: 0.2rem; color: var(--danger); text-decoration: none; }
+/* the action bar's fill runs the width of the window (a spread shadow,
+   clipped top and bottom), so what scrolls under it never shows at the
+   sides. Its top rule keeps to the column. */
 form[data-form="questions"] > footer {
   position: sticky;
   bottom: 0;
+  z-index: 3;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: 0.6rem;
   align-items: center;
-  padding: 1rem 0;
+  margin: 0;
+  padding: 0.9rem 0;
   background: var(--bg);
-  border-top: 1.5px solid var(--line);
+  border-block-start: 1px solid var(--line);
+  box-shadow: 0 0 0 100vmax var(--bg);
+  clip-path: inset(0 -100vmax);
 }
-form[data-form="questions"] > footer output { font-size: 0.9375rem; color: var(--muted); }
+form[data-form="questions"] > footer output { font-size: var(--size-small); color: var(--muted); margin-inline-start: 0.4rem; }
 /* keep a focused control clear of the sticky footer (WCAG 2.4.11); 8rem
    covers the footer even when it wraps to two rows on narrow screens */
 html:has(form[data-form="questions"]) { scroll-padding-block-end: 8rem; }
@@ -651,7 +829,8 @@ html:has(form[data-form="questions"]) { scroll-padding-block-end: 8rem; }
 /* ==========================================================================
    Buttons
    ========================================================================== */
-/* element defaults (submit/button/reset inputs, link-buttons, and reset as
+/* a button is ink, not accent: it is a command, and its shape says so.
+   element defaults (submit/button/reset inputs, link-buttons, and reset as
    secondary) carry :where(:not([data-variant])), so an explicit data-variant
    always wins at unchanged specificity */
 button,
@@ -661,21 +840,22 @@ input[type="reset"]:where(:not([data-variant])),
 a[role="button"]:where(:not([data-variant])),
 [data-variant] {
   font: inherit;
-  font-weight: 600;
-  line-height: 1.2;
+  font-size: var(--size-small);
+  font-weight: 500;
+  line-height: 1.25rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 0.62rem 1.15rem;
-  color: var(--on-accent);
-  background: var(--accent);
-  border: 1.5px solid transparent;
+  gap: 0.45rem;
+  padding: 0.5rem 0.95rem;
+  color: var(--on-ink);
+  background: var(--ink);
+  border: 1px solid transparent;
   border-radius: var(--radius);
   text-decoration: none;
   white-space: nowrap;
   cursor: pointer;
-  transition: background 0.15s ease, transform 0.06s ease, box-shadow 0.15s ease, color 0.15s ease;
+  transition: background 0.15s ease, transform 0.06s ease, border-color 0.15s ease, color 0.15s ease;
 }
 button:not(:disabled):active,
 input[type="submit"]:not(:disabled):active, input[type="button"]:not(:disabled):active,
@@ -685,19 +865,17 @@ a[role="button"]:not([aria-disabled="true"]):active, [data-variant]:not(:disable
 [data-variant="secondary"],
 button[type="reset"]:where(:not([data-variant])),
 input[type="reset"]:where(:not([data-variant])) {
-  background: var(--surface);
+  background: var(--tint);
   color: var(--text);
-  border-color: var(--ink);
 }
 [data-variant="outline"] {
   background: transparent;
-  color: var(--accent);
-  border-color: var(--accent);
+  color: var(--text);
+  border-color: var(--line-strong);
 }
 [data-variant="ghost"] {
   background: transparent;
   color: var(--text);
-  border-color: transparent;
 }
 [data-variant="danger"] {
   background: var(--danger);
@@ -710,27 +888,104 @@ input[type="reset"]:where(:not([data-variant])) {
   input[type="submit"]:where(:not([data-variant])):not(:disabled):hover,
   input[type="button"]:where(:not([data-variant])):not(:disabled):hover,
   a[role="button"]:where(:not([data-variant])):not([aria-disabled="true"]):hover,
-  [data-variant]:not(:disabled):hover { background: var(--accent-press); }
+  [data-variant]:not(:disabled):hover { background: var(--ink-press); color: var(--on-ink); }
   [data-variant="secondary"]:not(:disabled):hover,
   button[type="reset"]:where(:not([data-variant])):not(:disabled):hover,
   input[type="reset"]:where(:not([data-variant])):not(:disabled):hover {
-    background: var(--surface-alt);
+    background: var(--tint-strong);
+    color: var(--text);
   }
-  [data-variant="outline"]:not(:disabled):hover { background: var(--accent-soft); }
-  [data-variant="ghost"]:not(:disabled):hover { background: var(--surface-alt); }
-  [data-variant="danger"]:not(:disabled):hover { background: var(--danger-press); }
+  [data-variant="outline"]:not(:disabled):hover { background: var(--tint); color: var(--text); }
+  [data-variant="ghost"]:not(:disabled):hover { background: var(--tint); color: var(--text); }
+  [data-variant="danger"]:not(:disabled):hover { background: var(--danger-press); color: var(--on-danger); }
 }
 
 /* sizes ------------------------------------------------------------------ */
-[data-size="sm"] { padding: 0.4rem 0.8rem; font-size: 0.875rem; border-radius: calc(var(--radius) - 1px); }
-[data-size="lg"] { padding: 0.85rem 1.6rem; font-size: 1.08rem; }
+[data-size="sm"] { padding: 0.25rem 0.65rem; font-size: 0.875rem; border-radius: calc(var(--radius) - 1px); }
+[data-size="lg"] { padding: 0.7rem 1.35rem; font-size: var(--size-body); border-radius: calc(var(--radius) + 2px); }
+/* a finger needs more than a cursor does */
+@media (pointer: coarse) {
+  button, input:is([type="submit"], [type="button"], [type="reset"]), a[role="button"], [data-variant] { min-height: 2.75rem; }
+  [data-size="sm"] { min-height: 2.25rem; }
+}
 
-/* button group (segmented) ---------------------------------------------- */
-[role="group"] { display: inline-flex; }
+/* button group (segmented): a hairline of page shows between the parts --- */
+[role="group"] { display: inline-flex; gap: 1px; vertical-align: middle; }
 [role="group"] > * { border-radius: 0; }
 [role="group"] > :first-child { border-start-start-radius: var(--radius); border-end-start-radius: var(--radius); }
 [role="group"] > :last-child { border-start-end-radius: var(--radius); border-end-end-radius: var(--radius); }
-[role="group"] > :not(:first-child) { margin-inline-start: -1.5px; }
+[role="group"] > [data-variant="outline"]:not(:first-child) { margin-inline-start: -2px; }
+
+/* segmented radio group ---------------------------------------------------
+   <span role="radiogroup" aria-label="..."><label><input type="radio"
+   name="x" value="a"><span>A</span></label>...</span>
+   One choice from a few, on one line. Each segment is a real radio: the
+   input stays in place (invisible, covering its segment), so keyboard,
+   grouping, validation and form submission are native. The chosen segment
+   takes the accent, like every other chosen thing. The group isolates its
+   own stacking, so the invisible inputs can't sit over a sticky bar. */
+[role="radiogroup"] {
+  display: inline-flex;
+  max-width: 100%;
+  padding: 2px;
+  gap: 2px;
+  background: var(--tint);
+  border-radius: calc(var(--radius) + 1px);
+  vertical-align: middle;
+  isolation: isolate;
+}
+[role="radiogroup"] > label {
+  position: relative;
+  display: inline-flex;
+  margin: 0;
+  font-weight: 500;
+}
+[role="radiogroup"] > label > input[type="radio"] {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  border: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+[role="radiogroup"] > label > span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.22rem 0.7rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  white-space: nowrap;
+  color: var(--text);
+  border-radius: calc(var(--radius) - 1px);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  [role="radiogroup"] > label:hover > input:not(:checked):not(:disabled) + span { background: var(--tint); }
+}
+[role="radiogroup"] > label > input:checked + span {
+  color: var(--on-accent);
+  background: var(--accent);
+}
+/* a segment with an empty value means "no choice yet": chosen, it is a
+   plain raised tab, so the accent stays for real answers */
+[role="radiogroup"] > label > input[value=""]:checked + span {
+  color: var(--text);
+  background: var(--surface);
+  box-shadow: 0 0 0 1px var(--line);
+}
+[role="radiogroup"] > label > input:focus-visible + span {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+[role="radiogroup"] > label:has(> input:disabled) { opacity: 0.55; }
+[role="radiogroup"] > label > input:disabled { cursor: default; }
+@media (pointer: coarse) {
+  [role="radiogroup"] > label > span { padding-block: 0.5rem; }
+}
 
 /* disabled state ---------------------------------------------------------
    Mirrors the selectors above that set cursor: pointer so specificity always
@@ -753,36 +1008,40 @@ input:disabled::file-selector-button { cursor: default; }
 /* ==========================================================================
    Components via semantic tags
    ========================================================================== */
-/* card */
+/* spotlight: a sheet can't be lighter than a white page, so an <article> is
+   marked out by a hairline. It is drawn as an inset shadow, which takes no
+   room, so the words inside stay on the text edge. (Beige paper gives it a
+   fill instead: see the end of the file.) */
 article {
-  background: var(--surface);
-  border: 1px solid var(--line);
+  box-shadow: inset 0 0 0 1px var(--line-card);
   border-radius: var(--radius-lg);
-  padding: clamp(1.3rem, 3vw, 1.8rem);
-  box-shadow: var(--shadow);
+  padding: 1.25rem var(--bleed);
 }
-article > header { margin-bottom: 1rem; }
+article > :last-child:not(dialog) { margin-block-end: 0; }
+article > header { margin-bottom: 0.6rem; }
 article > header > :last-child { margin-bottom: 0; }
 article > footer {
-  margin-top: 1.2rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--line);
+  margin-top: 0.9rem;
+  padding: 0;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.6rem;
   flex-wrap: wrap;
 }
-:is(article, aside) + :is(article, aside) { margin-top: 1.5rem; }
+:is(article, aside) + :is(article, aside) { margin-top: 1rem; }
+:is(article, aside):not(:last-child) { margin-block-end: 1.1rem; }
 
-/* callout */
+/* note: an <aside> is pressed into the page, the opposite of an article */
 aside {
-  background: var(--accent-soft);
-  border-inline-start: 4px solid var(--accent);
-  border-radius: 0 var(--radius) var(--radius) 0;
-  padding: 1rem 1.25rem;
+  background: var(--surface-alt);
+  border-radius: var(--radius-lg);
+  padding: 1rem var(--bleed);
+  font-size: var(--size-small);
+  line-height: 1.55;
 }
 aside > :first-child { margin-top: 0; }
-aside > :last-child { margin-bottom: 0; }
+aside > :last-child:not(dialog) { margin-bottom: 0; }
+aside :where(h1, h2, h3, h4, h5, h6) { font-size: var(--size-small); margin-block-end: 0.25em; }
 
 /* nav */
 nav ul {
@@ -790,49 +1049,60 @@ nav ul {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.4rem 1.4rem;
+  gap: 0.4rem 1.5rem;
   padding: 0;
   margin: 0;
 }
 nav li { margin: 0; }
-/* nav links keep the accent link color, so they never pass for headings, and
-   drop the resting underline. Hover adds it; the current page reads as text
-   with an accent underline. Link-buttons are left to the button styles. */
-nav a:not([role="button"]) { font-weight: 600; text-decoration-line: none; }
+nav ul { font-size: var(--size-small); }
+/* nav links are muted and plain. Hover and the current page turn to ink;
+   the current page also keeps an underline, so color isn't its only cue.
+   Link-buttons are left to the button styles. */
+nav ul a:not([role="button"]) { color: var(--muted); text-decoration-line: none; }
 @media (hover: hover) and (pointer: fine) {
-  nav a:not([role="button"]):hover { text-decoration-line: underline; }
+  nav ul a:not([role="button"]):hover { color: var(--text); }
 }
-nav a:not([role="button"])[aria-current] { color: var(--text); text-decoration-line: underline; text-decoration-color: var(--accent); }
+nav ul a:not([role="button"])[aria-current] {
+  color: var(--text);
+  text-decoration-line: underline;
+  text-decoration-color: var(--line-strong);
+  text-underline-offset: 0.4em;
+}
 
-/* details / accordion */
-details {
-  border: 1.5px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface);
-}
+/* details: a line of text with a chevron; no box */
+details { border-radius: var(--radius); }
+details:has(+ details) { margin-block-end: 0.45rem; }
 summary {
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 500;
   list-style: none;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.9rem 1.1rem;
+  align-items: baseline;
+  gap: 0.65rem;
+  width: fit-content;
+  max-width: 100%;
+  padding-block: 0.2rem;
+  /* room for the focus ring to clear the last letter */
+  padding-inline-end: 0.4rem;
+  border-radius: 5px;
 }
 summary::-webkit-details-marker { display: none; }
-summary::after {
-  content: "+";
-  font-size: 1.4em;
-  line-height: 1;
-  color: var(--muted);
+summary::before {
+  content: "";
+  flex: none;
+  width: 0.45rem;
+  height: 0.45rem;
+  border: solid var(--muted);
+  border-width: 0 1.5px 1.5px 0;
+  transform: translateY(-0.12em) rotate(-45deg);
   transition: transform 0.2s var(--ease-out);
 }
-details[open] summary::after { transform: rotate(45deg); }
-details[open] summary { border-bottom: 1.5px solid var(--line); }
-details > :not(summary) { padding-inline: 1.1rem; }
-details > :not(summary):first-of-type { padding-top: 0.95rem; }
-details > :not(summary):last-child { padding-bottom: 1.1rem; margin-bottom: 0; }
+details[open] > summary::before { transform: translateY(-0.22em) rotate(45deg); }
+@media (hover: hover) and (pointer: fine) {
+  summary:hover::before { border-color: var(--text); }
+}
+details[open] > summary { margin-block-end: 0.9rem; }
+details > :last-child:not(dialog) { margin-bottom: 0; }
 /* open/close: the content grows from 0 to its full height and fades in over
    200ms, and reverses on close (content-visibility is held until it has
    collapsed). Height can only reach auto through interpolate-size, so browsers
@@ -851,19 +1121,20 @@ details > :not(summary):last-child { padding-bottom: 1.1rem; margin-bottom: 0; }
   }
 }
 
-/* dialog */
+/* dialog: the one thing that floats, so the one thing with a shadow */
 dialog {
   margin: auto;
-  max-width: min(32rem, calc(100vw - 2rem));
+  max-width: min(30rem, calc(100vw - 2rem));
   color: var(--text);
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  padding: clamp(1.3rem, 4vw, 1.9rem);
-  box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.5);
+  border-radius: calc(var(--radius-lg) + 2px);
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
 }
-dialog::backdrop { background: rgba(8, 8, 9, 0.55); backdrop-filter: blur(2px); }
+dialog::backdrop { background: color-mix(in srgb, var(--bg) 70%, transparent); }
 dialog > :last-child { margin-bottom: 0; }
+dialog form { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-block-start: 1.25rem; }
 /* open/close: the dialog fades in and scales up from 96% over 180ms, and its
    backdrop fades with it. Closing reverses that in 120ms where overlay can be
    transitioned, which keeps the dialog in the top layer until it has faded;
@@ -891,8 +1162,9 @@ dialog > :last-child { margin-bottom: 0; }
 progress, meter {
   appearance: none;
   -webkit-appearance: none;
+  display: block;
   width: 100%;
-  height: 0.65rem;
+  height: 0.375rem;
   border: none;
   border-radius: 999px;
   overflow: hidden;
@@ -901,22 +1173,107 @@ progress, meter {
 progress::-webkit-progress-bar { background: var(--line); }
 progress::-webkit-progress-value { background: var(--accent); border-radius: 999px; }
 progress::-moz-progress-bar { background: var(--accent); }
-meter::-webkit-meter-bar { background: var(--line); border: none; }
-meter::-webkit-meter-optimum-value { background: var(--accent); }
+meter::-webkit-meter-bar { background: var(--line); border: none; height: 0.375rem; }
+meter::-webkit-meter-optimum-value,
+meter::-webkit-meter-suboptimum-value,
+meter::-webkit-meter-even-less-good-value { background: var(--accent); }
 meter::-moz-meter-bar { background: var(--accent); }
 
 /* footer */
 footer {
-  margin-top: 3.5rem;
-  padding-top: 1.6rem;
-  border-top: 1px solid var(--line);
+  margin-top: var(--section-gap);
   color: var(--muted);
-  font-size: 0.9375rem;
+  font-size: var(--size-small);
 }
-/* footer links share the footer's muted color, so the underline is their
-   only cue: keep it full strength. Link-buttons keep their button colors
-   (an accent hover color would vanish on the accent fill). */
-footer a:not([role="button"]) { color: var(--muted); text-decoration-color: currentColor; }
+footer > :last-child:not(dialog) { margin-block-end: 0; }
+/* footer links share the footer's muted color; the underline is their cue */
 @media (hover: hover) and (pointer: fine) {
-  footer a:not([role="button"]):hover { color: var(--accent); }
+  footer a:not([role="button"]):hover { color: var(--text); }
+}
+
+/* ==========================================================================
+   One edge
+   --------------------------------------------------------------------------
+   Everything above puts text on the column's left edge. These rules keep it
+   there for the things that would otherwise push it in: tinted blocks reach
+   out past the edge by their own padding, and on a wide screen, list
+   markers, the quote bar, the disclosure chevron and question numbers hang
+   in the margin.
+   ========================================================================== */
+:where(main, main > section, main > section > section, main > form > section, body > header, main > header) > :is(pre, aside, article),
+:where(main, main > section, main > section > section, main > form > section) > details > :is(pre, aside, article) {
+  margin-inline: calc(-1 * var(--bleed));
+}
+
+/* phone: a tinted block runs to both edges of the screen, corners square */
+@media (max-width: 40rem) {
+  :root { --bleed: var(--gutter); --section-gap: 3.25rem; }
+  :where(main, main > section, main > section > section, main > form > section, body > header, main > header) > :is(pre, aside, article),
+:where(main, main > section, main > section > section, main > form > section) > details > :is(pre, aside, article) {
+    border-radius: 0;
+  }
+}
+
+@media (min-width: 48rem) {
+  :where(main, main > section, main > section > section, main > form > section, main > nav) > :is(ul, ol):not([role="list"]) { padding-inline-start: 0; }
+  :where(main, main > section, main > section > section, main > form > section) > blockquote { margin-inline-start: calc(-1.25rem - 2px); }
+  :where(main, main > section, main > section > section, main > form > section, :is(main, main > form) > section > :is(ul, ol)[role="list"] > li) > details > summary { margin-inline-start: -1.1rem; }
+  form[data-form="questions"] > fieldset > legend::before {
+    display: inline-block;
+    inline-size: 2rem;
+    margin-inline: -2.6rem 0.6rem;
+    text-align: end;
+  }
+}
+
+/* the margin: on a wide screen, a page built from <section><h2> gains a
+   left margin, and each section's <h2> moves into it as a label that stays
+   in view while its section scrolls past. The page title and every line of
+   content keep the one edge to the right of it. */
+@media (min-width: 56rem) {
+  body:has(:is(main, main > form) > :is(section, nav) > h2:first-child) {
+    max-width: calc(var(--width) + var(--rail) + var(--rail-gap) + 2 * var(--gutter));
+    padding-inline-start: calc(var(--gutter) + var(--rail) + var(--rail-gap));
+  }
+  :is(main, main > form) > :is(section, nav) > h2:first-child {
+    float: inline-start;
+    inline-size: var(--rail);
+    margin: 0;
+    margin-inline-start: calc(-1 * (var(--rail) + var(--rail-gap)));
+    position: sticky;
+    inset-block-start: 2rem;
+    font-size: var(--size-small);
+    /* the label's first line shares a baseline with the body text beside it */
+    line-height: calc(var(--size-body) * var(--leading));
+    letter-spacing: 0;
+    text-wrap: pretty;
+  }
+  :is(main, main > form) > :is(section, nav) > h2:first-child + * { margin-block-start: 0; }
+}
+
+@media print {
+  body { padding-block: 0; }
+  :is(main, main > form) > :is(section, nav) > h2:first-child { position: static; }
+  form[data-form="questions"] > footer { position: static; }
+}
+
+/* phone: the spotlight card runs the width of the screen, so only its top
+   and bottom rules are kept */
+@media (max-width: 40rem) {
+  :where(main, main > section, main > section > section, main > form > section, body > header, main > header) > article,
+  :where(main, main > section, main > section > section, main > form > section) > details > article {
+    box-shadow: inset 0 1px 0 var(--line-card), inset 0 -1px 0 var(--line-card);
+  }
+}
+
+/* ==========================================================================
+   Beige paper (data-paper="beige" on <html> or <body>) — see the tokens
+   --------------------------------------------------------------------------
+   On paper an <article> is a sheet lifted off the page by tone alone: a
+   fill, and no hairline. :is() rather than :where() so this beats the phone
+   rule just above; nothing else sets these two properties on an article.
+   ========================================================================== */
+:is(:root[data-paper="beige"], :root:has(> body[data-paper="beige"])) article {
+  background: var(--surface);
+  box-shadow: none;
 }

@@ -1,10 +1,11 @@
-# 🏖️ zinc.css
+# zinc.css
 
 **A classless CSS framework for semantic HTML.**
 
-Drop in one stylesheet and every semantic element looks sharp — no class names,
-no build step, no configuration. Write plain markup; `zinc.css` brings the
-sunshine.
+Drop in one stylesheet and every semantic element is styled — no class names,
+no build step, no configuration. Write plain markup; `zinc.css` sets it as one
+calm column of text, with section labels in the margin and colour kept for what
+you focus, check or choose.
 
 ```html
 <!-- one line. that's the install. -->
@@ -28,41 +29,42 @@ No download, no `npm install` — just point a `<link>` at jsDelivr or unpkg:
 <link rel="stylesheet" href="https://unpkg.com/zinc.css/zinc.css" />
 ```
 
-Pin a version once you're past prototyping (e.g. `zinc.css@0.0.0-pre.6/zinc.css`) —
+Pin a version once you're past prototyping (e.g. `zinc.css@0.1.0-next.0/zinc.css`) —
 an unpinned URL always serves `latest`, which is fine for a demo but can
 change under you in production.
 
 ---
 
-### Fonts (optional but recommended)
+### Fonts
 
-`zinc.css` defaults to **Inter** for display and body text, and
-**JetBrains Mono** for code — with safe system fallbacks if you skip this step.
+`zinc.css` uses the reader's own system faces (`ui-sans-serif` and
+`ui-monospace`), so the stylesheet is the only request. To use a web font,
+load it yourself and set the font tokens:
 
-```html
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link
-  rel="stylesheet"
-  href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
-/>
+```css
+:root {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
 ```
 
 ## Theming
 
 Set hooks on the `<html>` element — no classes anywhere.
 
-| Hook          | Values                                             | Effect                                                    |
-| ------------- | -------------------------------------------------- | --------------------------------------------------------- |
-| `data-mode`   | `light` · `dark`                                   | Force a color scheme (omit to follow the system)          |
-| `data-accent` | `electric` · `hot` · `amber` · `forest` · `violet` | Pick the accent color (each has a light and a dark shade) |
+| Hook          | Values                            | Effect                                                         |
+| ------------- | --------------------------------- | -------------------------------------------------------------- |
+| `data-mode`   | `light` · `dark`                  | Force a color scheme (omit to follow the system)               |
+| `data-accent` | `electric` · `forest` · `violet`  | Pick the accent color (each has a light and a dark shade)      |
+| `data-paper`  | `beige`                           | A pale green-beige paper instead of the white page (light mode) |
 
 ```html
-<html data-mode="dark" data-accent="electric"></html>
+<html data-mode="dark" data-accent="forest" data-paper="beige"></html>
 ```
 
-Every built-in accent keeps link text, button text and the focus ring at WCAG AA
-contrast in both modes.
+`data-paper` also works on `<body>`. The accent marks state only — focus,
+checked controls, chosen options, progress bars. Links and buttons are ink.
+Every built-in accent meets WCAG AA in both modes, as text and as a fill.
 
 ### Tune the tokens
 
@@ -73,11 +75,13 @@ Override any of these on `:root` to rebrand without touching the framework:
   --accent: light-dark(#0f766e, #2dd4bf); /* brand color: light shade, dark shade */
   --on-accent: light-dark(#ffffff, #0c0c0d); /* text on accent fills */
   --danger: light-dark(#d1242f, #ff6369); /* destructive actions, errors */
-  --radius: 9px; /* global corner radius */
-  --width: 72rem; /* max content width */
+  --radius: 8px; /* corner radius of controls */
+  --width: 42rem; /* the text column */
+  --measure: 38rem; /* where running text wraps, about 75 characters */
   --gutter: 2.5rem; /* page padding */
-  --font-sans: "Inter", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", monospace;
+  --rail: 11rem; /* the margin that holds section labels on a wide screen */
+  --font-sans: ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, monospace;
   --font-display: var(--font-sans);
 }
 ```
@@ -86,8 +90,24 @@ One color works in both modes; `light-dark()` gives each mode its own shade. Kee
 accent text at 4.5:1 on the page background and `--on-accent` at 4.5:1 on the
 accent.
 
-The full token set (neutrals, control borders, surfaces, shadows, code panel) is documented at
-the top of [`zinc.css`](./src/lib/zinc.css).
+The full token set (type sizes, layout, neutrals, control borders, code panel) is
+documented at the top of [`zinc.css`](./src/lib/zinc.css).
+
+## Page structure
+
+Build a page from `<section>` elements, each starting with an `<h2>`. From 56rem
+wide, each `<h2>` moves into a left margin as a short label that stays in view
+while its section scrolls past, so keep them to one to three words and put the
+sentence under it. Below 56rem it is an ordinary heading.
+
+- In the page `<header>`, a `<p>` before the `<h1>` is a small line of context,
+  and the first `<p>` after it is the lede, set a size larger.
+- A `<dl>` of `<div>` groups is a row of key figures: a large number with a
+  small label under it. A plain `<dl>` of `<dt>`/`<dd>` pairs is a ruled fact sheet.
+- `<ul role="list">` or `<ol role="list">` is a list of entries: no markers, a
+  hairline between entries.
+- `<menu>` of `<li>` is a toolbar; a `<label>` that wraps a field sits on one
+  line with it.
 
 ## Optional variant hooks
 
@@ -119,6 +139,12 @@ variants:
 
 <!-- a toggle switch -->
 <input type="checkbox" role="switch" />
+
+<!-- a segmented control: the chosen segment takes the accent -->
+<div role="radiogroup" aria-label="Decision">
+  <label><input type="radio" name="call" value="keep" /><span>Keep</span></label>
+  <label><input type="radio" name="call" value="drop" /><span>Drop</span></label>
+</div>
 ```
 
 ## Cards & callouts
@@ -126,14 +152,14 @@ variants:
 Two semantic elements carry visual emphasis:
 
 ```html
-<!-- a card: border, shadow, padding, styled header/footer -->
+<!-- a card: a hairline outline (a lighter sheet on the beige paper) -->
 <article>
   <header><h3>Key finding</h3></header>
   <p>Evidence or implication.</p>
   <footer>Source · confidence</footer>
 </article>
 
-<!-- a callout: accent-tinted panel for warnings and takeaways -->
+<!-- a note: a tinted block pressed into the page -->
 <aside>
   <p>The one thing to remember.</p>
 </aside>

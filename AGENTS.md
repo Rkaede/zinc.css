@@ -78,7 +78,7 @@ rules should reference these tokens, not hard-coded values.
   bug here. Both dark blocks also set `color-scheme: dark`, and `:root[data-mode="light"]`
   pins `color-scheme: light`, so native controls and `light-dark()` follow `data-mode`
   rather than the system.
-- **Accents** are swapped by `:root[data-accent="electric|hot|amber|forest|violet"]`. Each
+- **Accents** are swapped by `:root[data-accent="electric|forest|violet"]`. Each
   sets `--accent` and `--on-accent` as `light-dark(light shade, dark shade)` pairs, so
   accents need no entries in the dark blocks. `light-dark()` resolves from the used
   `color-scheme`, which is why a forced `data-mode` pins it. Derived accent shades
@@ -89,13 +89,24 @@ rules should reference these tokens, not hard-coded values.
   accents, so it needs no entries in the dark blocks. `--danger-press` is derived with
   `color-mix()` like `--accent-press`: darker in `:root`, lighter in both dark blocks.
   Never hard-code a red.
+- **Paper**: the default page is white. `data-paper="beige"` on `<html>` or `<body>`
+  swaps the light neutrals for a green-beige paper (`:root:where([data-paper="beige"],
+  :has(> body[data-paper="beige"]))`, kept at `:root` weight so the dark blocks still
+  win) and gives `<article>` a fill instead of its hairline (a rule at the end of the
+  file). `--line-card` is the outline of choice cards and the article: firmer than
+  `--line` on white, equal to it on beige. `pnpm run contrast` only measures the white
+  page; check beige by hand after changing its neutrals.
+- **Accent is state**: the accent marks only focus, checked controls, chosen options
+  and progress. Links and buttons are ink (`--ink`, `--on-ink`, `--ink-press`).
 - **`--line-strong`** is the neutral for control boundaries (form fields, checkbox,
   radio, switch and range tracks, color input, select chevron), at 3:1 or better on
   `--bg` and `--surface`. Like the other neutrals it is defined in `:root` and in both
   dark blocks. `--line` stays for decorative rules.
-- **User-facing API** (documented in README): theme hooks `data-mode` / `data-accent` on
-  `<html>`; variant hooks `data-variant` / `data-size` and `role="button"` / `role="switch"`
-  on elements; tunable tokens (`--accent`, `--radius`, `--width`, `--gutter`, fonts).
+- **User-facing API** (documented in README): theme hooks `data-mode` / `data-accent` /
+  `data-paper` on `<html>`; variant hooks `data-variant` / `data-size`, `data-form`, and
+  `role="button"` / `role="switch"` / `role="list"` / `role="radiogroup"` on elements;
+  tunable tokens (`--accent`, `--radius`, `--width`, `--measure`, `--gutter`, `--rail`,
+  fonts).
   Treat these as a public contract — renaming a token or attribute is a breaking change.
 
 ## Conventions

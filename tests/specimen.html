@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>zinc — specimen</title>
+<link rel="stylesheet" href="../src/lib/zinc.css" />
+<script>
+  // ?mode=light|dark, ?accent=<name> and ?paper=beige set the theme hooks
+  const q = new URLSearchParams(location.search), d = document.documentElement.dataset;
+  if (/^(light|dark)$/.test(q.get("mode"))) d.mode = q.get("mode");
+  if (/^[a-z]+$/.test(q.get("accent") || "")) d.accent = q.get("accent");
+  if (q.get("paper") === "beige") d.paper = "beige";
+</script>
+</head>
+<body>
+<header>
+  <nav>
+    <ul>
+      <li><strong>Specimen</strong></li>
+      <li><a href="#type" aria-current="page">Type</a></li>
+      <li><a href="#cards">Cards</a></li>
+      <li><a href="#forms">Forms</a></li>
+      <li><a href="#data">Data</a></li>
+      <li><a href="#" role="button" data-size="sm">Sign up</a></li>
+    </ul>
+  </nav>
+  <h1>Every element, one page</h1>
+  <p>A specimen of every tag the framework styles, in the order a real document uses them. Force a mode with <code>?mode=dark</code>, pick an accent with <code>?accent=forest</code>, and switch to the beige paper with <code>?paper=beige</code>.</p>
+</header>
+
+<main>
+<section id="type">
+  <h2>Typography sets the tone</h2>
+  <p>Body copy should read comfortably at length. It carries <a href="#">inline links</a>, <strong>strong emphasis</strong>, <em>italic asides</em>, <code>inline code</code>, keyboard keys like <kbd>⌘</kbd> <kbd>K</kbd>, <mark>highlighted text</mark>, <abbr title="Cascading Style Sheets">CSS</abbr> abbreviations, <del>removed</del> and <ins>inserted</ins> words, H<sub>2</sub>O and E = mc<sup>2</sup>. <small>Small print sits in a muted tone for secondary details.</small></p>
+  <h3>A third-level heading</h3>
+  <p>Subsections break up long pages. The heading scale should make the hierarchy obvious without shouting.</p>
+  <h4>Fourth level</h4>
+  <h5>Fifth level eyebrow</h5>
+  <h6>Sixth level label</h6>
+  <ul>
+    <li>Unordered lists use the accent for markers</li>
+    <li>Nested items keep their rhythm
+      <ul><li>Like this one</li></ul>
+    </li>
+  </ul>
+  <ol>
+    <li>Ordered steps read top to bottom</li>
+    <li>Each one is a single action</li>
+  </ol>
+  <blockquote>
+    <p>Good design is as little design as possible. Less, but better.</p>
+    <cite>Dieter Rams</cite>
+  </blockquote>
+  <dl>
+    <dt>Version</dt><dd>0.0.0-pre.6</dd>
+    <dt>License</dt><dd>MIT</dd>
+    <dt>Size</dt><dd>21 KB minified</dd>
+  </dl>
+  <pre><code>&lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/zinc.css/zinc.css"&gt;
+&lt;article&gt;
+  &lt;h3&gt;Card&lt;/h3&gt;
+  &lt;p&gt;No classes needed.&lt;/p&gt;
+&lt;/article&gt;</code></pre>
+  <hr />
+  <figure>
+    <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='640' height='240'><rect width='640' height='240' fill='%23888' opacity='.25'/><circle cx='320' cy='120' r='60' fill='%23888' opacity='.5'/></svg>" alt="Placeholder" width="640" height="240" />
+    <figcaption>A figure with a caption underneath.</figcaption>
+  </figure>
+</section>
+
+<section id="cards">
+  <h2>Cards and callouts</h2>
+  <aside>
+    <p><strong>Heads up.</strong> An <code>&lt;aside&gt;</code> is a callout: a tip, warning or summary that sits beside the main thread.</p>
+  </aside>
+  <article>
+    <header>
+      <h3>Recommended: ship the smaller change</h3>
+      <p><small>Updated 2 Nov 2026 · 4 min read</small></p>
+    </header>
+    <p>An <code>&lt;article&gt;</code> is a card. It groups a self-contained piece of content with an optional header and footer.</p>
+    <footer>
+      <button>Approve</button>
+      <button data-variant="secondary">Comment</button>
+      <small>2 reviewers</small>
+    </footer>
+  </article>
+  <article>
+    <h3>A plain card</h3>
+    <p>No header or footer, just content.</p>
+  </article>
+  <details>
+    <summary>Why classless?</summary>
+    <p>Because the markup already says what each thing is. Styling the tags directly keeps HTML readable and portable.</p>
+  </details>
+  <details open>
+    <summary>An open disclosure</summary>
+    <p>Its content shows by default and collapses on click.</p>
+  </details>
+  <p>
+    <button>Primary</button>
+    <button data-variant="secondary">Secondary</button>
+    <button data-variant="outline">Outline</button>
+    <button data-variant="ghost">Ghost</button>
+    <button data-variant="danger">Delete</button>
+    <button disabled>Disabled</button>
+  </p>
+  <p>
+    <button data-size="sm">Small</button>
+    <button data-size="lg">Large</button>
+    <a href="#" role="button">Link button</a>
+    <span role="group"><button data-variant="outline">Day</button><button data-variant="outline">Week</button><button data-variant="outline">Month</button></span>
+  </p>
+  <p><button onclick="document.getElementById('dlg').showModal()" data-variant="outline">Open dialog</button></p>
+  <dialog id="dlg">
+    <h3>Delete this project?</h3>
+    <p>This removes it for everyone on the team. It can't be undone.</p>
+    <form method="dialog"><button data-variant="danger">Delete</button> <button data-variant="ghost">Cancel</button></form>
+  </dialog>
+</section>
+
+<section id="forms">
+  <h2>Forms</h2>
+  <form onsubmit="event.preventDefault()">
+    <label for="name">Full name</label>
+    <input id="name" type="text" placeholder="Ada Lovelace" />
+    <label for="email">Email</label>
+    <input id="email" type="email" value="not-an-email" required />
+    <label for="plan">Plan</label>
+    <select id="plan"><option>Starter</option><option>Team</option><option>Enterprise</option></select>
+    <label for="msg">Message</label>
+    <textarea id="msg" placeholder="Tell us what you need"></textarea>
+    <fieldset>
+      <legend>Notifications</legend>
+      <label><input type="checkbox" checked /> Email me about replies</label>
+      <label><input type="checkbox" /> Weekly digest</label>
+      <label><input type="radio" name="r" checked /> Everyone</label>
+      <label><input type="radio" name="r" /> Only me</label>
+      <label><input type="checkbox" role="switch" checked /> Dark mode follows system</label>
+    </fieldset>
+    <label for="vol">Volume</label>
+    <input id="vol" type="range" value="60" />
+    <label for="col">Color</label>
+    <input id="col" type="color" value="#1d5ce0" />
+    <label for="file">Attachment</label>
+    <input id="file" type="file" />
+    <p><input type="submit" value="Send" /> <input type="reset" value="Clear" /></p>
+  </form>
+
+  <h3>Choice cards</h3>
+  <form data-form="questions" onsubmit="event.preventDefault()">
+    <fieldset>
+      <legend>Which direction should we take?<abbr title="required">*</abbr></legend>
+      <p>Pick one. You can change it later.</p>
+      <label><input type="radio" name="q1" checked /><span><strong>Rewrite the parser</strong><small>Two weeks, removes the edge cases for good.</small></span></label>
+      <label><input type="radio" name="q1" /><span><strong>Patch the three bugs</strong><small>Two days, keeps the old design.</small></span></label>
+      <label><input type="radio" name="q1" disabled /><span><strong>Do nothing</strong><small>Not available.</small></span></label>
+    </fieldset>
+    <fieldset>
+      <legend>Anything else?</legend>
+      <label for="q2">Notes</label>
+      <textarea id="q2" placeholder="Optional"></textarea>
+    </fieldset>
+    <footer><button type="submit">Copy answers</button> <button type="reset">Start over</button> <output>2 of 2 answered</output></footer>
+  </form>
+</section>
+
+<section id="data">
+  <h2>Data</h2>
+  <table>
+    <caption>Bundle size by build, in kilobytes.</caption>
+    <thead><tr><th>Build</th><th>Raw</th><th>Gzip</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>zinc.css</td><td>26.1</td><td>6.2</td><td><mark>shipped</mark></td></tr>
+      <tr><td>zinc.min.css</td><td>21.7</td><td>5.4</td><td>shipped</td></tr>
+      <tr><td>next</td><td>23.0</td><td>5.6</td><td><small>draft</small></td></tr>
+    </tbody>
+    <tfoot><tr><th>Total</th><td>70.8</td><td>17.2</td><td></td></tr></tfoot>
+  </table>
+  <label for="prog">Upload</label>
+  <progress id="prog" value="64" max="100">64%</progress>
+  <label for="met">Disk usage</label>
+  <meter id="met" value="0.72" low="0.5" high="0.85" optimum="0.2">72%</meter>
+  <address>Zinc Labs · 1 Example Street · Sydney</address>
+</section>
+</main>
+
+<footer>
+  <p>Made with plain HTML. <a href="#">Source</a> · <a href="#">License</a></p>
+</footer>
+</body>
+</html>
