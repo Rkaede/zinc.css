@@ -8,8 +8,9 @@
   const OPTIONS = [
     { key: "toc", attr: "debugToc", on: "list", label: "Contents as a list", hint: "“On this page” links in one column" },
     { key: "labels", attr: "debugLabels", on: "above", label: "Headings above content", hint: "Wide windows (56rem+) put them in the margin" },
-    { key: "spacing", attr: "debugSpacing", label: "Section spacing", choices: ["tight", "default", "roomy", "spacious"] },
-    { key: "rules", attr: "debugRules", on: "on", label: "Rules between sub-sections", hint: "A hairline between nested sections" },
+    { key: "spacing", attr: "debugSpacing", label: "Section spacing", choices: ["tight", "compact", "default", "spacious"] },
+    // zinc rules sub-sections by default, so this switch starts on and stores "off"
+    { key: "rules", attr: "debugRules", off: "off", label: "Rules between sub-sections", hint: "A hairline above each nested section" },
   ];
 
   function save() {
@@ -31,8 +32,9 @@
     const label = document.createElement("label");
     label.innerHTML = `<input type="checkbox" role="switch" /> <span>${option.label}<small>${option.hint}</small></span>`;
     const input = label.querySelector("input");
-    input.checked = root.dataset[option.attr] === option.on;
-    input.addEventListener("change", () => set(option, input.checked ? option.on : ""));
+    const value = root.dataset[option.attr];
+    input.checked = option.off ? value !== option.off : value === option.on;
+    input.addEventListener("change", () => set(option, option.off ? (input.checked ? "" : option.off) : (input.checked ? option.on : "")));
     return label;
   }
 

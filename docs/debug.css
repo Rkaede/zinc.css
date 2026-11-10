@@ -1,7 +1,7 @@
 /* ==========================================================================
-   Debug panel (built by debug.js): layout options to try out on the docs
-   and example pages. Each control sets an attribute on <html>; nothing
-   here is part of zinc.
+   Debug panel (built by debug.js), bottom right: layout options to try out
+   on the docs and example pages. Each control sets an attribute on <html>;
+   nothing here is part of zinc.
    ========================================================================== */
 details[data-debug-panel] {
   position: fixed;
@@ -50,25 +50,29 @@ details[data-debug-panel] [role="radiogroup"] { margin-block-start: 0.3rem; }
 }
 
 /* section spacing: scales the gap between sections (zinc's --section-gap,
-   4rem, or 3.25rem on a phone) and between sub-sections (3rem) */
+   6rem, or 4.875rem on a phone) and the 4.5rem around each sub-section's rule.
+   Compact is zinc's spacing before the rules came in. */
 :root { --debug-space: 1; }
-:root[data-debug-spacing="tight"] { --debug-space: 0.7; }
-:root[data-debug-spacing="roomy"] { --debug-space: 1.5; }
-:root[data-debug-spacing="spacious"] { --debug-space: 2; }
-:root[data-debug-spacing] { --section-gap: calc(4rem * var(--debug-space)); }
+:root[data-debug-spacing="tight"] { --debug-space: 0.5; }
+:root[data-debug-spacing="compact"] { --debug-space: 0.6667; }
+:root[data-debug-spacing="spacious"] { --debug-space: 1.3333; }
+:root[data-debug-spacing] { --section-gap: calc(6rem * var(--debug-space)); }
 @media (max-width: 40rem) {
-  :root[data-debug-spacing] { --section-gap: calc(3.25rem * var(--debug-space)); }
+  :root[data-debug-spacing] { --section-gap: calc(4.875rem * var(--debug-space)); }
 }
-:root[data-debug-spacing] main > section > section + section {
-  margin-block-start: calc(3rem * var(--debug-space));
+:root[data-debug-spacing] main > section > section {
+  margin-block-start: calc(2.25rem * var(--debug-space));
+  padding-block-start: calc(2.25rem * var(--debug-space));
 }
 
-/* a hairline above every sub-section, the first included, so a run of them
-   reads as a ruled list; each rule sits halfway through the gap above it.
-   The "+ section" selector matches the spacing rule's weight so this wins. */
-:root[data-debug-rules="on"] main > section > section,
-:root[data-debug-rules="on"] main > section > section + section {
-  margin-block-start: calc(1.5rem * var(--debug-space));
-  padding-block-start: calc(1.5rem * var(--debug-space));
-  border-block-start: 1px solid var(--line);
+/* rules off: sub-sections are set apart by space alone, with no extra gap
+   above the first, as zinc did before. Comes after the spacing rule, at
+   the same weight, so it wins. */
+:root[data-debug-rules="off"] main > section > section {
+  margin-block-start: 0;
+  padding-block-start: 0;
+  border-block-start: 0;
+}
+:root[data-debug-rules="off"] main > section > section + section {
+  margin-block-start: calc(4.5rem * var(--debug-space));
 }

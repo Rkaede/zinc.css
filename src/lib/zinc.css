@@ -57,7 +57,7 @@
   --rail-gap: 3rem;
   /* how far a tinted block reaches past the text edge on each side */
   --bleed: 1.25rem;
-  --section-gap: 4rem;
+  --section-gap: 6rem;
 
   /* motion ---------------------------------------------------------------- */
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
@@ -253,8 +253,13 @@ body > header > nav:only-child { margin-block-end: 0; }
 
 /* section rhythm: top-level sections are set apart by space alone */
 :is(main, main > form) > * + :is(section, nav), :is(main, main > form) > :is(section, nav) + * { margin-block-start: var(--section-gap); }
-/* sections inside a section (one per proposal, say) get a smaller gap */
-main > section > section + section { margin-block-start: 3rem; }
+/* sections inside a section (one per proposal, say) read as a ruled list: a
+   hairline above each, the first included, halfway through a 4.5rem gap */
+main > section > section {
+  margin-block-start: 2.25rem;
+  padding-block-start: 2.25rem;
+  border-block-start: 1px solid var(--line);
+}
 /* (a dialog written last in a container must keep its centering margins,
    so every "last child" reset in this file skips it) */
 :is(main, main > form) > :is(section, nav) > :last-child:not(dialog) { margin-block-end: 0; }
@@ -1213,7 +1218,7 @@ footer > :last-child:not(dialog) { margin-block-end: 0; }
 
 /* phone: a tinted block runs to both edges of the screen, corners square */
 @media (max-width: 40rem) {
-  :root { --bleed: var(--gutter); --section-gap: 3.25rem; }
+  :root { --bleed: var(--gutter); --section-gap: 4.875rem; }
   :where(main, main > section, main > section > section, main > form > section, body > header, main > header) > :is(pre, aside, article),
 :where(main, main > section, main > section > section, main > form > section) > details > :is(pre, aside, article) {
     border-radius: 0;
