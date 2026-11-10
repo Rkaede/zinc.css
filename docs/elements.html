@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Elements · zinc.css</title>
+<meta name="description" content="Every HTML element zinc.css styles: text, headings, lists, quotes, code, media, tables, details, dialog, every form control, buttons, navigation, progress and meter. Live demos with their markup." />
+<link rel="icon" href="data:," />
+<link rel="stylesheet" href="../src/lib/zinc.css" />
+<link rel="stylesheet" href="docs.css" />
+<script>
+  // a theme picked on the theming page is stored, and every page applies it
+  try {
+    const s = JSON.parse(localStorage.getItem("zinc-docs-theme")) || {};
+    for (const k of ["mode", "accent", "paper"]) if (/^[a-z]+$/.test(s[k] || "")) document.documentElement.dataset[k] = s[k];
+  } catch {}
+  // ?mode=light|dark, ?accent=<name> and ?paper=beige set the theme hooks
+  const q = new URLSearchParams(location.search), d = document.documentElement.dataset;
+  if (/^(light|dark)$/.test(q.get("mode"))) d.mode = q.get("mode");
+  if (/^[a-z]+$/.test(q.get("accent") || "")) d.accent = q.get("accent");
+  if (q.get("paper") === "beige") d.paper = "beige";
+</script>
+<script src="docs.js" defer></script>
+</head>
+<body>
+<header>
+  <nav aria-label="Docs">
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="start.html">Getting started</a></li>
+      <li><a href="elements.html" aria-current="page">Elements</a></li>
+      <li><a href="patterns.html">Patterns</a></li>
+      <li><a href="theming.html">Theming</a></li>
+      <li><a href="examples/index.html">Examples</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <header>
+    <p>Docs · Elements</p>
+    <h1>Elements</h1>
+    <p>Every element zinc styles, each with a live demo and the markup that made it. None of it uses a class.</p>
+  </header>
+
+  <nav aria-label="On this page">
+    <h2>On this page</h2>
+    <ul>
+      <li><a href="#text">Text</a></li>
+      <li><a href="#headings">Headings</a></li>
+      <li><a href="#lists">Lists</a></li>
+      <li><a href="#quotes">Quotes</a></li>
+      <li><a href="#code">Code</a></li>
+      <li><a href="#media">Media</a></li>
+      <li><a href="#tables">Tables</a></li>
+      <li><a href="#details">Details</a></li>
+      <li><a href="#dialog">Dialog</a></li>
+      <li><a href="#forms">Forms</a></li>
+      <li><a href="#buttons">Buttons</a></li>
+      <li><a href="#navigation">Navigation</a></li>
+      <li><a href="#progress">Progress</a></li>
+    </ul>
+  </nav>
+
+  <section id="text">
+    <h2>Text</h2>
+    <h3>Inline text</h3>
+    <p>Links are ink with a hairline underline, and turn to the accent on hover (with a mouse). <code>&lt;mark&gt;</code> and <code>&lt;ins&gt;</code> take a light tint of the accent; deleted text is muted.</p>
+    <figure data-demo>
+      <p>
+        Read the <a href="https://example.com/guide">ordering guide</a> first.
+        Use <strong>strong</strong> for weight and <em>em</em> for stress,
+        <mark>mark a phrase</mark>, show <del>removed</del> and <ins>inserted</ins> words,
+        expand <abbr title="Cascading Style Sheets">CSS</abbr>,
+        and write H<sub>2</sub>O or E = mc<sup>2</sup>.
+        <small>Small print is muted.</small>
+      </p>
+    </figure>
+    <h3>Addresses and rules</h3>
+    <p>An <code>&lt;address&gt;</code> is muted and upright. An <code>&lt;hr&gt;</code> is a hairline with generous space around it.</p>
+    <figure data-demo>
+      <address>Larkspur Bakery<br />4 Market Lane, Eastfield</address>
+      <hr />
+      <p>Open from 7am, Tuesday to Sunday.</p>
+    </figure>
+  </section>
+
+  <section id="headings">
+    <h2>Headings</h2>
+    <p><code>&lt;h1&gt;</code> takes the title size, which grows with the window from 1.75rem to 2.25rem. <code>&lt;h2&gt;</code> is 1.375rem, <code>&lt;h3&gt;</code> is body size, <code>&lt;h4&gt;</code> and <code>&lt;h5&gt;</code> are small, and <code>&lt;h6&gt;</code> is 0.875rem; <code>&lt;h5&gt;</code> and <code>&lt;h6&gt;</code> are muted. All headings are weight 600 and balance their lines. A heading that opens a header, section, article, aside, details, dialog, list item, fieldset, form or table cell loses its top margin.</p>
+    <figure data-demo>
+      <h1>Heading one</h1>
+      <h2>Heading two</h2>
+      <h3>Heading three</h3>
+      <h4>Heading four</h4>
+      <h5>Heading five</h5>
+      <h6>Heading six</h6>
+    </figure>
+  </section>
+
+  <section id="lists">
+    <h2>Lists</h2>
+    <p>Markers are muted, and numbers use tabular figures so they line up. In a section on a screen 48rem or wider, a list loses its indent and its markers hang in the margin, as the list below this paragraph does.</p>
+    <ul>
+      <li>Bullets and numbers sit outside the text edge.</li>
+      <li>The words stay on the edge.</li>
+    </ul>
+    <figure data-demo>
+      <ul>
+        <li>Sourdough, white and rye</li>
+        <li>Pastries
+          <ul>
+            <li>Croissants</li>
+            <li>Cardamom buns</li>
+          </ul>
+        </li>
+      </ul>
+      <ol>
+        <li>Feed the starter the night before.</li>
+        <li>Mix, rest, then fold every half hour.</li>
+        <li>Shape and prove overnight.</li>
+      </ol>
+    </figure>
+    <p>A list with <code>role="list"</code> is a list of entries with no markers; a <code>&lt;dl&gt;</code> is a fact sheet or a row of key figures; a <code>&lt;menu&gt;</code> is a toolbar. Those are on the <a href="patterns.html">patterns page</a>.</p>
+  </section>
+
+  <section id="quotes">
+    <h2>Quotes</h2>
+    <p>A blockquote has a quote bar on its leading edge, which hangs in the margin in a section on a wide screen. A <code>&lt;cite&gt;</code> inside it becomes a small attribution line with a dash in front.</p>
+    <figure data-demo>
+      <blockquote>
+        <p>We changed nothing but the flour, and the regulars noticed within a week.</p>
+        <cite>Tom Okafor, head baker</cite>
+      </blockquote>
+    </figure>
+  </section>
+
+  <section id="code">
+    <h2>Code</h2>
+    <h3>Inline</h3>
+    <p>Inline <code>&lt;code&gt;</code> sits on a faint tint, <code>&lt;kbd&gt;</code> looks like a key, and <code>&lt;samp&gt;</code> is monospace with no fill. A long path in inline code breaks rather than running out of its line.</p>
+    <figure data-demo>
+      <p>Run <code>pnpm run build</code>, then press <kbd>Ctrl</kbd> + <kbd>C</kbd> to stop. It prints <samp>zinc.css: 37 KB</samp>.</p>
+    </figure>
+    <h3>Blocks</h3>
+    <p>A <code>&lt;pre&gt;</code> is a tinted panel that reaches past the text edge on both sides, so the code inside stays on the edge. It scrolls sideways rather than wrap, and tabs are two spaces wide.</p>
+    <figure data-demo>
+      <pre><code>:root {
+  --accent: light-dark(#2b6e4b, #7fc79d);
+}</code></pre>
+    </figure>
+  </section>
+
+  <section id="media">
+    <h2>Media</h2>
+    <p>Images, video, SVG and canvas never grow wider than their container. Images and video are blocks with rounded corners. An inline <code>&lt;svg&gt;</code> fills with the text colour. A <code>&lt;figcaption&gt;</code> is small and muted.</p>
+    <figure data-demo>
+      <figure>
+        <svg width="320" height="120" viewBox="0 0 320 120" role="img" aria-label="Loaves sold per day: Tuesday 62, Wednesday 48, Thursday 70, Friday 96, Saturday 120">
+          <rect x="0" y="58" width="48" height="62" rx="4" />
+          <rect x="68" y="72" width="48" height="48" rx="4" />
+          <rect x="136" y="50" width="48" height="70" rx="4" />
+          <rect x="204" y="24" width="48" height="96" rx="4" />
+          <rect x="272" y="0" width="48" height="120" rx="4" />
+        </svg>
+        <figcaption>Loaves sold per day, Tuesday to Saturday.</figcaption>
+      </figure>
+    </figure>
+  </section>
+
+  <section id="tables">
+    <h2>Tables</h2>
+    <p>A table runs the full width of the column with no left padding on the first column and no right padding on the last, so its rules start and end on the text edges. Header cells are small and muted over a firm rule, numbers use tabular figures, the caption sits underneath, and a footer row is bold over a firm rule. On a phone, cells may break inside a word so a table of paths still fits.</p>
+    <figure data-demo>
+      <table>
+        <caption>Orders by shop, week 10.</caption>
+        <thead>
+          <tr><th scope="col">Shop</th><th scope="col">Loaves</th><th scope="col">Pastries</th><th scope="col">Takings</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Riverside</th><td>412</td><td>288</td><td>3,140</td></tr>
+          <tr><th scope="row">Market Lane</th><td>356</td><td>301</td><td>2,915</td></tr>
+          <tr><th scope="row">Eastfield</th><td>198</td><td>122</td><td>1,460</td></tr>
+        </tbody>
+        <tfoot>
+          <tr><th scope="row">Total</th><td>966</td><td>711</td><td>7,515</td></tr>
+        </tfoot>
+      </table>
+    </figure>
+    <p>Fold a long table into a <code>&lt;details&gt;</code>: see <a href="start.html#long-tables">long tables</a>.</p>
+  </section>
+
+  <section id="details">
+    <h2>Details</h2>
+    <p>A <code>&lt;summary&gt;</code> is a line of text with a chevron and no box. The chevron turns when it opens, and the content grows and fades in where the browser supports it. In a section on a wide screen the chevron hangs in the margin. Consecutive details sit close together.</p>
+    <figure data-demo>
+      <details>
+        <summary>Which flours do you use?</summary>
+        <p>Stoneground wholemeal from Millbrook, and a white bread flour milled to our spec.</p>
+      </details>
+      <details open>
+        <summary>Can I order for an event?</summary>
+        <p>Yes. Give us a week's notice for orders of more than 40 loaves.</p>
+      </details>
+    </figure>
+  </section>
+
+  <section id="dialog">
+    <h2>Dialog</h2>
+    <p>A <code>&lt;dialog&gt;</code> is the one thing that floats, so it is the one thing with a shadow. It centres itself, stays inside the window, fades and scales in, and dims the page behind it. A <code>&lt;form&gt;</code> inside a dialog lays its contents out in a wrapping row, which suits a row of buttons. With <code>method="dialog"</code>, a button closes it with no script.</p>
+    <figure data-demo>
+      <button commandfor="delete-dialog" command="show-modal">Delete draft…</button>
+      <dialog id="delete-dialog" aria-labelledby="delete-dialog-title">
+        <h3 id="delete-dialog-title">Delete this draft?</h3>
+        <p>The draft and its three comments are removed for good.</p>
+        <form method="dialog">
+          <button data-variant="danger" value="delete">Delete</button>
+          <button data-variant="secondary" value="cancel" autofocus>Cancel</button>
+        </form>
+      </dialog>
+    </figure>
+    <p>The demo opens the dialog with an invoker command (<code>commandfor</code> and <code>command="show-modal"</code>). In a browser without invoker commands, call <code>showModal()</code> from a script.</p>
+  </section>
+
+  <section id="forms">
+    <h2>Forms</h2>
+    <p>A <code>&lt;label&gt;</code> is a small, medium-weight line above its field. Fields take the full width, with a firm outline that has at least 3:1 contrast against the page. A focused text field swaps the outline for an accent edge and a soft halo; other controls get the standard accent focus ring. A label after a field keeps its distance from it.</p>
+
+    <h3>Text fields</h3>
+    <figure data-demo>
+      <label for="f-name">Name</label>
+      <input id="f-name" type="text" placeholder="Priya Nair" />
+      <label for="f-email">Email</label>
+      <input id="f-email" type="email" placeholder="priya@example.com" />
+      <label for="f-password">Password</label>
+      <input id="f-password" type="password" />
+      <label for="f-search">Search</label>
+      <input id="f-search" type="search" placeholder="Search orders" />
+    </figure>
+
+    <h3>Other field types</h3>
+    <p>Every text-like input type gets the same field: <code>url</code>, <code>tel</code>, <code>number</code>, <code>date</code>, <code>time</code>, <code>datetime-local</code>, <code>month</code>, <code>week</code>, and an <code>&lt;input&gt;</code> with no type.</p>
+    <figure data-demo>
+      <label for="f-url">Website</label>
+      <input id="f-url" type="url" placeholder="https://example.com" />
+      <label for="f-tel">Phone</label>
+      <input id="f-tel" type="tel" placeholder="020 7946 0000" />
+      <label for="f-number">Loaves</label>
+      <input id="f-number" type="number" value="24" min="1" />
+      <label for="f-date">Delivery date</label>
+      <input id="f-date" type="date" />
+      <label for="f-time">Delivery time</label>
+      <input id="f-time" type="time" />
+      <label for="f-datetime">Collection</label>
+      <input id="f-datetime" type="datetime-local" />
+      <label for="f-month">Billing month</label>
+      <input id="f-month" type="month" />
+      <label for="f-week">Rota week</label>
+      <input id="f-week" type="week" />
+    </figure>
+
+    <h3>Textarea and select</h3>
+    <p>A textarea starts 6.5rem tall and resizes vertically. A select gets a drawn chevron; a multiple select drops it.</p>
+    <figure data-demo>
+      <label for="f-notes">Notes for the driver</label>
+      <textarea id="f-notes" placeholder="Side door, ring twice"></textarea>
+      <label for="f-shop">Shop</label>
+      <select id="f-shop">
+        <option>Riverside</option>
+        <option>Market Lane</option>
+        <option>Eastfield</option>
+      </select>
+      <label for="f-breads">Breads</label>
+      <select id="f-breads" multiple>
+        <option selected>Sourdough</option>
+        <option>Rye</option>
+        <option selected>Wholemeal</option>
+        <option>Spelt</option>
+      </select>
+    </figure>
+
+    <h3>Checkboxes and radios</h3>
+    <p>A label that wraps a checkbox or radio becomes a line of body text with the control in front. Checked, the control fills with the accent. A <code>&lt;fieldset&gt;</code> is an unboxed group headed by its <code>&lt;legend&gt;</code>.</p>
+    <figure data-demo>
+      <fieldset>
+        <legend>Delivery days</legend>
+        <label><input type="checkbox" name="days" value="tue" checked /> Tuesday</label>
+        <label><input type="checkbox" name="days" value="thu" /> Thursday</label>
+        <label><input type="checkbox" name="days" value="sat" checked /> Saturday</label>
+      </fieldset>
+      <fieldset>
+        <legend>Collect from</legend>
+        <label><input type="radio" name="collect" value="riverside" checked /> Riverside</label>
+        <label><input type="radio" name="collect" value="market-lane" /> Market Lane</label>
+      </fieldset>
+    </figure>
+    <p>Add a <code>&lt;span&gt;</code> inside the label and the same controls become <a href="patterns.html#choice-cards">choice cards</a>; add <code>role="switch"</code> to a checkbox for a <a href="patterns.html#switches">switch</a>.</p>
+
+    <h3>Range</h3>
+    <p>A thin track in the control-outline colour, with an accent thumb.</p>
+    <figure data-demo>
+      <label for="f-range">Proving time</label>
+      <input id="f-range" type="range" min="30" max="120" value="75" />
+    </figure>
+
+    <h3>Colour and file</h3>
+    <p>A colour input is a small swatch with a field outline. A file input's button is a soft tinted button, with the file name muted beside it.</p>
+    <figure data-demo>
+      <label for="f-colour">Label colour</label>
+      <input id="f-colour" type="color" value="#2b6e4b" />
+      <label for="f-file">Menu photo</label>
+      <input id="f-file" type="file" accept="image/*" />
+    </figure>
+
+    <h3>Validation</h3>
+    <p>A field turns its outline to the danger colour when it is invalid, but only after the person has changed it or tried to submit (<code>:user-invalid</code>), so an empty form never starts out red. Type a number outside the range below and leave the field.</p>
+    <figure data-demo>
+      <label for="f-qty">Loaves, 12 to 200</label>
+      <input id="f-qty" type="number" min="12" max="200" required />
+    </figure>
+
+    <h3>Disabled</h3>
+    <p>Disabled controls fade to 55% and lose the pointer cursor. Disabling a <code>&lt;fieldset&gt;</code> dims its controls but not its legend.</p>
+    <figure data-demo>
+      <label for="f-code">Shop code</label>
+      <input id="f-code" type="text" value="RVS-01" disabled />
+      <fieldset disabled>
+        <legend>Locked until Friday</legend>
+        <label><input type="checkbox" checked /> Standing order</label>
+      </fieldset>
+    </figure>
+  </section>
+
+  <section id="buttons">
+    <h2>Buttons</h2>
+    <p>A button is ink, not accent: it is a command, and its shape says so. A row of buttons sits well in a <code>&lt;menu&gt;</code>, which wraps them with a gap (see <a href="patterns.html#toolbars">toolbars</a>). On a touch screen every button is at least 2.75rem tall (2.25rem for a small one).</p>
+
+    <h3>Variants</h3>
+    <p>Set <code>data-variant</code> to <code>secondary</code>, <code>outline</code>, <code>ghost</code> or <code>danger</code>. Use one primary button per group.</p>
+    <figure data-demo>
+      <menu>
+        <li><button>Primary</button></li>
+        <li><button data-variant="secondary">Secondary</button></li>
+        <li><button data-variant="outline">Outline</button></li>
+        <li><button data-variant="ghost">Ghost</button></li>
+        <li><button data-variant="danger">Danger</button></li>
+      </menu>
+    </figure>
+
+    <h3>Sizes</h3>
+    <figure data-demo>
+      <menu>
+        <li><button data-size="sm">Small</button></li>
+        <li><button>Default</button></li>
+        <li><button data-size="lg">Large</button></li>
+      </menu>
+    </figure>
+
+    <h3>Input buttons and reset</h3>
+    <p>Submit and button inputs look like buttons. A reset button or input is secondary unless you give it a variant.</p>
+    <figure data-demo>
+      <menu>
+        <li><input type="submit" value="Submit" /></li>
+        <li><input type="button" value="Input button" /></li>
+        <li><button type="reset">Reset</button></li>
+      </menu>
+    </figure>
+
+    <h3>Links as buttons</h3>
+    <p>A link with <code>role="button"</code> takes the button styles, and so does any element with a <code>data-variant</code>. A link has no disabled state, so use <code>aria-disabled="true"</code>, which fades it and stops clicks.</p>
+    <figure data-demo>
+      <menu>
+        <li><a role="button" href="https://example.com/start">Get started</a></li>
+        <li><a role="button" data-variant="outline" href="https://example.com/docs">Read the guide</a></li>
+        <li><a role="button" aria-disabled="true">Sold out</a></li>
+      </menu>
+    </figure>
+
+    <h3>Disabled</h3>
+    <figure data-demo>
+      <menu>
+        <li><button disabled>Save</button></li>
+        <li><button data-variant="outline" disabled>Preview</button></li>
+      </menu>
+    </figure>
+
+    <h3>Button groups</h3>
+    <p>Wrap buttons in an element with <code>role="group"</code> to join them into one segmented strip, with a hairline of page between the parts. For a choice of one option among a few, use a <a href="patterns.html#segmented">segmented control</a> instead.</p>
+    <figure data-demo>
+      <div role="group" aria-label="Zoom">
+        <button data-variant="secondary">Day</button>
+        <button data-variant="secondary">Week</button>
+        <button data-variant="secondary">Month</button>
+      </div>
+    </figure>
+  </section>
+
+  <section id="navigation">
+    <h2>Navigation</h2>
+    <p>A <code>&lt;ul&gt;</code> inside a <code>&lt;nav&gt;</code> is a wrapping row of small, muted links with no underline. The link with <code>aria-current</code> turns to the text colour and keeps an underline, so colour is not its only cue. A link-button inside keeps the button styles.</p>
+    <figure data-demo>
+      <nav aria-label="Account">
+        <ul>
+          <li><a href="https://example.com/orders" aria-current="page">Orders</a></li>
+          <li><a href="https://example.com/invoices">Invoices</a></li>
+          <li><a href="https://example.com/settings">Settings</a></li>
+          <li><a href="https://example.com/new" role="button" data-size="sm">New order</a></li>
+        </ul>
+      </nav>
+    </figure>
+    <p>Put a nav alone in the body's <code>&lt;header&gt;</code> for a top bar, as on this site.</p>
+  </section>
+
+  <section id="progress">
+    <h2>Progress</h2>
+    <p><code>&lt;progress&gt;</code> and <code>&lt;meter&gt;</code> are thin, rounded bars filled with the accent. A meter stays the accent whatever its <code>low</code>, <code>high</code> and <code>optimum</code> say: the accent marks the amount, not a judgement of it.</p>
+    <figure data-demo>
+      <label for="p-upload">Uploading menu photos</label>
+      <progress id="p-upload" value="64" max="100">64%</progress>
+      <label for="m-oven">Oven capacity used</label>
+      <meter id="m-oven" value="0.7">70%</meter>
+    </figure>
+  </section>
+</main>
+
+<footer>
+  <p>zinc.css 0.1.0-next.0 · MIT License · <a href="https://github.com/Rkaede/zinc.css">GitHub</a> · <a href="https://www.npmjs.com/package/zinc.css">npm</a></p>
+</footer>
+</body>
+</html>

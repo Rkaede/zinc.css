@@ -15,13 +15,8 @@ the deliverable is one CSS file.
 
 ## Branches
 
-`main` and `develop` (this branch) carry **only the library** — no docs site, no
-showcase, no build-site tooling. The multi-page docs site (`src/website/`,
-`build-site.js`, plus the `build:site`/`preview:site` pnpm scripts) lives on a separate
-local-only `website` branch and is not present here. Check out `website` to work on the
-site or to see a stylesheet change against the curated showcase — `tests/` and
-`examples/` here (see below) cover QA, but `website`'s showcase is the polished,
-documented reference.
+The docs site lives in `docs/` on the same branch as the library, so a stylesheet
+change and its documentation land together. There is no separate docs branch.
 
 ## Layout
 
@@ -36,15 +31,25 @@ documented reference.
   exercise every variant/size/state of one part of the framework per file, for catching
   regressions while editing `src/lib/zinc.css`. `pnpm run dev` serves the repo and opens
   this folder.
-- `examples/` — whole realistic pages (reports, a dashboard, a triage board, forms),
+- `docs/` — the documentation site: static HTML pages styled by zinc itself (home,
+  getting started, elements, patterns, theming), linking `../src/lib/zinc.css` so
+  `pnpm run dev` shows live edits. `docs/docs.js` generates each demo's code block from
+  the demo (`<figure data-demo>`) and runs the theme switcher; `docs/docs.css` holds
+  the little docs-only chrome. Like the framework, the site uses no `class` attributes.
+  `docs/demos/` holds small whole-page demos for patterns that need a page of their own.
+- `docs/examples/` — whole realistic pages (reports, a dashboard, a triage board, forms),
   for checking how the stylesheet holds up on a real page rather than one element at a
-  time. Not in the npm package. Their content is invented: never paste real
-  conversations, people, projects, emails or links into them.
+  time. Their content is invented: never paste real conversations, people, projects,
+  emails or links into them. The same goes for demo content anywhere in `docs/`.
+- `build-docs.js` — `pnpm run build:docs`: runs `pnpm run build`, copies `docs/` to
+  `dist/docs/`, puts the built `zinc.css` at `dist/docs/zinc.css` and rewrites every
+  page's stylesheet link to it, so `dist/docs/` is a self-contained static site.
+  Neither `docs/` nor `dist/` is in the npm package (the `files` whitelist).
 - `scripts/contrast.mjs` — `pnpm run contrast`: reads the color tokens from
   `src/lib/zinc.css` and prints a before/after WCAG contrast table for every accent in
   both modes (baseline: the `v0.0.0-pre.5` tag). It also checks the control borders
   (`--line-strong`) and the danger pair in each mode. Exits 1 if a check fails.
-- Root-level `zinc.css` / `zinc.min.css`, plus `temp/`, `node_modules/`, are gitignored
+- Root-level `zinc.css` / `zinc.min.css`, plus `dist/`, `temp/`, `node_modules/`, are gitignored
   and generated; never edit them by hand.
 - `.agents/skills/` (real files), `.claude/skills/` (relative symlinks to them) and
   `skills-lock.json` are Emil Kowalski's design and animation skills, installed from
@@ -56,14 +61,15 @@ documented reference.
 
 ```bash
 pnpm run build   # src/lib/zinc.css → zinc.css + zinc.min.css (repo root)
-pnpm run dev      # serve the repo, opens tests/ for visual QA
+pnpm run build:docs   # build, then copy docs/ into dist/docs/ as a self-contained site
+pnpm run dev      # serve the repo, opens tests/ for visual QA (docs at /docs/)
 pnpm run contrast   # before/after contrast: every accent × mode, plus control borders and danger (exits 1 on a failure)
 ```
 
 There are no tests, linter, or typecheck in the traditional sense — `tests/` is for
 manual visual QA, not automated checks. The one automated check is `pnpm run contrast`;
 run it after touching any color token. Run `pnpm run dev` and check pages in `tests/`
-in light/dark and across the five accents.
+and `docs/` in light/dark, on beige, and across the three accents.
 
 ## How the stylesheet is organized
 
@@ -121,5 +127,7 @@ rules should reference these tokens, not hard-coded values.
 - Modern CSS is used intentionally (`color-mix()`, `:user-invalid`, `:focus-visible`,
   logical properties, `text-wrap: balance`). Match the existing approach rather than
   adding fallbacks or polyfills.
-- When adding or changing a styled element, also add it to the showcase on the
-  `website` branch (`src/website/components.html`) so it's visible and documented.
+- When adding or changing a styled element, also document it in `docs/` (the elements
+  or patterns page, plus the token tables on the theming page if a token changes) so
+  it's visible and documented. Every claim and default there must match
+  `src/lib/zinc.css`.

@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Getting started · zinc.css</title>
+<meta name="description" content="Start a page with zinc.css: the minimal document, how to structure sections, headers, cards and notes, fonts, and browser support." />
+<link rel="icon" href="data:," />
+<link rel="stylesheet" href="../src/lib/zinc.css" />
+<link rel="stylesheet" href="docs.css" />
+<script>
+  // a theme picked on the theming page is stored, and every page applies it
+  try {
+    const s = JSON.parse(localStorage.getItem("zinc-docs-theme")) || {};
+    for (const k of ["mode", "accent", "paper"]) if (/^[a-z]+$/.test(s[k] || "")) document.documentElement.dataset[k] = s[k];
+  } catch {}
+  // ?mode=light|dark, ?accent=<name> and ?paper=beige set the theme hooks
+  const q = new URLSearchParams(location.search), d = document.documentElement.dataset;
+  if (/^(light|dark)$/.test(q.get("mode"))) d.mode = q.get("mode");
+  if (/^[a-z]+$/.test(q.get("accent") || "")) d.accent = q.get("accent");
+  if (q.get("paper") === "beige") d.paper = "beige";
+</script>
+<script src="docs.js" defer></script>
+</head>
+<body>
+<header>
+  <nav aria-label="Docs">
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="start.html" aria-current="page">Getting started</a></li>
+      <li><a href="elements.html">Elements</a></li>
+      <li><a href="patterns.html">Patterns</a></li>
+      <li><a href="theming.html">Theming</a></li>
+      <li><a href="examples/index.html">Examples</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <header>
+    <p>Docs · Getting started</p>
+    <h1>Getting started</h1>
+    <p>Link the stylesheet, write semantic HTML, and build the page from sections with short headings. That is most of it.</p>
+  </header>
+
+  <section id="minimal">
+    <h2>Minimal page</h2>
+    <p>A complete page. The viewport <code>&lt;meta&gt;</code> matters: without it, phones render the page at desktop width and zinc's small-screen rules never apply.</p>
+    <pre><code>&lt;!doctype html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+  &lt;meta charset="utf-8" /&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1" /&gt;
+  &lt;title&gt;Hello&lt;/title&gt;
+  &lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/zinc.css@0.1.0-next.0/zinc.min.css" /&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;main&gt;
+    &lt;h1&gt;Hello, world&lt;/h1&gt;
+    &lt;p&gt;No classes. &lt;a href="https://example.com"&gt;Just markup.&lt;/a&gt;&lt;/p&gt;
+    &lt;button&gt;It styles itself&lt;/button&gt;
+  &lt;/main&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    <p>The body is the column: it is <code>--width</code> wide (42rem) plus the page padding, centred in the window. Running text wraps a little earlier, at <code>--measure</code> (38rem, about 75 characters); tables, entry lists and tinted blocks may use the whole column.</p>
+  </section>
+
+  <section id="structure">
+    <h2>Page structure</h2>
+    <p>zinc reads the shape of the page. This skeleton gets all of it:</p>
+    <pre><code>&lt;body&gt;
+  &lt;header&gt;
+    &lt;nav&gt;&lt;ul&gt;&lt;li&gt;&lt;a href="/" aria-current="page"&gt;Home&lt;/a&gt;&lt;/li&gt;…&lt;/ul&gt;&lt;/nav&gt;
+  &lt;/header&gt;
+
+  &lt;main&gt;
+    &lt;header&gt;
+      &lt;p&gt;Harbor API · Run 412 · 3 March&lt;/p&gt;   &lt;!-- context line --&gt;
+      &lt;h1&gt;Code health&lt;/h1&gt;
+      &lt;p&gt;Two modules need attention this week.&lt;/p&gt;   &lt;!-- lede --&gt;
+    &lt;/header&gt;
+
+    &lt;section&gt;
+      &lt;h2&gt;Do next&lt;/h2&gt;   &lt;!-- a label in the margin on a wide screen --&gt;
+      &lt;p&gt;…&lt;/p&gt;
+    &lt;/section&gt;
+
+    &lt;section&gt;
+      &lt;h2&gt;Findings&lt;/h2&gt;
+      …
+    &lt;/section&gt;
+  &lt;/main&gt;
+
+  &lt;footer&gt;&lt;p&gt;Generated 3 March&lt;/p&gt;&lt;/footer&gt;
+&lt;/body&gt;</code></pre>
+    <ul>
+      <li>A <code>&lt;header&gt;</code> in the body that holds only a <code>&lt;nav&gt;</code> is a top bar, with room below it.</li>
+      <li>In the page header (<code>body &gt; header</code> or <code>main &gt; header</code>), a <code>&lt;p&gt;</code> before the <code>&lt;h1&gt;</code> is a small, muted line of context. The first <code>&lt;p&gt;</code> after the <code>&lt;h1&gt;</code> is the lede, set a size up in full text colour: write the one thing every reader should take away.</li>
+      <li>Top-level sections are the children of <code>&lt;main&gt;</code> (or of a <code>&lt;form&gt;</code> directly inside it). They are set apart by space alone, 4rem (3.25rem on a phone). Sections inside a section get 3rem.</li>
+      <li>A <code>&lt;footer&gt;</code> is small and muted, with a section's worth of space above it.</li>
+    </ul>
+    <p>See it as a whole page in the <a href="demos/page.html">page structure demo</a>; this page is built the same way.</p>
+  </section>
+
+  <section id="labels">
+    <h2>Section labels</h2>
+    <p>From 56rem wide, when a section is a child of <code>&lt;main&gt;</code> (or of a <code>&lt;form&gt;</code> directly inside it) and its first child is an <code>&lt;h2&gt;</code>, the page gains a left margin (<code>--rail</code>, 11rem, plus a 3rem gap) and the heading moves into it. It shrinks to small text and stays in view while its section scrolls past. Below 56rem it is an ordinary heading.</p>
+    <ul>
+      <li>Keep labels to one to three words, and put the sentence under them. A label reads like a tab, not a headline.</li>
+      <li>The <code>&lt;h2&gt;</code> must come first in its section. A section that opens with anything else keeps its heading in the column.</li>
+      <li>Use <code>&lt;h3&gt;</code> and below inside a section. Only a top-level section's <code>&lt;h2&gt;</code> becomes a label; a nested section's <code>&lt;h2&gt;</code> stays put.</li>
+      <li>A <code>&lt;nav&gt;</code> directly inside <code>&lt;main&gt;</code> that starts with an <code>&lt;h2&gt;</code> gets a label too, which suits a table of contents.</li>
+    </ul>
+    <p>More on the <a href="patterns.html#margin-labels">patterns page</a>.</p>
+  </section>
+
+  <section id="cards-notes">
+    <h2>Cards and notes</h2>
+    <p>Two elements carry emphasis, in opposite directions.</p>
+    <article>
+      <h3>An <code>&lt;article&gt;</code> is a card</h3>
+      <p>Outlined by a hairline on the white page, a lighter sheet on the beige paper. Use it for the one panel that deserves the spotlight: a top recommendation, a key finding, a small group of evidence cards.</p>
+    </article>
+    <aside>
+      <p><strong>An <code>&lt;aside&gt;</code> is a note.</strong> A tinted block pressed into the page, in smaller text. Use it for a caveat, a tip, or the one thing to remember.</p>
+    </aside>
+    <p>Both reach past the text edge by their own padding, so the words inside them stay on the edge. Build pages from sections with headings and let tables, lists and prose sit directly in them; save cards for what stands out. If everything is a card, nothing is. Don't nest one <code>&lt;article&gt;</code> inside another.</p>
+  </section>
+
+  <section id="long-tables">
+    <h2>Long tables</h2>
+    <p>A table of every row is reference, not reading. Fold it into a <code>&lt;details&gt;</code> and say in the <code>&lt;summary&gt;</code> what is inside and how much:</p>
+    <pre><code>&lt;details&gt;
+  &lt;summary&gt;All 48 invoices&lt;/summary&gt;
+  &lt;table&gt;…&lt;/table&gt;
+&lt;/details&gt;</code></pre>
+    <p>The summary is a line of text with a chevron and no box. In a section on a screen 48rem or wider, the chevron hangs in the margin so the summary text stays on the edge. Code blocks, notes and cards inside a folded section still bleed like the rest.</p>
+  </section>
+
+  <section id="fonts">
+    <h2>Fonts</h2>
+    <p>zinc uses the reader's own system faces, so the stylesheet is the only request. The defaults:</p>
+    <pre><code>--font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+  "Helvetica Neue", Arial, sans-serif;
+--font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas,
+  "Liberation Mono", monospace;
+--font-display: var(--font-sans);   /* headings */</code></pre>
+    <p>To use a web font, load it yourself and set the tokens on <code>:root</code>, after zinc. zinc uses three weights: 400, 500 and 600. It also sets <code>&lt;em&gt;</code>, <code>&lt;i&gt;</code> and <code>&lt;cite&gt;</code> in italic, which the browser slants for you unless you load the italic face too:</p>
+    <pre><code>&lt;link rel="preconnect" href="https://fonts.googleapis.com" /&gt;
+&lt;link rel="preconnect" href="https://fonts.gstatic.com" crossorigin /&gt;
+&lt;link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" /&gt;
+&lt;style&gt;
+  :root {
+    --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  }
+&lt;/style&gt;</code></pre>
+    <p>Set <code>--font-display</code> to give headings a face of their own.</p>
+  </section>
+
+  <section id="browsers">
+    <h2>Browser support</h2>
+    <p>zinc is written for current browsers and ships no fallbacks. It relies on <code>:has()</code>, <code>light-dark()</code> and <code>color-mix()</code>, which together need Chrome and Edge 123, Firefox 121 or Safari 17.5 and later.</p>
+    <p>In an older browser the page still reads, but parts drop out. Every colour written with <code>light-dark()</code> (the accent, danger, the card outline and the code panel) is lost, so checked controls lose their fill and the focus ring can disappear. Without <code>:has()</code>, section labels, key figures, choice cards, toolbar fields and the beige paper set on <code>&lt;body&gt;</code> fall back to plain layout.</p>
+    <p>Some touches are progressive and simply skipped where unsupported:</p>
+    <ul>
+      <li><code>&lt;details&gt;</code> grows open and fades in only where <code>interpolate-size</code> and <code>::details-content</code> are supported; elsewhere it snaps open.</li>
+      <li>A <code>&lt;dialog&gt;</code> fades and scales in with <code>@starting-style</code>. It fades out on close only where <code>overlay</code> can be transitioned; other browsers close it at once.</li>
+      <li><code>text-wrap: balance</code> on headings, <code>text-wrap: pretty</code> on paragraphs and <code>hanging-punctuation</code> are ignored where unsupported.</li>
+    </ul>
+    <p>With reduced motion set, every animation and transition ends at once. Hover styles apply only to fine pointers, so a tap on a phone never leaves a control stuck in its hover state, and on touch screens buttons grow to at least 2.75rem tall.</p>
+  </section>
+</main>
+
+<footer>
+  <p>zinc.css 0.1.0-next.0 · MIT License · <a href="https://github.com/Rkaede/zinc.css">GitHub</a> · <a href="https://www.npmjs.com/package/zinc.css">npm</a></p>
+</footer>
+</body>
+</html>

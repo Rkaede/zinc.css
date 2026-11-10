@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Page structure demo · zinc.css</title>
+<meta name="description" content="A whole page built the zinc.css way: header context line and lede, sections with margin labels, key figures, a card, a note and a folded table." />
+<link rel="icon" href="data:," />
+<link rel="stylesheet" href="../../src/lib/zinc.css" />
+<script>
+  // a theme picked on the theming page is stored, and every page applies it
+  try {
+    const s = JSON.parse(localStorage.getItem("zinc-docs-theme")) || {};
+    for (const k of ["mode", "accent", "paper"]) if (/^[a-z]+$/.test(s[k] || "")) document.documentElement.dataset[k] = s[k];
+  } catch {}
+  // ?mode=light|dark, ?accent=<name> and ?paper=beige set the theme hooks
+  const q = new URLSearchParams(location.search), d = document.documentElement.dataset;
+  if (/^(light|dark)$/.test(q.get("mode"))) d.mode = q.get("mode");
+  if (/^[a-z]+$/.test(q.get("accent") || "")) d.accent = q.get("accent");
+  if (q.get("paper") === "beige") d.paper = "beige";
+</script>
+<script src="../docs.js" defer></script>
+</head>
+<body>
+<header>
+  <nav aria-label="Docs">
+    <ul>
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="../start.html">Getting started</a></li>
+      <li><a href="../elements.html">Elements</a></li>
+      <li><a href="../patterns.html">Patterns</a></li>
+      <li><a href="../theming.html">Theming</a></li>
+      <li><a href="../examples/index.html">Examples</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <header>
+    <p>Larkspur Bakery · Week 10 · Prepared Monday 9 March</p>
+    <h1>Weekly report</h1>
+    <p>Sales held steady across the three shops. One change is worth making: move the rye bake to Thursday, when the ovens run at half capacity.</p>
+  </header>
+
+  <section>
+    <h2>About this page</h2>
+    <aside>
+      <p>A demo for the <a href="../patterns.html#margin-labels">zinc.css docs</a>. The business is invented. On a window 56rem or wider, each section's heading sits in the margin on the left; make the window narrower and the headings return to the column.</p>
+    </aside>
+  </section>
+
+  <section>
+    <h2>Summary</h2>
+    <dl>
+      <div><dt>Loaves sold</dt><dd>966</dd></div>
+      <div><dt>Pastries sold</dt><dd>711</dd></div>
+      <div><dt>Waste</dt><dd>3.2%</dd></div>
+    </dl>
+    <p>Riverside sold the most, as usual. Eastfield is still finding its regulars, but Saturday trade there grew for the fourth week running.</p>
+  </section>
+
+  <section>
+    <h2>Do next</h2>
+    <article>
+      <header><h3>Move the rye bake to Thursday</h3></header>
+      <p>Rye sells best at the weekend, and Thursday's ovens have room. Baking it a day later saves an early shift and keeps it fresher for Saturday.</p>
+      <footer><button data-size="sm">Accept</button> <button data-size="sm" data-variant="ghost">Dismiss</button></footer>
+    </article>
+    <ol>
+      <li>Confirm the Millbrook flour order by noon Friday, before prices rise.</li>
+      <li>Book the deck oven service for a Monday, when the shops are closed.</li>
+      <li>Reply to Priya about the weekend rota swap.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Feedback</h2>
+    <blockquote>
+      <p>The new sourdough is the best bread on the high street. Please never change the flour again.</p>
+      <cite>A regular at Market Lane</cite>
+    </blockquote>
+    <p>Three reviews this week, all about bread. Nobody mentioned the price rise in February.</p>
+  </section>
+
+  <section>
+    <h2>By shop</h2>
+    <section>
+      <h3>Riverside</h3>
+      <p>412 loaves and 288 pastries. The early opening at 7am now brings in a fifth of the day's takings.</p>
+    </section>
+    <section>
+      <h3>Market Lane</h3>
+      <p>356 loaves and 301 pastries. The hygiene inspection is due in the week of 16 March.</p>
+    </section>
+    <section>
+      <h3>Eastfield</h3>
+      <p>198 loaves and 122 pastries, up 9% on last week.</p>
+    </section>
+  </section>
+
+  <section>
+    <h2>All orders</h2>
+    <p>The wholesale orders behind the totals above.</p>
+    <details>
+      <summary>14 wholesale orders</summary>
+      <table>
+        <thead><tr><th scope="col">Customer</th><th scope="col">Day</th><th scope="col">Loaves</th></tr></thead>
+        <tbody>
+          <tr><td>Fern Street Café</td><td>Tuesday</td><td>24</td></tr>
+          <tr><td>The Corner Deli</td><td>Tuesday</td><td>18</td></tr>
+          <tr><td>Fern Street Café</td><td>Thursday</td><td>24</td></tr>
+          <tr><td>Hillside School</td><td>Thursday</td><td>40</td></tr>
+          <tr><td>The Corner Deli</td><td>Saturday</td><td>30</td></tr>
+        </tbody>
+      </table>
+    </details>
+  </section>
+</main>
+
+<footer>
+  <p>zinc.css 0.1.0-next.0 · MIT License · <a href="https://github.com/Rkaede/zinc.css">GitHub</a> · <a href="https://www.npmjs.com/package/zinc.css">npm</a></p>
+</footer>
+</body>
+</html>

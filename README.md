@@ -2,6 +2,9 @@
 
 **A classless CSS framework for semantic HTML.**
 
+Documentation lives in [`docs/`](./docs/): run `pnpm run dev` and open `/docs/`, or
+serve the repo root with any local server and open `docs/index.html`.
+
 Drop in one stylesheet and every semantic element is styled — no class names,
 no build step, no configuration. Write plain markup; `zinc.css` sets it as one
 calm column of text, with section labels in the margin and colour kept for what
@@ -74,11 +77,11 @@ Override any of these on `:root` to rebrand without touching the framework:
 :root {
   --accent: light-dark(#0f766e, #2dd4bf); /* brand color: light shade, dark shade */
   --on-accent: light-dark(#ffffff, #0c0c0d); /* text on accent fills */
-  --danger: light-dark(#d1242f, #ff6369); /* destructive actions, errors */
+  --danger: light-dark(#b93a2c, #f2877a); /* destructive actions, errors */
   --radius: 8px; /* corner radius of controls */
   --width: 42rem; /* the text column */
   --measure: 38rem; /* where running text wraps, about 75 characters */
-  --gutter: 2.5rem; /* page padding */
+  --gutter: clamp(1.25rem, 5vw, 2.5rem); /* page padding */
   --rail: 11rem; /* the margin that holds section labels on a wide screen */
   --font-sans: ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, monospace;
@@ -191,7 +194,7 @@ optional `<p>` under the legend is a hint.
 
 - Questions are numbered automatically.
 - Each question is separated by a rule.
-- The badge turns red when a required question is left empty.
+- The question number turns red when a required question is left empty.
 - A trailing `<footer>` becomes a sticky action bar.
 
 ```html

@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Patterns · zinc.css</title>
+<meta name="description" content="Page patterns in zinc.css: margin labels, header context and lede, key figures, fact sheets, entry lists, toolbars, cards, notes, choice cards, segmented controls, question forms and switches." />
+<link rel="icon" href="data:," />
+<link rel="stylesheet" href="../src/lib/zinc.css" />
+<link rel="stylesheet" href="docs.css" />
+<script>
+  // a theme picked on the theming page is stored, and every page applies it
+  try {
+    const s = JSON.parse(localStorage.getItem("zinc-docs-theme")) || {};
+    for (const k of ["mode", "accent", "paper"]) if (/^[a-z]+$/.test(s[k] || "")) document.documentElement.dataset[k] = s[k];
+  } catch {}
+  // ?mode=light|dark, ?accent=<name> and ?paper=beige set the theme hooks
+  const q = new URLSearchParams(location.search), d = document.documentElement.dataset;
+  if (/^(light|dark)$/.test(q.get("mode"))) d.mode = q.get("mode");
+  if (/^[a-z]+$/.test(q.get("accent") || "")) d.accent = q.get("accent");
+  if (q.get("paper") === "beige") d.paper = "beige";
+</script>
+<script src="docs.js" defer></script>
+</head>
+<body>
+<header>
+  <nav aria-label="Docs">
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="start.html">Getting started</a></li>
+      <li><a href="elements.html">Elements</a></li>
+      <li><a href="patterns.html" aria-current="page">Patterns</a></li>
+      <li><a href="theming.html">Theming</a></li>
+      <li><a href="examples/index.html">Examples</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <header>
+    <p>Docs · Patterns</p>
+    <h1>Patterns</h1>
+    <p>A few arrangements of ordinary elements get a layout of their own. Each is still plain HTML: the structure, an ARIA role or a <code>data-</code> attribute is the hook.</p>
+  </header>
+
+  <nav aria-label="On this page">
+    <h2>On this page</h2>
+    <ul>
+      <li><a href="#margin-labels">Margin labels</a></li>
+      <li><a href="#header">Header and lede</a></li>
+      <li><a href="#key-figures">Key figures</a></li>
+      <li><a href="#fact-sheets">Fact sheets</a></li>
+      <li><a href="#entry-lists">Entry lists</a></li>
+      <li><a href="#toolbars">Toolbars</a></li>
+      <li><a href="#cards">Cards</a></li>
+      <li><a href="#notes">Notes</a></li>
+      <li><a href="#choice-cards">Choice cards</a></li>
+      <li><a href="#segmented">Segmented controls</a></li>
+      <li><a href="#questions">Question forms</a></li>
+      <li><a href="#switches">Switches</a></li>
+    </ul>
+  </nav>
+
+  <section id="margin-labels">
+    <h2>Margin labels</h2>
+    <p>Build the page from <code>&lt;section&gt;</code> elements inside <code>&lt;main&gt;</code>, each opening with an <code>&lt;h2&gt;</code>. From 56rem wide, the page gains a left margin and each <code>&lt;h2&gt;</code> moves into it as a small label that stays in view while its section scrolls past. The title and every line of content keep one edge to the right of it. Below 56rem the labels are ordinary headings.</p>
+    <pre><code>&lt;main&gt;
+  &lt;section&gt;
+    &lt;h2&gt;Do next&lt;/h2&gt;
+    &lt;p&gt;Two modules need attention this week…&lt;/p&gt;
+  &lt;/section&gt;
+  &lt;section&gt;
+    &lt;h2&gt;Findings&lt;/h2&gt;
+    …
+  &lt;/section&gt;
+&lt;/main&gt;</code></pre>
+    <p><strong>Use it</strong> for any page longer than a screen: reports, docs, dashboards. Keep labels to one to three words and put the sentence under them. This page is built this way; on a wide window the labels are on the left. See it on its own in the <a href="demos/page.html">page structure demo</a>, and read the rules in <a href="start.html#labels">Getting started</a>.</p>
+  </section>
+
+  <section id="header">
+    <h2>Header and lede</h2>
+    <p>In the page header (<code>body &gt; header</code> or <code>main &gt; header</code>), a <code>&lt;p&gt;</code> before the <code>&lt;h1&gt;</code> is a small, muted line of context: where this came from, when, for whom. The first <code>&lt;p&gt;</code> after the <code>&lt;h1&gt;</code> is the lede, a size up and in full text colour. Any later paragraphs in the header are muted.</p>
+    <pre><code>&lt;header&gt;
+  &lt;p&gt;Harbor API · Run 412 · 3 March&lt;/p&gt;
+  &lt;h1&gt;Code health&lt;/h1&gt;
+  &lt;p&gt;Two modules need attention this week; the rest is steady.&lt;/p&gt;
+&lt;/header&gt;</code></pre>
+    <p><strong>Use it</strong> to answer the page's question before the reader scrolls: the lede is the one thing every reader should take away. The header of this page uses it, and so does the <a href="demos/page.html">page structure demo</a>.</p>
+  </section>
+
+  <section id="key-figures">
+    <h2>Key figures</h2>
+    <p>A <code>&lt;dl&gt;</code> whose <code>&lt;dt&gt;</code>/<code>&lt;dd&gt;</code> pairs are each wrapped in a <code>&lt;div&gt;</code> is a row of headline numbers. The value leads in large type and the label sits under it, though the label comes first in the markup, so it is read first. The row wraps to fit.</p>
+    <figure data-demo>
+      <dl>
+        <div><dt>Loaves this week</dt><dd>966</dd></div>
+        <div><dt>Waste</dt><dd>3.2%</dd></div>
+        <div><dt>Wholesale orders</dt><dd>14</dd></div>
+        <div><dt>Open issues</dt><dd>2</dd></div>
+      </dl>
+    </figure>
+    <p><strong>Use it</strong> at the top of a report or dashboard for the few numbers that matter. Keep it to four.</p>
+  </section>
+
+  <section id="fact-sheets">
+    <h2>Fact sheets</h2>
+    <p>A plain <code>&lt;dl&gt;</code> of <code>&lt;dt&gt;</code>/<code>&lt;dd&gt;</code> pairs is a two-column list of facts in small text, ruled like a table. The terms are muted and take only the width they need, up to 42% of the column.</p>
+    <figure data-demo>
+      <dl>
+        <dt>Shop</dt><dd>Riverside</dd>
+        <dt>Opened</dt><dd>March 2019</dd>
+        <dt>Ovens</dt><dd>Two deck, one convection</dd>
+        <dt>Manager</dt><dd>Priya Nair</dd>
+      </dl>
+    </figure>
+    <p><strong>Use it</strong> for properties of one thing: the details of a run, a person, a package. Use a table when you compare many things.</p>
+  </section>
+
+  <section id="entry-lists">
+    <h2>Entry lists</h2>
+    <p>A <code>&lt;ul role="list"&gt;</code> or <code>&lt;ol role="list"&gt;</code> is a list of entries: no markers, no indent, a hairline between entries, and more room around an entry than inside it. Entries use the whole column width, and can hold paragraphs, lists and controls.</p>
+    <figure data-demo>
+      <ul role="list">
+        <li>
+          <strong>Millbrook Flour Co</strong> · <a href="https://mail.example.com/m/3101">Price change from 9 March</a>
+          <p>Bread flour goes up 8% next Monday. Confirm the standing order by noon to keep the current price.</p>
+          <menu>
+            <li><button data-size="sm">Confirm order</button></li>
+            <li><button data-size="sm" data-variant="ghost">Remind me later</button></li>
+          </menu>
+        </li>
+        <li>
+          <strong>Priya Nair</strong> · <a href="https://mail.example.com/m/3103">Re: weekend rota swap</a>
+          <p>She asked on Friday to swap Saturday for Sunday. <small>Waiting two days.</small></p>
+        </li>
+      </ul>
+    </figure>
+    <p><strong>Use it</strong> for things a reader acts on one at a time: messages, findings, tasks. Keep ordinary bulleted lists for points in running text.</p>
+  </section>
+
+  <section id="toolbars">
+    <h2>Toolbars</h2>
+    <p>A <code>&lt;menu&gt;</code> of <code>&lt;li&gt;</code> items is a wrapping row of controls. A label that wraps a field sits on one line with it, muted, and the field takes only the width it needs, at a smaller size. A text or search field takes whatever room the other controls leave.</p>
+    <figure data-demo>
+      <menu>
+        <li><label>Search <input type="search" placeholder="Feature or owner" /></label></li>
+        <li><label>Status <select><option>All</option><option>Open</option><option>Shipped</option></select></label></li>
+        <li><label><input type="checkbox" checked /> Mine only</label></li>
+        <li><button data-variant="secondary">Export</button></li>
+      </menu>
+    </figure>
+    <p><strong>Use it</strong> for filters above a table or list, and for any row of buttons.</p>
+  </section>
+
+  <section id="cards">
+    <h2>Cards</h2>
+    <p>An <code>&lt;article&gt;</code> is a card: a hairline outline on the white page, a lighter sheet with no outline on the beige paper. In a section it reaches past the text edge by its own padding, so its words stay on the edge; on a phone it runs to both sides of the screen and keeps only its top and bottom rules. A <code>&lt;footer&gt;</code> inside it is a row of small, muted items and buttons.</p>
+    <figure data-demo>
+      <article>
+        <header>
+          <h3>Move the rye bake to Thursday</h3>
+        </header>
+        <p>Thursday's ovens run at half capacity, and rye sells best at the weekend. Moving the bake saves an early shift and loses nothing on freshness.</p>
+        <footer>
+          <button data-size="sm">Accept</button>
+          <button data-size="sm" data-variant="ghost">Dismiss</button>
+          <span>Confidence: high</span>
+        </footer>
+      </article>
+    </figure>
+    <p><strong>Use it</strong> for the one panel that deserves a spotlight: a top recommendation, a key finding, a few evidence cards. If everything is a card, nothing is. Don't nest cards.</p>
+  </section>
+
+  <section id="notes">
+    <h2>Notes</h2>
+    <p>An <code>&lt;aside&gt;</code> is a note: a tinted block pressed into the page, in smaller text. Headings inside it shrink to the same small size. Like a card, it reaches past the text edge.</p>
+    <figure data-demo>
+      <aside>
+        <h3>Before you order</h3>
+        <p>Millbrook's prices rise on 9 March. Orders placed before noon on Friday keep the old price.</p>
+      </aside>
+    </figure>
+    <p><strong>Use it</strong> for a caveat, a tip or the one thing to remember, set apart from the argument of the page.</p>
+  </section>
+
+  <section id="choice-cards">
+    <h2>Choice cards</h2>
+    <p>Wrap a radio or checkbox and a <code>&lt;span&gt;</code> in a <code>&lt;label&gt;</code>, and the label becomes a large, tappable card. Put the title in <code>&lt;strong&gt;</code> and an optional description in <code>&lt;small&gt;</code>. The chosen card takes an accent outline and a faint accent wash, and the card, not the input, carries the focus ring. Without the <code>&lt;span&gt;</code>, the label stays an ordinary inline control.</p>
+    <figure data-demo>
+      <label>
+        <input type="radio" name="plan" value="solo" />
+        <span><strong>Solo</strong><small>One shop, one login</small></span>
+      </label>
+      <label>
+        <input type="radio" name="plan" value="team" checked />
+        <span><strong>Team</strong><small>Up to five shops, shared billing</small></span>
+      </label>
+      <label>
+        <input type="checkbox" name="extras" value="wholesale" />
+        <span><strong>Wholesale portal</strong><small>Let cafés order from you directly</small></span>
+      </label>
+    </figure>
+    <p><strong>Use it</strong> when each option needs a line of explanation, or when the choice is the main thing on the page. Choice cards have no margin of their own: in a <a href="#questions">question form</a> they are spaced for you.</p>
+  </section>
+
+  <section id="segmented">
+    <h2>Segmented controls</h2>
+    <p>Put labels, each wrapping a radio and a <code>&lt;span&gt;</code>, inside an element with <code>role="radiogroup"</code>. The radios become segments on one line, and the chosen one takes the accent. Each segment is still a real radio, so the keyboard, grouping, validation and form submission work as usual. A segment whose value is empty means "no choice yet": chosen, it is a plain raised tab, so the accent stays for real answers.</p>
+    <figure data-demo>
+      <span role="radiogroup" aria-label="Decision">
+        <label><input type="radio" name="decision" value="" checked /><span>Undecided</span></label>
+        <label><input type="radio" name="decision" value="keep" /><span>Keep</span></label>
+        <label><input type="radio" name="decision" value="drop" /><span>Drop</span></label>
+      </span>
+    </figure>
+    <p><strong>Use it</strong> for one choice among two to four short options, such as a decision per row in a list. For a strip of commands rather than a choice, use a <a href="elements.html#buttons">button group</a>.</p>
+  </section>
+
+  <section id="questions">
+    <h2>Question forms</h2>
+    <p>Add <code>data-form="questions"</code> to a <code>&lt;form&gt;</code> to lay it out as a questionnaire. Each <code>&lt;fieldset&gt;</code> is one question and its <code>&lt;legend&gt;</code> is the question text. An optional <code>&lt;p&gt;</code> under the legend is a hint.</p>
+    <ul>
+      <li>Questions are numbered automatically. On a wide screen the numbers hang in the margin.</li>
+      <li>Questions are set apart by space, and choice cards inside them are spaced for you.</li>
+      <li>An <code>&lt;abbr title="required"&gt;*&lt;/abbr&gt;</code> in the legend is a required mark in the danger colour. When a question holds an invalid answer after the person has interacted or tried to submit, its number turns red too.</li>
+      <li>A trailing <code>&lt;footer&gt;</code> becomes an action bar that sticks to the bottom of the window. An <code>&lt;output&gt;</code> in it is a small muted status.</li>
+    </ul>
+    <figure data-demo>
+      <form data-form="questions">
+        <fieldset>
+          <legend>Which shop do you collect from?<abbr title="required">*</abbr></legend>
+          <p>You can change this for each order.</p>
+          <label>
+            <input type="radio" name="collect-from" value="riverside" required />
+            <span><strong>Riverside</strong><small>Open from 7am</small></span>
+          </label>
+          <label>
+            <input type="radio" name="collect-from" value="market-lane" />
+            <span><strong>Market Lane</strong><small>Open from 8am</small></span>
+          </label>
+        </fieldset>
+        <fieldset>
+          <legend>Anything we should know?</legend>
+          <textarea name="notes" aria-label="Anything we should know?"></textarea>
+        </fieldset>
+      </form>
+    </figure>
+    <p>The demo above leaves out the footer, because a sticky bar inside this page would cover the docs. See the whole thing, footer and validation included, in the <a href="demos/questions.html">question form demo</a>, or in the longer <a href="examples/questions.html">questions example</a>.</p>
+    <pre><code>&lt;form data-form="questions"&gt;
+  &lt;fieldset&gt;…&lt;/fieldset&gt;
+  &lt;footer&gt;
+    &lt;button type="submit"&gt;Send answers&lt;/button&gt;
+    &lt;output&gt;2 of 5 answered&lt;/output&gt;
+  &lt;/footer&gt;
+&lt;/form&gt;</code></pre>
+    <p><strong>Use it</strong> when you need several answers from someone: a survey, an intake form, a set of decisions.</p>
+  </section>
+
+  <section id="switches">
+    <h2>Switches</h2>
+    <p>Add <code>role="switch"</code> to a checkbox for a sliding toggle. Off, the track is the control-outline colour; on, it takes the accent and the thumb slides across.</p>
+    <figure data-demo>
+      <label><input type="checkbox" role="switch" checked /> Email me the weekly summary</label>
+      <label><input type="checkbox" role="switch" /> Text me when an order is ready</label>
+    </figure>
+    <p><strong>Use it</strong> for a setting that is on or off and takes effect at once. For an option that is sent with a form, a plain checkbox is clearer.</p>
+  </section>
+</main>
+
+<footer>
+  <p>zinc.css 0.1.0-next.0 · MIT License · <a href="https://github.com/Rkaede/zinc.css">GitHub</a> · <a href="https://www.npmjs.com/package/zinc.css">npm</a></p>
+</footer>
+</body>
+</html>

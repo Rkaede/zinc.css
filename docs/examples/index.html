@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Examples · zinc.css</title>
+<meta name="description" content="Whole pages built with zinc.css: reports, a dashboard, a triage board and forms, in plain semantic HTML with no classes." />
+<link rel="icon" href="data:," />
+<link rel="stylesheet" href="../../src/lib/zinc.css" />
+<script>
+  // a theme picked on the theming page is stored, and every page applies it
+  try {
+    const s = JSON.parse(localStorage.getItem("zinc-docs-theme")) || {};
+    for (const k of ["mode", "accent", "paper"]) if (/^[a-z]+$/.test(s[k] || "")) document.documentElement.dataset[k] = s[k];
+  } catch {}
+  // ?mode=light|dark, ?accent=<name> and ?paper=beige set the theme hooks
+  const q = new URLSearchParams(location.search), d = document.documentElement.dataset;
+  if (/^(light|dark)$/.test(q.get("mode"))) d.mode = q.get("mode");
+  if (/^[a-z]+$/.test(q.get("accent") || "")) d.accent = q.get("accent");
+  if (q.get("paper") === "beige") d.paper = "beige";
+</script>
+<script src="../docs.js" defer></script>
+</head>
+<body>
+<header>
+  <nav aria-label="Docs">
+    <ul>
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="../start.html">Getting started</a></li>
+      <li><a href="../elements.html">Elements</a></li>
+      <li><a href="../patterns.html">Patterns</a></li>
+      <li><a href="../theming.html">Theming</a></li>
+      <li><a href="index.html" aria-current="page">Examples</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <header>
+    <p>Docs · Examples</p>
+    <h1>Examples</h1>
+    <p>Whole pages of the kinds zinc is built for: reports, dashboards and forms, in plain semantic HTML with no classes.</p>
+    <p>The people, companies and projects in them are invented. Add <code>?mode=dark</code>, <code>?accent=forest</code> or <code>?paper=beige</code> to any page; a theme picked on the <a href="../theming.html">theming page</a> is passed along by the links below.</p>
+  </header>
+
+  <section>
+    <h2>Reports</h2>
+    <ul role="list">
+      <li><a href="briefing.html"><strong>Inbox briefing</strong></a><p>An entry list sorted by urgency, key figures and a folded table.</p></li>
+      <li><a href="code-health.html"><strong>Code health</strong></a><p>A dashboard: key figures, a short "do next" list and fact sheets.</p></li>
+      <li><a href="recommendations.html"><strong>Recommendations</strong></a><p>A long report with a folded index and many disclosures.</p></li>
+    </ul>
+  </section>
+  <section>
+    <h2>Boards</h2>
+    <ul role="list">
+      <li><a href="triage.html"><strong>Feature triage</strong></a><p>A toolbar of filters, segmented choices with notes, and a searchable audit.</p></li>
+    </ul>
+  </section>
+  <section>
+    <h2>Forms</h2>
+    <ul role="list">
+      <li><a href="questions.html"><strong>Questions</strong></a><p>A questionnaire of choice cards with a sticky action bar.</p></li>
+      <li><a href="skill-check.html"><strong>Every control</strong></a><p>A short form that uses each kind of input once.</p></li>
+      <li><a href="audit-form.html"><strong>Audit decisions</strong></a><p>A long form of per-item decisions with filters and a preview.</p></li>
+    </ul>
+  </section>
+</main>
+
+<footer>
+  <p>zinc.css 0.1.0-next.0 · MIT License · <a href="https://github.com/Rkaede/zinc.css">GitHub</a> · <a href="https://www.npmjs.com/package/zinc.css">npm</a></p>
+</footer>
+</body>
+</html>

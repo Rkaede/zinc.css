@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>zinc.css: a classless CSS framework</title>
+<meta name="description" content="zinc.css is one stylesheet that styles semantic HTML directly: no classes, no JavaScript, no build step. Install it from a CDN or npm." />
+<link rel="icon" href="data:," />
+<link rel="stylesheet" href="../src/lib/zinc.css" />
+<link rel="stylesheet" href="docs.css" />
+<script>
+  // a theme picked on the theming page is stored, and every page applies it
+  try {
+    const s = JSON.parse(localStorage.getItem("zinc-docs-theme")) || {};
+    for (const k of ["mode", "accent", "paper"]) if (/^[a-z]+$/.test(s[k] || "")) document.documentElement.dataset[k] = s[k];
+  } catch {}
+  // ?mode=light|dark, ?accent=<name> and ?paper=beige set the theme hooks
+  const q = new URLSearchParams(location.search), d = document.documentElement.dataset;
+  if (/^(light|dark)$/.test(q.get("mode"))) d.mode = q.get("mode");
+  if (/^[a-z]+$/.test(q.get("accent") || "")) d.accent = q.get("accent");
+  if (q.get("paper") === "beige") d.paper = "beige";
+</script>
+<script src="docs.js" defer></script>
+</head>
+<body>
+<header>
+  <nav aria-label="Docs">
+    <ul>
+      <li><a href="index.html" aria-current="page">Home</a></li>
+      <li><a href="start.html">Getting started</a></li>
+      <li><a href="elements.html">Elements</a></li>
+      <li><a href="patterns.html">Patterns</a></li>
+      <li><a href="theming.html">Theming</a></li>
+      <li><a href="examples/index.html">Examples</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <header>
+    <p>A classless CSS framework · 0.1.0-next.0</p>
+    <h1>zinc.css</h1>
+    <p>One stylesheet that styles semantic HTML as it is. Write plain markup with no class names, and zinc sets it as one column of text, with section labels in the margin and colour kept for what you focus, check or choose.</p>
+  </header>
+
+  <section id="about">
+    <h2>In brief</h2>
+    <p>zinc is a single CSS file. It styles elements such as <code>&lt;button&gt;</code>, <code>&lt;table&gt;</code>, <code>&lt;article&gt;</code> and <code>&lt;details&gt;</code> directly, so there is nothing to learn beyond HTML. There is no JavaScript, no preprocessor and no build step on your side.</p>
+    <ul>
+      <li>Text sits on one left edge. On a wide screen, each section's heading moves into a margin as a label that stays in view.</li>
+      <li>Links and buttons are ink. The accent colour marks only state: focus, checked controls, chosen options and progress.</li>
+      <li>Light and dark modes follow the system, or you set one. Three accents and a beige paper are built in.</li>
+      <li>The few variants (button styles, sizes, switches, segmented controls) are attributes and ARIA roles, never classes.</li>
+    </ul>
+  </section>
+
+  <section id="demo">
+    <h2>Demo</h2>
+    <p>Everything below is plain HTML. The markup under it is generated from the demo itself.</p>
+    <figure data-demo>
+      <h3>Weekly bake schedule</h3>
+      <p>Orders close at <strong>noon on Friday</strong>. Press <kbd>Enter</kbd> to save, or read the <a href="https://example.com/guide">ordering guide</a>.</p>
+      <label><input type="checkbox" checked /> Include the rye trial</label>
+      <label><input type="checkbox" role="switch" /> Email me a copy</label>
+      <progress value="3" max="5">3 of 5 done</progress>
+      <menu>
+        <li><button>Save schedule</button></li>
+        <li><button data-variant="outline">Preview</button></li>
+      </menu>
+    </figure>
+    <p>Change the mode, accent and paper on the <a href="theming.html">theming page</a>; the choice follows you through the docs.</p>
+  </section>
+
+  <section id="install">
+    <h2>Install</h2>
+    <aside>
+      <p><strong>Use the <code>next</code> tag.</strong> This site documents <code>0.1.0-next.0</code>, a pre-release published under the npm <code>next</code> tag. An unpinned URL or a plain <code>npm install zinc.css</code> gets <code>latest</code>, which is still an older version with a different look. Ask for <code>@next</code>, or pin <code>@0.1.0-next.0</code>.</p>
+    </aside>
+    <h3>From a CDN</h3>
+    <p>Add one <code>&lt;link&gt;</code> to the <code>&lt;head&gt;</code>. jsDelivr and unpkg both serve the package:</p>
+    <pre><code>&lt;!-- jsDelivr --&gt;
+&lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/zinc.css@next/zinc.css" /&gt;
+
+&lt;!-- unpkg --&gt;
+&lt;link rel="stylesheet" href="https://unpkg.com/zinc.css@next/zinc.css" /&gt;</code></pre>
+    <p>Each package also has a minified build, <code>zinc.min.css</code>.</p>
+    <h3>Pin a version</h3>
+    <p>The <code>@next</code> tag moves when a new pre-release comes out. For anything past a prototype, pin the exact version so the page can't change under you:</p>
+    <pre><code>&lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/zinc.css@0.1.0-next.0/zinc.min.css" /&gt;</code></pre>
+    <h3>From npm</h3>
+    <pre><code>npm install zinc.css@next</code></pre>
+    <p>The package holds <code>zinc.css</code> and <code>zinc.min.css</code> at its top level. Link the file from <code>node_modules/zinc.css/</code>, or import it with a bundler that handles CSS:</p>
+    <pre><code>import "zinc.css";       /* zinc.css */
+import "zinc.css/min";   /* zinc.min.css */</code></pre>
+  </section>
+
+  <section id="docs">
+    <h2>The docs</h2>
+    <ul role="list">
+      <li><a href="start.html"><strong>Getting started</strong></a><p>The minimal page, how to structure a page so it reads well, fonts and browser support.</p></li>
+      <li><a href="elements.html"><strong>Elements</strong></a><p>Every element zinc styles, from inline text to every input type, each with a live demo and its markup.</p></li>
+      <li><a href="patterns.html"><strong>Patterns</strong></a><p>The page-level hooks: margin labels, key figures, entry lists, toolbars, cards, choice cards and question forms.</p></li>
+      <li><a href="theming.html"><strong>Theming</strong></a><p>Mode, accent and paper, with a live switcher, and every token you can tune.</p></li>
+      <li><a href="examples/index.html"><strong>Examples</strong></a><p>Whole pages built with zinc: reports, a dashboard, a triage board and forms.</p></li>
+    </ul>
+  </section>
+</main>
+
+<footer>
+  <p>zinc.css 0.1.0-next.0 · MIT License · <a href="https://github.com/Rkaede/zinc.css">GitHub</a> · <a href="https://www.npmjs.com/package/zinc.css">npm</a></p>
+</footer>
+</body>
+</html>

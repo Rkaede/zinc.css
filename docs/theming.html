@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Theming · zinc.css</title>
+<meta name="description" content="Theme zinc.css with three hooks on html (mode, accent, paper) and a set of CSS custom properties. Live switcher, every token and its default, and how to add your own accent." />
+<link rel="icon" href="data:," />
+<link rel="stylesheet" href="../src/lib/zinc.css" />
+<link rel="stylesheet" href="docs.css" />
+<script>
+  // a theme picked on the theming page is stored, and every page applies it
+  try {
+    const s = JSON.parse(localStorage.getItem("zinc-docs-theme")) || {};
+    for (const k of ["mode", "accent", "paper"]) if (/^[a-z]+$/.test(s[k] || "")) document.documentElement.dataset[k] = s[k];
+  } catch {}
+  // ?mode=light|dark, ?accent=<name> and ?paper=beige set the theme hooks
+  const q = new URLSearchParams(location.search), d = document.documentElement.dataset;
+  if (/^(light|dark)$/.test(q.get("mode"))) d.mode = q.get("mode");
+  if (/^[a-z]+$/.test(q.get("accent") || "")) d.accent = q.get("accent");
+  if (q.get("paper") === "beige") d.paper = "beige";
+</script>
+<script src="docs.js" defer></script>
+</head>
+<body>
+<header>
+  <nav aria-label="Docs">
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="start.html">Getting started</a></li>
+      <li><a href="elements.html">Elements</a></li>
+      <li><a href="patterns.html">Patterns</a></li>
+      <li><a href="theming.html" aria-current="page">Theming</a></li>
+      <li><a href="examples/index.html">Examples</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <header>
+    <p>Docs · Theming</p>
+    <h1>Theming</h1>
+    <p>Three attributes on <code>&lt;html&gt;</code> pick the mode, the accent and the paper. Everything else is a CSS custom property you can override.</p>
+  </header>
+
+  <section id="hooks">
+    <h2>Theme hooks</h2>
+    <dl>
+      <dt><code>data-mode</code></dt><dd><code>light</code>, <code>dark</code><br />Forces a mode. Leave it off to follow the system setting. A forced mode also sets <code>color-scheme</code>, so native controls, scrollbars and <code>light-dark()</code> colours follow it.</dd>
+      <dt><code>data-accent</code></dt><dd><code>electric</code>, <code>forest</code>, <code>violet</code><br />Picks the accent. Electric, a dusty blue, is the default; forest is green and violet is purple. Each has a light and a dark shade.</dd>
+      <dt><code>data-paper</code></dt><dd><code>beige</code><br />Swaps the white page for a pale green-beige paper, and gives cards a lighter fill in place of their outline. Works on <code>&lt;html&gt;</code> or <code>&lt;body&gt;</code>. In dark mode the page stays dark grey; cards still take a fill instead of an outline.</dd>
+    </dl>
+    <pre><code>&lt;html lang="en" data-mode="dark" data-accent="forest" data-paper="beige"&gt;</code></pre>
+  </section>
+
+  <section id="switcher">
+    <h2>Switcher</h2>
+    <p>Try the hooks on this site. Your choice is kept in this browser and applied to every page of the docs. The example pages get it through their links.</p>
+    <noscript><p>The switcher needs JavaScript. Without it, add <code>?mode=dark</code>, <code>?accent=forest</code> or <code>?paper=beige</code> to the address of any page here.</p></noscript>
+    <form data-theme-picker hidden>
+      <menu>
+        <li>
+          <small>Mode</small>
+          <span role="radiogroup" aria-label="Mode">
+            <label><input type="radio" name="mode" value="system" checked /><span>System</span></label>
+            <label><input type="radio" name="mode" value="light" /><span>Light</span></label>
+            <label><input type="radio" name="mode" value="dark" /><span>Dark</span></label>
+          </span>
+        </li>
+        <li>
+          <small>Accent</small>
+          <span role="radiogroup" aria-label="Accent">
+            <label><input type="radio" name="accent" value="electric" checked /><span>Electric</span></label>
+            <label><input type="radio" name="accent" value="forest" /><span>Forest</span></label>
+            <label><input type="radio" name="accent" value="violet" /><span>Violet</span></label>
+          </span>
+        </li>
+        <li>
+          <small>Paper</small>
+          <span role="radiogroup" aria-label="Paper">
+            <label><input type="radio" name="paper" value="white" checked /><span>White</span></label>
+            <label><input type="radio" name="paper" value="beige" /><span>Beige</span></label>
+          </span>
+        </li>
+        <li><button type="reset" data-variant="ghost" data-size="sm">Reset</button></li>
+      </menu>
+    </form>
+    <pre data-theme-markup hidden><code>&lt;html lang="en"&gt;</code></pre>
+    <p>Everything the accent touches, plus a card and a note to show the paper:</p>
+    <figure data-preview>
+      <label><input type="checkbox" checked /> A checked box</label>
+      <label><input type="radio" name="preview-radio" checked /> A chosen radio</label>
+      <label><input type="checkbox" role="switch" checked /> A switch that is on</label>
+      <label><input type="radio" name="preview-card" checked /> <span><strong>A chosen card</strong><small>Accent outline, faint accent wash</small></span></label>
+      <p>
+        <span role="radiogroup" aria-label="Preview segments">
+          <label><input type="radio" name="preview-segment" value="a" checked /><span>Chosen</span></label>
+          <label><input type="radio" name="preview-segment" value="b" /><span>Other</span></label>
+        </span>
+      </p>
+      <label for="preview-range">Range</label>
+      <input id="preview-range" type="range" value="60" />
+      <label for="preview-progress">Progress</label>
+      <progress id="preview-progress" value="0.6">60%</progress>
+      <p>Text with a <mark>highlight</mark>, a <a href="#accent">link</a> that turns to the accent on hover, and <code>code</code>.</p>
+      <menu>
+        <li><button>Ink button</button></li>
+        <li><button data-variant="secondary">Secondary</button></li>
+        <li><button data-variant="danger">Danger</button></li>
+      </menu>
+      <article>
+        <h3>A card</h3>
+        <p>A hairline on white, a lighter sheet on beige.</p>
+      </article>
+      <aside><p>A note, pressed into the page.</p></aside>
+    </figure>
+    <p>Press <kbd>Tab</kbd> to move through the preview and see the focus ring.</p>
+  </section>
+
+  <section id="accent">
+    <h2>The accent</h2>
+    <p>The accent marks state, and nothing else: the focus ring, a checked checkbox or radio, a switch that is on, a chosen choice card or segment, the range thumb, progress and meter bars, and a focused text field. It also tints <code>&lt;mark&gt;</code>, <code>&lt;ins&gt;</code> and selected text, colours the text cursor, and shows on a link under the mouse.</p>
+    <p>Links and buttons are ink. A link is the text colour with a hairline underline; a button is a dark fill in light mode and a light one in dark mode. A command looks like a command, and colour stays free to say "this one is chosen".</p>
+    <p>Every built-in accent meets WCAG AA in both modes: at least 4.5:1 as text against the page, and <code>--on-accent</code> at least 4.5:1 on an accent fill. The focus ring clears 3:1 against the page and against fields.</p>
+  </section>
+
+  <section id="custom-accent">
+    <h2>Your own accent</h2>
+    <p>Name an accent of your own in your stylesheet, after zinc, and give it a light and a dark shade with <code>light-dark()</code>. The browser picks the shade from the mode, so you need no rules for dark mode.</p>
+    <pre><code>:root[data-accent="teal"] {
+  --accent: light-dark(#0f766e, #2dd4bf);
+  --on-accent: light-dark(#ffffff, #101311);
+}</code></pre>
+    <pre><code>&lt;html lang="en" data-accent="teal"&gt;</code></pre>
+    <p>To change the default accent instead, set the same two properties on plain <code>:root</code>. A <code>data-accent</code> attribute still wins over that, because <code>:root[data-accent]</code> is the stronger selector.</p>
+    <ul>
+      <li>Keep the accent at 4.5:1 or more against the page in each mode (white, or <code>#141615</code> in dark), and <code>--on-accent</code> at 4.5:1 or more on the accent.</li>
+      <li>The soft shades zinc mixes from the accent (the text-field halo, the <code>&lt;ins&gt;</code> tint, the selection) follow it automatically.</li>
+      <li>The danger colour works the same way: set <code>--danger</code> and <code>--on-danger</code> as <code>light-dark()</code> pairs.</li>
+    </ul>
+    <p>The <code>?accent=</code> switch on these docs accepts any name, so once your stylesheet defines one, <code>?accent=teal</code> previews it.</p>
+  </section>
+
+  <section id="tokens">
+    <h2>Tokens</h2>
+    <p>Override any of these on <code>:root</code> in a stylesheet loaded after zinc. Defaults are the light, white-page values.</p>
+
+    <h3>Colour</h3>
+    <dl>
+      <dt><code>--accent</code></dt><dd><code>light-dark(#3559c7, #93aaff)</code><br />The state colour: focus, checked, chosen, progress.</dd>
+      <dt><code>--on-accent</code></dt><dd><code>light-dark(#ffffff, #101311)</code><br />Marks and text on an accent fill: the tick, the radio dot, a chosen segment's label.</dd>
+      <dt><code>--danger</code></dt><dd><code>light-dark(#b93a2c, #f2877a)</code><br />Danger buttons, invalid fields, required marks.</dd>
+      <dt><code>--on-danger</code></dt><dd><code>light-dark(#ffffff, #101311)</code><br />Text on a danger button.</dd>
+    </dl>
+
+    <h3>Shape and layout</h3>
+    <dl>
+      <dt><code>--radius</code></dt><dd><code>8px</code><br />Corners of fields, buttons, choice cards, images and video.</dd>
+      <dt><code>--radius-lg</code></dt><dd><code>12px</code><br />Corners of code blocks, cards and notes. The dialog adds 2px.</dd>
+      <dt><code>--width</code></dt><dd><code>42rem</code><br />The text column.</dd>
+      <dt><code>--measure</code></dt><dd><code>38rem</code><br />Where paragraphs, list items, quotes and captions wrap, about 75 characters. Tables, entry lists and blocks use the whole column.</dd>
+      <dt><code>--gutter</code></dt><dd><code>clamp(1.25rem, 5vw, 2.5rem)</code><br />Page padding on each side.</dd>
+      <dt><code>--rail</code></dt><dd><code>11rem</code><br />The margin that holds section labels from 56rem wide.</dd>
+      <dt><code>--rail-gap</code></dt><dd><code>3rem</code><br />The space between that margin and the column.</dd>
+      <dt><code>--bleed</code></dt><dd><code>1.25rem</code><br />How far code blocks, notes and cards reach past the text edge on each side. Up to 40rem wide it equals <code>--gutter</code>, so they run to the screen edges.</dd>
+      <dt><code>--section-gap</code></dt><dd><code>4rem</code><br />Space between top-level sections, below the page header and above a footer. 3.25rem up to 40rem wide.</dd>
+    </dl>
+    <p>zinc sets <code>--bleed</code> and <code>--section-gap</code> again inside a <code>max-width: 40rem</code> media query, so an override on plain <code>:root</code> after zinc applies at every width.</p>
+
+    <h3>Type</h3>
+    <dl>
+      <dt><code>--font-sans</code></dt><dd><code>ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif</code><br />Body text and controls.</dd>
+      <dt><code>--font-mono</code></dt><dd><code>ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace</code><br />Code, keys and sample output.</dd>
+      <dt><code>--font-display</code></dt><dd><code>var(--font-sans)</code><br />Headings.</dd>
+      <dt><code>--size-title</code></dt><dd><code>clamp(1.75rem, 1.45rem + 1.5vw, 2.25rem)</code><br />The <code>&lt;h1&gt;</code>.</dd>
+      <dt><code>--size-lede</code></dt><dd><code>1.25rem</code><br />The lede under the title.</dd>
+      <dt><code>--size-body</code></dt><dd><code>1.0625rem</code><br />Body text, <code>&lt;h3&gt;</code> and field text.</dd>
+      <dt><code>--size-small</code></dt><dd><code>0.9375rem</code><br />Small print, labels, tables, buttons, notes, section labels.</dd>
+      <dt><code>--leading</code></dt><dd><code>1.6</code><br />Line height of body text.</dd>
+    </dl>
+    <p>To load a web font, see <a href="start.html#fonts">Fonts</a>.</p>
+
+    <h3>Neutrals</h3>
+    <p>The page colours, in light, dark and on the beige paper. Where no beige value is given, the beige paper keeps the light one.</p>
+    <dl>
+      <dt><code>--bg</code></dt><dd><code>#ffffff</code> light, <code>#141615</code> dark, <code>#f3f5f0</code> beige<br />The page.</dd>
+      <dt><code>--surface</code></dt><dd><code>#ffffff</code> light, <code>#1d201e</code> dark<br />Fields, choice cards, the dialog, and cards on beige.</dd>
+      <dt><code>--surface-alt</code></dt><dd><code>#f1f3ee</code> light, <code>#252926</code> dark, <code>#e7eae3</code> beige<br />Notes.</dd>
+      <dt><code>--text</code></dt><dd><code>#1c201d</code> light, <code>#e4e7e2</code> dark<br />Text.</dd>
+      <dt><code>--muted</code></dt><dd><code>#616862</code> light, <code>#9ba09a</code> dark<br />Secondary text, markers, labels.</dd>
+      <dt><code>--line</code></dt><dd><code>#e4e7e0</code> light, <code>#2a2e2b</code> dark, <code>#dfe3db</code> beige<br />Rules: table rows, entry lists, fact sheets, <code>&lt;hr&gt;</code>.</dd>
+      <dt><code>--line-card</code></dt><dd><code>#d9ddd5</code> light, <code>#343936</code> dark, <code>var(--line)</code> beige, in both modes<br />The outline of cards and choice cards.</dd>
+      <dt><code>--line-strong</code></dt><dd><code>#818882</code> light, <code>#6e746f</code> dark<br />Control boundaries, at 3:1 or more on the page: fields, checkboxes, tracks.</dd>
+      <dt><code>--ink</code></dt><dd><code>#1c201d</code> light, <code>#e4e7e2</code> dark<br />The fill of a primary button.</dd>
+      <dt><code>--on-ink</code></dt><dd><code>var(--bg)</code> in every mode<br />Text on a primary button.</dd>
+      <dt><code>--code-bg</code></dt><dd><code>#f1f3ee</code> light, <code>#1d201e</code> dark, <code>#e7eae3</code> beige<br />Code blocks.</dd>
+      <dt><code>--code-text</code></dt><dd><code>#1c201d</code> light, <code>#e4e7e2</code> dark<br />Text in code blocks.</dd>
+    </dl>
+    <p><code>--line-card</code>, <code>--code-bg</code> and <code>--code-text</code> are written as <code>light-dark()</code> pairs; the rest get their dark values from zinc's dark-mode rules. Those rules are stronger than plain <code>:root</code>, so to change a neutral in dark mode, set it under both of zinc's dark selectors:</p>
+    <pre><code>@media (prefers-color-scheme: dark) {
+  :root:not([data-mode="light"]) { --bg: #101211; }
+}
+:root[data-mode="dark"] { --bg: #101211; }</code></pre>
+
+    <h3>Derived</h3>
+    <p>Mixed from the tokens above with <code>color-mix()</code>, so they follow them. You rarely need to set these.</p>
+    <dl>
+      <dt><code>--accent-soft</code></dt><dd>12% accent<br />The halo around a focused text field, the <code>&lt;ins&gt;</code> tint.</dd>
+      <dt><code>--tint</code></dt><dd>7% text colour<br />Inline code, secondary buttons, the segmented track, the file button, hover fills.</dd>
+      <dt><code>--tint-strong</code></dt><dd>12% text colour<br />Hover on secondary buttons and the file button.</dd>
+      <dt><code>--ink-press</code></dt><dd>82% ink, 18% page<br />Hover on a primary button.</dd>
+      <dt><code>--danger-press</code></dt><dd>86% danger with black; 82% with white in dark<br />Hover on a danger button.</dd>
+      <dt><code>--shadow</code></dt><dd>Two soft layers<br />The dialog, the one thing that floats.</dd>
+      <dt><code>--ease-out</code></dt><dd><code>cubic-bezier(0.23, 1, 0.32, 1)</code><br />The switch thumb, the summary chevron, details and the dialog.</dd>
+    </dl>
+  </section>
+</main>
+
+<footer>
+  <p>zinc.css 0.1.0-next.0 · MIT License · <a href="https://github.com/Rkaede/zinc.css">GitHub</a> · <a href="https://www.npmjs.com/package/zinc.css">npm</a></p>
+</footer>
+</body>
+</html>

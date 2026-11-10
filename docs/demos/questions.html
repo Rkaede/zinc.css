@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Question form demo · zinc.css</title>
+<meta name="description" content="A zinc.css question form: numbered questions, hints, choice cards, a segmented control, a switch, required marks and a sticky action bar." />
+<link rel="icon" href="data:," />
+<link rel="stylesheet" href="../../src/lib/zinc.css" />
+<script>
+  // a theme picked on the theming page is stored, and every page applies it
+  try {
+    const s = JSON.parse(localStorage.getItem("zinc-docs-theme")) || {};
+    for (const k of ["mode", "accent", "paper"]) if (/^[a-z]+$/.test(s[k] || "")) document.documentElement.dataset[k] = s[k];
+  } catch {}
+  // ?mode=light|dark, ?accent=<name> and ?paper=beige set the theme hooks
+  const q = new URLSearchParams(location.search), d = document.documentElement.dataset;
+  if (/^(light|dark)$/.test(q.get("mode"))) d.mode = q.get("mode");
+  if (/^[a-z]+$/.test(q.get("accent") || "")) d.accent = q.get("accent");
+  if (q.get("paper") === "beige") d.paper = "beige";
+</script>
+<script src="../docs.js" defer></script>
+</head>
+<body>
+<header>
+  <nav aria-label="Docs">
+    <ul>
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="../start.html">Getting started</a></li>
+      <li><a href="../elements.html">Elements</a></li>
+      <li><a href="../patterns.html">Patterns</a></li>
+      <li><a href="../theming.html">Theming</a></li>
+      <li><a href="../examples/index.html">Examples</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <header>
+    <p>Larkspur Bakery · Wholesale sign-up</p>
+    <h1>Set up your standing order</h1>
+    <p>Four questions, about two minutes. A demo for the <a href="../patterns.html#questions">zinc.css docs</a>: nothing is sent. Press "Save answers" with the first question empty to see the required mark at work.</p>
+  </header>
+
+  <form data-form="questions" onsubmit="event.preventDefault(); this.querySelector('output').value = 'Saved. This demo sends nothing.'">
+    <fieldset>
+      <legend>Which shop should deliver to you?<abbr title="required">*</abbr></legend>
+      <p>Pick the one nearest to you; we deliver within three miles.</p>
+      <label><input type="radio" name="shop" value="riverside" required /> <span><strong>Riverside</strong><small>Deliveries from 6am</small></span></label>
+      <label><input type="radio" name="shop" value="market-lane" /> <span><strong>Market Lane</strong><small>Deliveries from 7am</small></span></label>
+      <label><input type="radio" name="shop" value="eastfield" /> <span><strong>Eastfield</strong><small>Deliveries from 7am, not on Mondays</small></span></label>
+    </fieldset>
+
+    <fieldset>
+      <legend>What do you want each week?</legend>
+      <p>Choose any. You can change quantities later.</p>
+      <label><input type="checkbox" name="items" value="sourdough" checked /> <span><strong>Sourdough</strong><small>White, wholemeal or rye</small></span></label>
+      <label><input type="checkbox" name="items" value="pastries" /> <span><strong>Pastries</strong><small>Croissants and cardamom buns</small></span></label>
+      <label><input type="checkbox" name="items" value="cakes" /> <span><strong>Cakes</strong><small>Whole cakes, cut to order</small></span></label>
+    </fieldset>
+
+    <fieldset>
+      <legend>How often?</legend>
+      <p>
+        <span role="radiogroup" aria-label="How often">
+          <label><input type="radio" name="often" value="" checked /><span>Not sure yet</span></label>
+          <label><input type="radio" name="often" value="weekly" /><span>Weekly</span></label>
+          <label><input type="radio" name="often" value="twice" /><span>Twice a week</span></label>
+        </span>
+      </p>
+      <label><input type="checkbox" role="switch" name="reminders" checked /> Remind me the day before</label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Anything else?</legend>
+      <label for="notes">Delivery notes</label>
+      <textarea id="notes" name="notes" placeholder="Side door, ring twice"></textarea>
+    </fieldset>
+
+    <footer>
+      <button type="submit">Save answers</button>
+      <button type="reset">Start again</button>
+      <output>4 questions</output>
+    </footer>
+  </form>
+</main>
+
+<footer>
+  <p>zinc.css 0.1.0-next.0 · MIT License · <a href="https://github.com/Rkaede/zinc.css">GitHub</a> · <a href="https://www.npmjs.com/package/zinc.css">npm</a></p>
+</footer>
+</body>
+</html>
