@@ -1,7 +1,7 @@
 {
 	"name": "zinc.css",
 	"version": "0.1.0-next.0",
-	"description": "A classless CSS framework for semantic HTML. One calm column, labels in the margin, colour only for state. No classes, no build step.",
+	"description": "The classless CSS framework for AI agents: reports, dashboards and forms in plain semantic HTML. One calm column, labels in the margin, colour only for state. No classes, no build step.",
 	"license": "MIT",
 	"author": "Corey McGeachie",
 	"type": "module",
@@ -32,7 +32,9 @@
 		"no-class",
 		"dark-mode",
 		"design-system",
-		"zinc"
+		"zinc",
+		"ai-agents",
+		"agent-skills"
 	],
 	"homepage": "https://github.com/Rkaede/zinc.css#readme",
 	"repository": {

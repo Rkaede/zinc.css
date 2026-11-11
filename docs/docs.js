@@ -1,11 +1,7 @@
 /* zinc.css docs: progressive extras. Without JavaScript the pages still read
-   and every demo still renders; only the generated markup and the theme
-   switcher are missing. */
+   and every demo still renders; only the generated markup and the copy
+   button are missing. (The Theme button is theme.js.) */
 {
-  const KEY = "zinc-docs-theme";
-  const root = document.documentElement;
-  const HOOKS = ["mode", "accent", "paper"];
-
   /* 1. Demos: each <figure data-demo> is the one source of its markup. Its
      innerHTML is dedented and shown in a <pre><code> placed after it. */
   const BOOLEAN = /\s(checked|disabled|required|open|selected|multiple|hidden|readonly|novalidate|autofocus)=""/g;
@@ -32,47 +28,21 @@
     });
   }
 
-  /* 3. Theme switcher (theming page): sets the hooks on <html>, shows the
-     markup, and stores the choice so every docs page picks it up. */
-  const picker = document.querySelector("form[data-theme-picker]");
-  if (picker) {
-    const markup = document.querySelector("pre[data-theme-markup]");
-    const DEFAULTS = { mode: "system", accent: "electric", paper: "white" };
-    const show = () => {
-      const attrs = HOOKS.filter((k) => root.dataset[k]).map((k) => ` data-${k}="${root.dataset[k]}"`);
-      markup.firstElementChild.textContent = `<html lang="en"${attrs.join("")}>`;
-    };
-    const apply = () => {
-      const stored = {};
-      for (const k of HOOKS) {
-        const value = picker.elements[k].value;
-        if (value && value !== DEFAULTS[k]) root.dataset[k] = stored[k] = value;
-        else delete root.dataset[k];
-      }
+  /* 3. A <button data-copy> copies the code block just before it, such as
+     the getting-started prompt. It stays hidden without JavaScript. */
+  for (const button of document.querySelectorAll("button[data-copy]")) {
+    const pre = button.closest("p, menu")?.previousElementSibling;
+    if (!pre?.matches("pre") || !navigator.clipboard) continue;
+    const label = button.textContent;
+    button.hidden = false;
+    button.addEventListener("click", async () => {
       try {
-        if (Object.keys(stored).length) localStorage.setItem(KEY, JSON.stringify(stored));
-        else localStorage.removeItem(KEY);
-      } catch {}
-      show();
-    };
-    for (const k of HOOKS) picker.elements[k].value = root.dataset[k] || DEFAULTS[k];
-    picker.addEventListener("change", apply);
-    picker.addEventListener("reset", () => setTimeout(apply));
-    picker.hidden = markup.hidden = false;
-    show();
-  }
-
-  /* 4. The example pages read ?mode, ?accent and ?paper but not the stored
-     theme, so links to them carry the current hooks along. */
-  const params = new URLSearchParams();
-  for (const k of HOOKS) if (root.dataset[k]) params.set(k, root.dataset[k]);
-  if (params.size) {
-    for (const a of document.querySelectorAll('a[href*="examples/"], main a[href$=".html"]')) {
-      const url = new URL(a.href, location.href);
-      if (/\/examples\/(?!index\.html)[\w-]+\.html$/.test(url.pathname) && !url.search) {
-        url.search = params;
-        a.href = url;
+        await navigator.clipboard.writeText(pre.textContent);
+        button.textContent = "Copied";
+      } catch {
+        button.textContent = "Couldn’t copy";
       }
-    }
+      setTimeout(() => (button.textContent = label), 2000);
+    });
   }
 }

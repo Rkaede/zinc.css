@@ -7,24 +7,24 @@
 <title>Pantry feature triage</title>
 <link rel="icon" href="data:,">
 <link rel="stylesheet" href="../../src/lib/zinc.css" />
+<link rel="stylesheet" href="../theme.css" />
 <link rel="stylesheet" href="../debug.css" />
 <script>
-  // ?mode=light|dark, ?accent=<name> and ?paper=beige set the theme hooks
-  const q = new URLSearchParams(location.search), d = document.documentElement.dataset;
-  if (/^(light|dark)$/.test(q.get("mode"))) d.mode = q.get("mode");
-  if (/^[a-z]+$/.test(q.get("accent") || "")) d.accent = q.get("accent");
-  if (q.get("paper") === "beige") d.paper = "beige";
-</script>
-<script>
-  // Debug panel choices (debug.js): stored, or ?toc= ?labels= ?spacing= ?rules=
-  try {
-    const s = JSON.parse(localStorage.getItem("zinc-docs-debug")) || {}, u = new URLSearchParams(location.search);
-    for (const [k, a] of [["toc", "debugToc"], ["labels", "debugLabels"], ["spacing", "debugSpacing"], ["rules", "debugRules"]]) {
+  // Theme hooks, chosen with the Theme button (theme.js) and stored, or set
+  // for one page with ?mode= ?accent= ?paper=. Debug panel choices (debug.js),
+  // stored, or ?toc= ?labels= ?spacing= ?rules=.
+  {
+    const d = document.documentElement.dataset, u = new URLSearchParams(location.search), read = (key) => {
+      try { return JSON.parse(localStorage.getItem(key)) || {}; } catch { return {}; }
+    };
+    const theme = read("zinc-docs-theme"), debug = read("zinc-docs-debug");
+    for (const [k, a, s] of [["mode", "mode", theme], ["accent", "accent", theme], ["paper", "paper", theme], ["toc", "debugToc", debug], ["labels", "debugLabels", debug], ["spacing", "debugSpacing", debug], ["rules", "debugRules", debug]]) {
       const v = u.get(k) || s[k];
-      if (/^[a-z]+$/.test(v || "")) document.documentElement.dataset[a] = v;
+      if (/^[a-z]+$/.test(v || "")) d[a] = v;
     }
-  } catch {}
+  }
 </script>
+<script src="../theme.js" defer></script>
 <script src="../debug.js" defer></script>
 </head>
 <body>

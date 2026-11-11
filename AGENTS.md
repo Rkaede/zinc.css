@@ -7,7 +7,10 @@ This file provides guidance to coding agents (Claude Code, etc.) when working wi
 
 ## What this is
 
-`zinc.css` is a **classless** CSS framework: it styles semantic HTML tags directly
+`zinc.css` is a **classless** CSS framework for AI agents: the pages agents write
+(reports, dashboards, forms that ask the user questions) are plain semantic HTML, and
+zinc styles them. An agent skill, `html-zinc`, goes with it; the docs home page gives
+the prompt that installs it. It styles semantic HTML tags directly
 (`<button>`, `<article>`, `<aside>`, etc.) so users write plain markup with no class
 names and no build step on their end. The entire framework is a single hand-authored
 stylesheet. There is no JavaScript runtime, no preprocessor, and no component library —
@@ -31,19 +34,25 @@ change and its documentation land together. There is no separate docs branch.
   exercise every variant/size/state of one part of the framework per file, for catching
   regressions while editing `src/lib/zinc.css`. `pnpm run dev` serves the repo and opens
   this folder.
-- `docs/` — the documentation site: static HTML pages styled by zinc itself (home,
-  getting started, elements, patterns, theming), linking `../src/lib/zinc.css` so
-  `pnpm run dev` shows live edits. `docs/docs.js` generates each demo's code block from
-  the demo (`<figure data-demo>`) and runs the theme switcher; `docs/docs.css` holds
-  the little docs-only chrome. Like the framework, the site uses no `class` attributes.
-  `docs/demos/` holds small whole-page demos for patterns that need a page of their own.
-  `docs/debug.js` + `docs/debug.css` add a Debug panel to every docs and example page
-  for trying layout options (contents as a list, headings above content, section
-  spacing, rules between sub-sections); docs-only overrides, never part of zinc.
+- `docs/` — the documentation site: static HTML pages styled by zinc itself, linking
+  `../src/lib/zinc.css` so `pnpm run dev` shows live edits. Two pages: the home page
+  (`index.html`: why classless, the getting-started prompt for the skill, the examples
+  with the patterns each one shows, install by hand, theming, browsers) and
+  `elements.html`. `docs/docs.js` generates each demo's code block from the demo
+  (`<figure data-demo>`) and wires up copy buttons; `docs/docs.css` holds the little
+  docs-only chrome. Like the framework, the site uses no `class` attributes.
+  `docs/theme.js` + `docs/theme.css` add the Theme button and popover (top right, on
+  every docs and example page) that set and store `data-mode`, `data-accent` and
+  `data-paper`. `docs/debug.js` + `docs/debug.css` add a Debug panel (bottom right) for
+  trying layout options (contents as a list, headings above content, section spacing,
+  rules between sub-sections off); docs-only overrides, never part of zinc. Every page's
+  head carries the same inline script that applies both before paint.
 - `docs/examples/` — whole realistic pages (reports, a dashboard, a triage board, forms),
-  for checking how the stylesheet holds up on a real page rather than one element at a
-  time. Their content is invented: never paste real conversations, people, projects,
-  emails or links into them. The same goes for demo content anywhere in `docs/`.
+  the kinds of page an agent writes. They stand in for pattern docs: the home page
+  lists each with the patterns it shows, so keep that list true when an example
+  changes. Their content is invented: never paste real conversations, people,
+  projects, emails or links into them. The same goes for demo content anywhere in
+  `docs/`.
 - `build-docs.js` — `pnpm run build:docs`: runs `pnpm run build`, copies `docs/` to
   `dist/docs/`, puts the built `zinc.css` at `dist/docs/zinc.css` and rewrites every
   page's stylesheet link to it, so `dist/docs/` is a self-contained static site.
@@ -130,7 +139,6 @@ rules should reference these tokens, not hard-coded values.
 - Modern CSS is used intentionally (`color-mix()`, `:user-invalid`, `:focus-visible`,
   logical properties, `text-wrap: balance`). Match the existing approach rather than
   adding fallbacks or polyfills.
-- When adding or changing a styled element, also document it in `docs/` (the elements
-  or patterns page, plus the token tables on the theming page if a token changes) so
-  it's visible and documented. Every claim and default there must match
-  `src/lib/zinc.css`.
+- When adding or changing a styled element, also document it: the elements page for
+  an element, an example (and its line on the home page) for a page-level pattern, and
+  the README for a token. Every claim and default there must match `src/lib/zinc.css`.

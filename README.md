@@ -1,14 +1,34 @@
 # zinc.css
 
-**A classless CSS framework for semantic HTML.**
+**The classless CSS framework for AI agents.**
 
-Documentation lives in [`docs/`](./docs/): run `pnpm run dev` and open `/docs/`, or
-serve the repo root with any local server and open `docs/index.html`.
+When an agent answers with a page instead of a long chat reply (a report, a
+dashboard, a form that asks you questions), it writes plain semantic HTML and
+`zinc.css` styles it. No class names to remember or invent, no build step, one
+`<link>`. The page is set as one calm column of text, with section labels in the
+margin and colour kept for what you focus, check or choose.
 
-Drop in one stylesheet and every semantic element is styled — no class names,
-no build step, no configuration. Write plain markup; `zinc.css` sets it as one
-calm column of text, with section labels in the margin and colour kept for what
-you focus, check or choose.
+zinc comes with an agent skill, `html-zinc`, that tells the agent when a page
+beats a chat reply, how to shape it, and how to ask you several questions with a
+form. Give your agent this prompt:
+
+```text
+Install the html-zinc skill from the zinc.css repo:
+
+npx skills add Rkaede/zinc.css --skill html-zinc
+
+From now on, when I ask for a report, a comparison, a dashboard or anything
+that reads better as a page than as a chat reply, use the skill to write it
+as a single HTML file styled with zinc.css, and open it for me. When you need
+several decisions from me at once, use its questions mode: a form I fill in
+in the browser and paste back to you.
+```
+
+Documentation and example pages live in [`docs/`](./docs/): run `pnpm run dev`
+and open `/docs/`, or serve the repo root with any local server and open
+`docs/index.html`.
+
+You can also link zinc by hand in any page:
 
 ```html
 <!-- one line. that's the install. -->

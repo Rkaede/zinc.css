@@ -8,30 +8,25 @@
 <link rel="icon" href="data:," />
 <link rel="stylesheet" href="../src/lib/zinc.css" />
 <link rel="stylesheet" href="docs.css" />
+<link rel="stylesheet" href="theme.css" />
 <link rel="stylesheet" href="debug.css" />
 <script>
-  // a theme picked on the theming page is stored, and every page applies it
-  try {
-    const s = JSON.parse(localStorage.getItem("zinc-docs-theme")) || {};
-    for (const k of ["mode", "accent", "paper"]) if (/^[a-z]+$/.test(s[k] || "")) document.documentElement.dataset[k] = s[k];
-  } catch {}
-  // ?mode=light|dark, ?accent=<name> and ?paper=beige set the theme hooks
-  const q = new URLSearchParams(location.search), d = document.documentElement.dataset;
-  if (/^(light|dark)$/.test(q.get("mode"))) d.mode = q.get("mode");
-  if (/^[a-z]+$/.test(q.get("accent") || "")) d.accent = q.get("accent");
-  if (q.get("paper") === "beige") d.paper = "beige";
+  // Theme hooks, chosen with the Theme button (theme.js) and stored, or set
+  // for one page with ?mode= ?accent= ?paper=. Debug panel choices (debug.js),
+  // stored, or ?toc= ?labels= ?spacing= ?rules=.
+  {
+    const d = document.documentElement.dataset, u = new URLSearchParams(location.search), read = (key) => {
+      try { return JSON.parse(localStorage.getItem(key)) || {}; } catch { return {}; }
+    };
+    const theme = read("zinc-docs-theme"), debug = read("zinc-docs-debug");
+    for (const [k, a, s] of [["mode", "mode", theme], ["accent", "accent", theme], ["paper", "paper", theme], ["toc", "debugToc", debug], ["labels", "debugLabels", debug], ["spacing", "debugSpacing", debug], ["rules", "debugRules", debug]]) {
+      const v = u.get(k) || s[k];
+      if (/^[a-z]+$/.test(v || "")) d[a] = v;
+    }
+  }
 </script>
 <script src="docs.js" defer></script>
-<script>
-  // Debug panel choices (debug.js): stored, or ?toc= ?labels= ?spacing= ?rules=
-  try {
-    const s = JSON.parse(localStorage.getItem("zinc-docs-debug")) || {}, u = new URLSearchParams(location.search);
-    for (const [k, a] of [["toc", "debugToc"], ["labels", "debugLabels"], ["spacing", "debugSpacing"], ["rules", "debugRules"]]) {
-      const v = u.get(k) || s[k];
-      if (/^[a-z]+$/.test(v || "")) document.documentElement.dataset[a] = v;
-    }
-  } catch {}
-</script>
+<script src="theme.js" defer></script>
 <script src="debug.js" defer></script>
 </head>
 <body>
@@ -39,11 +34,7 @@
   <nav aria-label="Docs">
     <ul>
       <li><a href="index.html">Home</a></li>
-      <li><a href="start.html">Getting started</a></li>
       <li><a href="elements.html" aria-current="page">Elements</a></li>
-      <li><a href="patterns.html">Patterns</a></li>
-      <li><a href="theming.html">Theming</a></li>
-      <li><a href="examples/index.html">Examples</a></li>
     </ul>
   </nav>
 </header>
@@ -133,7 +124,7 @@
         <li>Shape and prove overnight.</li>
       </ol>
     </figure>
-    <p>A list with <code>role="list"</code> is a list of entries with no markers; a <code>&lt;dl&gt;</code> is a fact sheet or a row of key figures; a <code>&lt;menu&gt;</code> is a toolbar. Those are on the <a href="patterns.html">patterns page</a>.</p>
+    <p>A list with <code>role="list"</code> is a list of entries with no markers; a <code>&lt;dl&gt;</code> is a fact sheet or a row of key figures; a <code>&lt;menu&gt;</code> is a toolbar. The <a href="index.html#examples">examples</a> show each of them in a whole page.</p>
   </section>
 
   <section id="quotes">
@@ -199,7 +190,7 @@
         </tfoot>
       </table>
     </figure>
-    <p>Fold a long table into a <code>&lt;details&gt;</code>: see <a href="start.html#long-tables">long tables</a>.</p>
+    <p>Fold a long table into a <code>&lt;details&gt;</code>, and say in the <code>&lt;summary&gt;</code> what is inside and how many rows, as the <a href="examples/briefing.html">inbox briefing</a> does.</p>
   </section>
 
   <section id="details">
@@ -306,7 +297,7 @@
         <label><input type="radio" name="collect" value="market-lane" /> Market Lane</label>
       </fieldset>
     </figure>
-    <p>Add a <code>&lt;span&gt;</code> inside the label and the same controls become <a href="patterns.html#choice-cards">choice cards</a>; add <code>role="switch"</code> to a checkbox for a <a href="patterns.html#switches">switch</a>.</p>
+    <p>Add a <code>&lt;span&gt;</code> inside the label and the same controls become choice cards; add <code>role="switch"</code> to a checkbox for a switch. The <a href="examples/questions.html">questions example</a> uses both.</p>
 
     <h3>Range</h3>
     <p>A thin track in the control-outline colour, with an accent thumb.</p>
@@ -345,7 +336,7 @@
 
   <section id="buttons">
     <h2>Buttons</h2>
-    <p>A button is ink, not accent: it is a command, and its shape says so. A row of buttons sits well in a <code>&lt;menu&gt;</code>, which wraps them with a gap (see <a href="patterns.html#toolbars">toolbars</a>). On a touch screen every button is at least 2.75rem tall (2.25rem for a small one).</p>
+    <p>A button is ink, not accent: it is a command, and its shape says so. A row of buttons sits well in a <code>&lt;menu&gt;</code>, which wraps them with a gap (the <a href="examples/triage.html">feature triage</a> has a toolbar of filters). On a touch screen every button is at least 2.75rem tall (2.25rem for a small one).</p>
 
     <h3>Variants</h3>
     <p>Set <code>data-variant</code> to <code>secondary</code>, <code>outline</code>, <code>ghost</code> or <code>danger</code>. Use one primary button per group.</p>
@@ -397,7 +388,7 @@
     </figure>
 
     <h3>Button groups</h3>
-    <p>Wrap buttons in an element with <code>role="group"</code> to join them into one segmented strip, with a hairline of page between the parts. For a choice of one option among a few, use a <a href="patterns.html#segmented">segmented control</a> instead.</p>
+    <p>Wrap buttons in an element with <code>role="group"</code> to join them into one segmented strip, with a hairline of page between the parts. For a choice of one option among a few, use a segmented control instead: radios inside an element with <code>role="radiogroup"</code>, as in the <a href="examples/triage.html">feature triage</a>.</p>
     <figure data-demo>
       <div role="group" aria-label="Zoom">
         <button data-variant="secondary">Day</button>
