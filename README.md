@@ -98,7 +98,9 @@ Override any of these on `:root` to rebrand without touching the framework:
   --accent: light-dark(#0f766e, #2dd4bf); /* brand color: light shade, dark shade */
   --on-accent: light-dark(#ffffff, #0c0c0d); /* text on accent fills */
   --danger: light-dark(#b93a2c, #f2877a); /* destructive actions, errors */
-  --radius: 8px; /* corner radius of controls */
+  --radius: 12px; /* corner radius of controls: buttons and fields */
+  --radius-lg: 18px; /* corner radius of cards: articles, notes, code blocks, dialogs */
+  --corner-shape: superellipse(1.4); /* the curve of those corners; round in browsers without corner-shape */
   --width: 42rem; /* the text column */
   --measure: 38rem; /* where running text wraps, about 75 characters */
   --gutter: clamp(1.25rem, 5vw, 2.5rem); /* page padding */

@@ -22,7 +22,8 @@
      [role="radiogroup"]  around <label><input type="radio"><span>: segments
 
    Tunable design tokens (override on :root):
-     --accent  --radius  --width  --gutter  --font-sans …
+     --accent  --radius  --radius-lg  --corner-shape  --width  --gutter
+     --font-sans …
 
    Cascade layer: the whole file sits in one layer, zinc, so any CSS of
    yours that is not in a layer wins over it whatever its specificity. To
@@ -51,9 +52,16 @@
   --leading: 1.6;
 
   /* shape ----------------------------------------------------------------- */
-  --radius: 8px;
-  --radius-lg: 12px;
+  /* controls: buttons and fields share one radius, so a field and the
+     button beside it line up */
+  --radius: 12px;
+  /* cards: articles, notes, code blocks (and the dialog, 2px more), a step
+     rounder than the controls they hold */
+  --radius-lg: 18px;
   --radius-pill: 999px;
+  /* the curve of those corners: a superellipse a little squarer than a
+     circle's arc (1 is round, 2 a squircle). See "corner shape" in Base. */
+  --corner-shape: superellipse(1.4);
 
   /* layout: --width is the measure, the width of the text column. On a wide
      screen a page with sections gains a margin (--rail) for their labels. */
@@ -210,6 +218,21 @@ body {
   outline-offset: 2px;
 }
 :where(a):focus-visible { border-radius: 3px; }
+
+/* corner shape: controls, cards and media bend their rounded corners along
+   --corner-shape. Browsers without corner-shape keep round corners. The
+   small marks inside inputs (checkbox, radio, switch, range) are left out,
+   so radios and switches stay circles and capsules. It only changes an
+   element with a radius, so plain labels are unaffected; choice cards are
+   the labels it reaches. */
+:where(
+  button, input:not([type="checkbox"], [type="radio"], [type="range"]), select, textarea, label,
+  a[role="button"], [data-variant], [role="radiogroup"], [role="radiogroup"] > label > span,
+  article, aside, pre, dialog, img, video
+) {
+  corner-shape: var(--corner-shape);
+}
+:where(input)::file-selector-button { corner-shape: var(--corner-shape); }
 
 [hidden] { display: none !important; }
 
