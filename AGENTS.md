@@ -60,7 +60,10 @@ change and its documentation land together. There is no separate docs branch.
 - `scripts/contrast.mjs` — `pnpm run contrast`: reads the color tokens from
   `src/lib/zinc.css` and prints a before/after WCAG contrast table for every accent in
   both modes (baseline: the `v0.0.0-pre.5` tag). It also checks the control borders
-  (`--line-strong`) and the danger pair in each mode. Exits 1 if a check fails.
+  (`--line-strong`) and the danger pair in each mode. It reads rules inside `@layer`
+  blocks and evaluates hex, `rgb()`, `oklch()`, `oklab()` and `color-mix()` in `srgb` or
+  `oklab`; any other color syntax is a parse error (exit 2), so teach the script before
+  using one. Exits 1 if a check fails.
 - Root-level `zinc.css` / `zinc.min.css`, plus `dist/`, `temp/`, `node_modules/`, are gitignored
   and generated; never edit them by hand.
 - `.agents/skills/` (real files), `.claude/skills/` (relative symlinks to them) and
@@ -89,6 +92,13 @@ and `docs/` in light/dark, on beige, and across the three accents.
 Tokens (`:root`) → Base → Typography → Media → Tables → Forms → Buttons →
 Components via semantic tags. Keep edits in the matching section.
 
+The whole file sits inside one cascade layer, `@layer zinc { … }`, opened after the
+header comment and closed on the last line (its contents are not indented). That
+makes any unlayered author CSS win over zinc whatever its specificity, so a page's own
+`<style>` or the docs' `docs.css`, `theme.css` and `debug.css` never need to outweigh
+zinc's selectors. Keep every new rule inside the layer. One side effect: zinc's
+`!important` declarations (`[hidden]`, reduced motion) now beat unlayered `!important`.
+
 ### Token & theming architecture (read before changing colors/spacing)
 
 All design decisions flow through CSS custom properties on `:root`. Concrete element
@@ -108,6 +118,10 @@ rules should reference these tokens, not hard-coded values.
   (`--accent-press`, `--accent-soft`, `--accent-faint`) still come from `color-mix()` so
   they follow whatever `--accent` is; `--accent-press` darkens in light and lightens in
   dark (set in the dark blocks).
+- **Mixes run in Oklab**: every `color-mix()` is `in oklab`, so a press shade or a tint
+  keeps its color's hue (sRGB drifts a saturated blue toward purple). Use `oklab`, not
+  `oklch`, for mixes: a polar mix with a near-neutral like `--surface` interpolates hue
+  and tints toward the neutral's own faint green. The base tokens stay hex.
 - **Danger** is `--danger` and `--on-danger`, a `light-dark(light, dark)` pair like the
   accents, so it needs no entries in the dark blocks. `--danger-press` is derived with
   `color-mix()` like `--accent-press`: darker in `:root`, lighter in both dark blocks.
@@ -136,8 +150,8 @@ rules should reference these tokens, not hard-coded values.
 
 - Classless is the core constraint: **never introduce a class selector** for styling.
   Opt-in variants use `data-*` attributes or ARIA roles, never classes.
-- Modern CSS is used intentionally (`color-mix()`, `:user-invalid`, `:focus-visible`,
-  logical properties, `text-wrap: balance`). Match the existing approach rather than
+- Modern CSS is used intentionally (`@layer`, `color-mix()` in Oklab, `:user-invalid`,
+  `:focus-visible`, logical properties, `text-wrap: balance`). Match the existing approach rather than
   adding fallbacks or polyfills.
 - When adding or changing a styled element, also document it: the elements page for
   an element, an example (and its line on the home page) for a page-level pattern, and

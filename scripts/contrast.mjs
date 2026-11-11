@@ -3,7 +3,9 @@
    plus the control borders and the danger pair in each mode.
    Resolves the color tokens and the :focus-visible ring the way the cascade
    does (:root, then the accent theme and any forced mode), evaluates var(),
-   light-dark() and color-mix(), and measures WCAG 2 contrast ratios.
+   light-dark(), oklch(), oklab() and color-mix() (in srgb or oklab), and
+   measures WCAG 2 contrast ratios. Rules inside @layer blocks are read as if
+   they were unlayered; zinc puts the whole file in one layer.
    Per accent and mode:
      link/bg          --accent on --bg                                 >= 4.5
      link/surface     --accent on --surface                            >= 4.5
@@ -142,9 +144,64 @@ function parseRgb(args, expr) {
   return { r: clamp(r, 255), g: clamp(g, 255), b: clamp(b, 255), a: clamp(a, 1) };
 }
 
-// CSS Color 5 color-mix(in srgb, ...): premultiplied alpha, percentages normalised
+// Oklab (Björn Ottosson): gamma-encoded sRGB 0–255 <-> { L, a, b } -----------
+function toOklab({ r, g, b }) {
+  const [lr, lg, lb] = [r, g, b].map(linear);
+  const l = Math.cbrt(0.4122214708 * lr + 0.5363325363 * lg + 0.0514459929 * lb);
+  const m = Math.cbrt(0.2119034982 * lr + 0.6806995451 * lg + 0.1073969566 * lb);
+  const s = Math.cbrt(0.0883024619 * lr + 0.2817188376 * lg + 0.6299787005 * lb);
+  return {
+    L: 0.2104542553 * l + 0.793617785 * m - 0.0040720468 * s,
+    a: 1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s,
+    b: 0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s,
+  };
+}
+
+// linear 0–1 back to gamma-encoded 0–255, clipped to the sRGB gamut
+function encode(c) {
+  const v = c <= 0.0031308 ? 12.92 * c : 1.055 * c ** (1 / 2.4) - 0.055;
+  return Math.min(255, Math.max(0, v * 255));
+}
+
+// out-of-gamut channels are clipped, as browsers do when they paint
+function fromOklab({ L, a, b }, alpha) {
+  const l = (L + 0.3963377774 * a + 0.2158037573 * b) ** 3;
+  const m = (L - 0.1055613458 * a - 0.0638541728 * b) ** 3;
+  const s = (L - 0.0894841775 * a - 1.291485548 * b) ** 3;
+  return {
+    r: encode(4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s),
+    g: encode(-1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s),
+    b: encode(-0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s),
+    a: alpha,
+  };
+}
+
+// oklab(L a b / A) and oklch(L C H / A): L as 0–1 or a percentage, a/b/C as
+// numbers or percentages (100% = 0.4), H in degrees; "none" counts as 0
+function parseOk(fn, args, expr) {
+  const [channels, alpha, ...extra] = splitTop(args, /\//);
+  const vals = splitTop(channels, /\s/).filter(Boolean);
+  if (extra.length || vals.length !== 3) throw unsupported(expr);
+  const num = (v, pctScale) => {
+    if (v === 'none') return 0;
+    if (v.endsWith('%')) return (Number(v.slice(0, -1)) / 100) * pctScale;
+    return Number(v.replace(/deg$/, ''));
+  };
+  const L = num(vals[0], 1);
+  const [second, third] = [num(vals[1], 0.4), num(vals[2], 0.4)];
+  // oklch's second and third channels are chroma and hue: turn them into a and b
+  const hue = (third * Math.PI) / 180;
+  const [a, b] = fn === 'oklch' ? [second * Math.cos(hue), second * Math.sin(hue)] : [second, third];
+  const A = alpha === undefined ? 1 : num(alpha, 1);
+  if ([L, a, b, A].some(Number.isNaN)) throw unsupported(expr);
+  return fromOklab({ L, a, b }, Math.min(1, Math.max(0, A)));
+}
+
+// CSS Color 5 color-mix(in srgb | oklab, ...): premultiplied alpha, percentages normalised
 function colorMix([space, ...stops], expr, evaluate) {
-  if (!/^in\s+srgb$/i.test(space) || stops.length !== 2) throw unsupported(expr);
+  const match = /^in\s+(srgb|oklab)$/i.exec(space);
+  if (!match || stops.length !== 2) throw unsupported(expr);
+  const inOklab = match[1].toLowerCase() === 'oklab';
   const [a, b] = stops.map((stop) => {
     let pct = null;
     const rest = [];
@@ -162,10 +219,13 @@ function colorMix([space, ...stops], expr, evaluate) {
   const sum = p1 + p2;
   if (p1 < 0 || p2 < 0 || p1 > 100 || p2 > 100 || sum === 0) throw unsupported(expr);
   const alpha = (p1 * a.color.a + p2 * b.color.a) / sum;
-  const channel = (k) =>
-    alpha === 0 ? 0 : (p1 * a.color[k] * a.color.a + p2 * b.color[k] * b.color.a) / sum / alpha;
   // a sum under 100% scales the result's alpha down by that fraction
-  return { r: channel('r'), g: channel('g'), b: channel('b'), a: sum < 100 ? (alpha * sum) / 100 : alpha };
+  const outAlpha = sum < 100 ? (alpha * sum) / 100 : alpha;
+  const [x, y] = inOklab ? [toOklab(a.color), toOklab(b.color)] : [a.color, b.color];
+  // premultiplied: a fully transparent stop adds alpha but no colour
+  const channel = (k) => (alpha === 0 ? 0 : (p1 * x[k] * a.color.a + p2 * y[k] * b.color.a) / sum / alpha);
+  if (inOklab) return fromOklab({ L: channel('L'), a: channel('a'), b: channel('b') }, outAlpha);
+  return { r: channel('r'), g: channel('g'), b: channel('b'), a: outAlpha };
 }
 
 // ctx: { props: Map of custom properties, mode: 'light' | 'dark' }
@@ -194,6 +254,9 @@ function evalColor(expr, ctx, depth = 0) {
     case 'rgb':
     case 'rgba':
       return parseRgb(call.args, s);
+    case 'oklab':
+    case 'oklch':
+      return parseOk(call.fn, call.args, s);
     default:
       throw unsupported(s);
   }
@@ -288,6 +351,7 @@ function parseDecls(body) {
 
 const ACCENT_RULE = /^:root\[data-accent=(["']?)([\w-]+)\1\]$/;
 const MODE_RULE = /^:root\[data-mode=(["']?)(light|dark)\1\]$/;
+const LAYER = /^@layer\b/i;
 const DARK_MEDIA = /^@media\s*\(\s*prefers-color-scheme\s*:\s*dark\s*\)$/i;
 const DARK_AUTO_RULE = /^:root:not\(\[data-mode=(["']?)light\1\]\)$/;
 const OUTLINE_WIDTH = /^([+-]?(\d+\.?\d*|\.\d+)[a-z%]*|thin|medium|thick)$/i;
@@ -316,7 +380,8 @@ function parseStylesheet(css) {
   const visit = (text, inDarkMedia) => {
     for (const { prelude, body } of parseRules(text)) {
       if (prelude.startsWith('@')) {
-        if (!inDarkMedia && DARK_MEDIA.test(prelude)) visit(body, true);
+        if (LAYER.test(prelude)) visit(body, inDarkMedia);
+        else if (!inDarkMedia && DARK_MEDIA.test(prelude)) visit(body, true);
         continue;
       }
       const rule = classify(prelude, inDarkMedia);

@@ -150,12 +150,12 @@ in the browser and paste back to you.</code></pre>
       <dt><code>data-accent</code></dt><dd><code>electric</code> (the default, a dusty blue), <code>forest</code> or <code>violet</code>.</dd>
       <dt><code>data-paper</code></dt><dd><code>beige</code> swaps the white page for a pale green-beige paper. Works on <code>&lt;body&gt;</code> too.</dd>
     </dl>
-    <p>Every colour, size and font is a custom property you can override on <code>:root</code> in a stylesheet loaded after zinc. The README lists them all.</p>
+    <p>Every colour, size and font is a custom property you can override on <code>:root</code>. The README lists them all. zinc sits in a cascade layer, <code>zinc</code>, so your own CSS wins over it wherever it loads and whatever its specificity.</p>
   </section>
 
   <section id="browsers">
     <h2>Browsers</h2>
-    <p>zinc is written for current browsers and ships no fallbacks. It relies on <code>:has()</code>, <code>light-dark()</code> and <code>color-mix()</code>, which need Chrome and Edge 123, Firefox 121 or Safari 17.5 and later. In older browsers the page still reads, but accent colours, section labels, key figures and choice cards fall back to plain styles.</p>
+    <p>zinc is written for current browsers and ships no fallbacks. It relies on <code>:has()</code>, <code>light-dark()</code>, <code>color-mix()</code> and cascade layers, which need Chrome and Edge 123, Firefox 121 or Safari 17.5 and later. In somewhat older browsers, back to early 2022, the page still reads, but accent colours, section labels, key figures and choice cards fall back to plain styles. Browsers from before 2022 don't support cascade layers, so they skip zinc entirely and show their default styles.</p>
   </section>
 </main>
 

@@ -111,7 +111,13 @@ Override any of these on `:root` to rebrand without touching the framework:
 
 One color works in both modes; `light-dark()` gives each mode its own shade. Keep
 accent text at 4.5:1 on the page background and `--on-accent` at 4.5:1 on the
-accent.
+accent. zinc mixes the hover, press and tint shades from your accent in Oklab, so
+they keep its hue.
+
+Put the overrides in a stylesheet of your own or a `<style>` block, in any order.
+zinc sits in one cascade layer, `zinc`, so any CSS that is not in a layer wins over
+it, whatever its specificity. If your own CSS uses layers, name zinc's first so yours
+win: `@layer zinc, app;`.
 
 The full token set (type sizes, layout, neutrals, control borders, code panel) is
 documented at the top of [`zinc.css`](./src/lib/zinc.css).
