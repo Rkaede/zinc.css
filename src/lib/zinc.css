@@ -571,11 +571,6 @@ caption { caption-side: bottom; color: var(--muted); font-size: var(--size-small
 th, td { padding: 0.6rem 1.5rem 0.6rem 0; text-align: start; vertical-align: top; }
 :is(th, td):last-child { padding-inline-end: 0; }
 td { overflow-wrap: break-word; }
-/* phone: a cell may break inside a word, so a table of paths still fits */
-@media (max-width: 40rem) {
-  th, td { padding-inline-end: 1rem; }
-  td, tbody th, :is(td, tbody th) code { overflow-wrap: anywhere; }
-}
 th { font-weight: 600; }
 thead th {
   font-size: 0.875rem;
@@ -585,6 +580,14 @@ thead th {
   border-bottom: 1px solid var(--line-strong);
   white-space: nowrap;
   vertical-align: bottom;
+}
+/* phone: a cell may break inside a word, so a table of paths still fits, and
+   a header wraps between words, so a long label can't push the table past
+   the text edge */
+@media (max-width: 40rem) {
+  th, td { padding-inline-end: 1rem; }
+  td, tbody th, :is(td, tbody th) code { overflow-wrap: anywhere; }
+  thead th { white-space: normal; }
 }
 tbody th, tbody td { border-bottom: 1px solid var(--line); }
 tbody th { font-weight: 500; }
