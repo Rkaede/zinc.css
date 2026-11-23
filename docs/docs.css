@@ -36,3 +36,18 @@ figure[data-demo] + pre {
 /* a token or attribute name in a fact sheet stays on one line */
 dt > code { white-space: nowrap; }
 
+
+/* example thumbnails on the home page: a portrait screenshot of each page's
+   first screen, under its title and description, one to a row and at most
+   26rem wide, with no rule between entries,
+   outlined like a card so its white page stands off the white site.
+   (skill-check.html, every control, is a page for development and isn't
+   listed.) */
+#examples > ul > li { padding-block: 0 3rem; border: 0; }
+#examples > ul > li:last-child { padding-block-end: 0; }
+#examples img {
+  inline-size: min(100%, 26rem);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 0 0 1px var(--line-card);
+  margin-block-start: 0.9rem;
+}

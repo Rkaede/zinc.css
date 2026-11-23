@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>zinc.css: classless CSS for AI agents</title>
-<meta name="description" content="zinc.css is a classless CSS framework for the pages AI agents write: reports, dashboards and forms that ask you questions. Plain semantic HTML, one stylesheet, no build step, and an agent skill to go with it." />
+<title>zinc.css: classless CSS for reports, dashboards and forms</title>
+<meta name="description" content="zinc.css is a classless CSS framework for reports, dashboards and forms. Plain semantic HTML, one stylesheet, no build step. Its tested example pages and agent skill also suit the pages a coding agent writes." />
 <link rel="icon" href="data:," />
 <link rel="stylesheet" href="../src/lib/zinc.css" />
 <link rel="stylesheet" href="docs.css" />
@@ -30,28 +30,18 @@
 <script src="debug.js" defer></script>
 </head>
 <body>
-<header>
-  <nav aria-label="Docs">
-    <ul>
-      <li><a href="index.html" aria-current="page">Home</a></li>
-      <li><a href="elements.html">Elements</a></li>
-    </ul>
-  </nav>
-</header>
-
 <main>
   <header>
-    <p>Classless CSS for AI agents · 0.1.0-next.0</p>
     <h1>zinc.css</h1>
-    <p>A stylesheet for the pages AI agents write: reports, dashboards, and forms that ask you questions. The agent writes plain semantic HTML with no class names, and zinc sets it as one calm column, with labels in the margin and colour kept for what you focus, check or choose.</p>
+    <p>A classless stylesheet for reports, dashboards and forms. You write plain semantic HTML with no class names, and zinc sets it as one calm column, with labels in the margin and colour kept for what you focus, check or choose.</p>
   </header>
 
   <section id="why">
     <h2>Why classless</h2>
-    <p>When an agent answers with a page instead of a long chat reply, that page should be easy for the agent to write and easy for you to read. A classless stylesheet helps with both.</p>
+    <p>A page should be quick to write and easy to read. A classless stylesheet helps with both.</p>
     <ul>
-      <li><strong>Nothing to look up.</strong> The agent already knows HTML. There are no class names to remember, misspell or invent, and no strings of utilities to spend tokens on.</li>
-      <li><strong>One shape, learned once.</strong> A page opens with the answer and is built from short, labelled sections, so you know where to look whichever agent wrote it.</li>
+      <li><strong>Nothing to look up.</strong> If you know HTML, you know zinc. There are no class names to remember, misspell or invent.</li>
+      <li><strong>One shape, learned once.</strong> A page opens with the answer and is built from short, labelled sections, so a reader knows where to look on every page.</li>
       <li><strong>One file, no build.</strong> A single <code>&lt;link&gt;</code> from a CDN. The page is one self-contained HTML file to open, save or send.</li>
       <li><strong>Colour means state.</strong> Links and buttons are ink. The accent marks only focus, checked controls, chosen options and progress, so the answers in a form stand out.</li>
     </ul>
@@ -59,65 +49,7 @@
 
   <section id="start">
     <h2>Getting started</h2>
-    <p>zinc comes with an agent skill, <code>html-zinc</code>. It tells your agent when a page beats a chat reply, how to shape the page so it reads well, and how to ask you several questions at once with a form you fill in and paste back. Paste this into your agent:</p>
-    <pre><code>Install the html-zinc skill from the zinc.css repo:
-
-npx skills add Rkaede/zinc.css --skill html-zinc
-
-From now on, when I ask for a report, a comparison, a dashboard or anything
-that reads better as a page than as a chat reply, use the skill to write it
-as a single HTML file styled with zinc.css, and open it for me. When you need
-several decisions from me at once, use its questions mode: a form I fill in
-in the browser and paste back to you.</code></pre>
-    <p><button type="button" data-copy data-variant="secondary" data-size="sm" hidden>Copy prompt</button></p>
-    <p>The <code>skills</code> command installs the skill for Claude Code, Codex and most other coding agents. The pages it writes look like the examples below.</p>
-  </section>
-
-  <section id="examples">
-    <h2>Examples</h2>
-    <p>Whole pages of the kinds agents write, each showing a few of zinc's patterns, with the markup that makes each one in brackets. The people, companies and projects in them are invented. Use the Theme button at the top right to see them in dark mode, with another accent or on the beige paper.</p>
-    <ul role="list">
-      <li>
-        <a href="examples/briefing.html"><strong>Inbox briefing</strong></a>
-        <p>A morning summary of an inbox: what needs a reply, receipts, and what was filed.</p>
-        <p><small>Section labels in the margin (a <code>&lt;section&gt;</code> that opens with an <code>&lt;h2&gt;</code>). Entry lists of messages (<code>&lt;ul role="list"&gt;</code>). Long tables folded away, with a summary that counts the rows (<code>&lt;details&gt;</code>).</small></p>
-      </li>
-      <li>
-        <a href="examples/code-health.html"><strong>Code health</strong></a>
-        <p>A dashboard for one codebase: what to fix first, then the evidence by area.</p>
-        <p><small>Key figures (a <code>&lt;dl&gt;</code> of <code>&lt;div&gt;</code> pairs). Fact sheets (a plain <code>&lt;dl&gt;</code>). A note (<code>&lt;aside&gt;</code>). Folded tables. A closing Method section.</small></p>
-      </li>
-      <li>
-        <a href="examples/recommendations.html"><strong>Recommendations</strong></a>
-        <p>A long report of 27 suggestions, the first five up front.</p>
-        <p><small>A lede that gives the answer (the first <code>&lt;p&gt;</code> after the <code>&lt;h1&gt;</code>). A folded index, and a disclosure for each sketch (<code>&lt;details&gt;</code>). Tables and a note.</small></p>
-      </li>
-      <li>
-        <a href="examples/triage.html"><strong>Feature triage</strong></a>
-        <p>Nine feature ideas to decide on, with a searchable audit of the research behind them.</p>
-        <p><small>A toolbar of filters (<code>&lt;menu&gt;</code>). A decision per idea (a segmented <code>role="radiogroup"</code>). One card for the lead idea (<code>&lt;article&gt;</code>). Key figures and notes.</small></p>
-      </li>
-      <li>
-        <a href="examples/questions.html"><strong>Questions</strong></a>
-        <p>The decisions an agent needs before cleaning up a shared drive, answered in the browser.</p>
-        <p><small>A numbered questionnaire (<code>&lt;form data-form="questions"&gt;</code>, one <code>&lt;fieldset&gt;</code> per question). Choice cards (a <code>&lt;label&gt;</code> around an input and a <code>&lt;span&gt;</code>). Switches (<code>role="switch"</code>). An action bar that sticks to the bottom (a <code>&lt;footer&gt;</code> with an <code>&lt;output&gt;</code>).</small></p>
-      </li>
-      <li>
-        <a href="examples/skill-check.html"><strong>Every control</strong></a>
-        <p>A short setup form that uses each kind of input once.</p>
-        <p><small>A question form with choice cards, switches, text, email, URL, number, date, time and range fields, and a required mark (<code>&lt;abbr title="required"&gt;</code>).</small></p>
-      </li>
-      <li>
-        <a href="examples/audit-form.html"><strong>Audit decisions</strong></a>
-        <p>A long form: discuss, defer or skip each finding of a code audit.</p>
-        <p><small>A segmented decision on every entry (a <code>role="radiogroup"</code> inside <code>role="list"</code>). A filter toolbar (<code>&lt;menu&gt;</code>). A contents list with a label of its own (a <code>&lt;nav&gt;</code> that opens with an <code>&lt;h2&gt;</code>).</small></p>
-      </li>
-    </ul>
-  </section>
-
-  <section id="install">
-    <h2>Install by hand</h2>
-    <p>The skill links zinc for you. To use it in a page of your own, add one <code>&lt;link&gt;</code> to the <code>&lt;head&gt;</code>.</p>
+    <p>Add one <code>&lt;link&gt;</code> to the <code>&lt;head&gt;</code> of a page.</p>
     <aside>
       <p><strong>Use the <code>next</code> tag.</strong> These docs cover <code>0.1.0-next.0</code>, a pre-release published under the npm <code>next</code> tag. An unpinned URL or a plain <code>npm install zinc.css</code> gets <code>latest</code>, which is still an older version with a different look.</p>
     </aside>
@@ -142,20 +74,59 @@ in the browser and paste back to you.</code></pre>
     <p>Every element zinc styles, from inline text to each input type, is on the <a href="elements.html">elements page</a>.</p>
   </section>
 
-  <section id="theming">
-    <h2>Theming</h2>
-    <p>Three attributes on <code>&lt;html&gt;</code> set the theme. Try them with the Theme button at the top right.</p>
-    <dl>
-      <dt><code>data-mode</code></dt><dd><code>light</code> or <code>dark</code>. Leave it off to follow the system setting.</dd>
-      <dt><code>data-accent</code></dt><dd><code>electric</code> (the default, a dusty blue), <code>forest</code> or <code>violet</code>.</dd>
-      <dt><code>data-paper</code></dt><dd><code>beige</code> swaps the white page for a pale green-beige paper. Works on <code>&lt;body&gt;</code> too.</dd>
-    </dl>
-    <p>Every colour, size and font is a custom property you can override on <code>:root</code>. The README lists them all. zinc sits in a cascade layer, <code>zinc</code>, so your own CSS wins over it wherever it loads and whatever its specificity.</p>
+  <section id="examples">
+    <h2>Examples</h2>
+    <p>Each example is a whole page of one common kind. The content is invented, so read it for its shape, not its subject. The Theme button at the top right shows them in dark mode, with another accent or on the beige paper.</p>
+    <ul role="list">
+      <li>
+        <a href="examples/briefing.html"><strong>Inbox briefing</strong></a>
+        <p>A digest of anything that arrives as a stream: mail, alerts, tickets.</p>
+        <a href="examples/briefing.html" tabindex="-1" aria-hidden="true"><img src="examples/thumbs/briefing.webp" alt="" width="900" height="1200" loading="lazy"></a>
+      </li>
+      <li>
+        <a href="examples/code-health.html"><strong>Code health</strong></a>
+        <p>A health check of one thing: a codebase, a budget, a project.</p>
+        <a href="examples/code-health.html" tabindex="-1" aria-hidden="true"><img src="examples/thumbs/code-health.webp" alt="" width="900" height="1200" loading="lazy"></a>
+      </li>
+      <li>
+        <a href="examples/recommendations.html"><strong>Recommendations</strong></a>
+        <p>A ranked list of findings, the few that matter first.</p>
+        <a href="examples/recommendations.html" tabindex="-1" aria-hidden="true"><img src="examples/thumbs/recommendations.webp" alt="" width="900" height="1200" loading="lazy"></a>
+      </li>
+      <li>
+        <a href="examples/triage.html"><strong>Feature triage</strong></a>
+        <p>A decision board for a set of options to weigh.</p>
+        <a href="examples/triage.html" tabindex="-1" aria-hidden="true"><img src="examples/thumbs/triage.webp" alt="" width="900" height="1200" loading="lazy"></a>
+      </li>
+      <li>
+        <a href="examples/questions.html"><strong>Questions</strong></a>
+        <p>A questionnaire for the choices only you can make.</p>
+        <a href="examples/questions.html" tabindex="-1" aria-hidden="true"><img src="examples/thumbs/questions.webp" alt="" width="900" height="1200" loading="lazy"></a>
+      </li>
+      <li>
+        <a href="examples/audit-form.html"><strong>Audit decisions</strong></a>
+        <p>A rich feedback form, for reviewing a long list item by item.</p>
+        <a href="examples/audit-form.html" tabindex="-1" aria-hidden="true"><img src="examples/thumbs/audit-form.webp" alt="" width="900" height="1200" loading="lazy"></a>
+      </li>
+    </ul>
   </section>
 
-  <section id="browsers">
-    <h2>Browsers</h2>
-    <p>zinc is written for current browsers and ships no fallbacks. It relies on <code>:has()</code>, <code>light-dark()</code>, <code>color-mix()</code> and cascade layers, which need Chrome and Edge 123, Firefox 121 or Safari 17.5 and later. In somewhat older browsers, back to early 2022, the page still reads, but accent colours, section labels, key figures and choice cards fall back to plain styles. Browsers from before 2022 don't support cascade layers, so they skip zinc entirely and show their default styles.</p>
+  <section id="agents">
+    <h2>With an agent</h2>
+    <p>zinc also suits the pages a coding agent writes when a chat reply would run long. The examples above are those pages: a digest, a health check, ranked findings, a decision board, a questionnaire, and a review form with a row of choices for each item. Each layout is checked on a phone and on a wide screen, in light and dark, so the agent has a worked pattern to copy.</p>
+    <p>An agent skill, <code>html-zinc</code>, goes with it. It tells your agent when a page beats a chat reply, how to shape the page so it reads well, and how to ask you several questions at once with a form you fill in and paste back. Paste this into your agent:</p>
+    <pre><code>Install the html-zinc skill from the zinc.css repo:
+
+npx skills add Rkaede/zinc.css --skill html-zinc
+
+From now on, when I ask for a report, a comparison, a dashboard or anything
+that reads better as a page than as a chat reply, use the skill to write it
+as a single HTML file styled with zinc.css, and open it for me. When you need
+several decisions from me at once, use its questions mode: a form I fill in
+in the browser and paste back to you.</code></pre>
+    <p><button type="button" data-copy data-variant="secondary" data-size="sm" hidden>Copy prompt</button></p>
+    <p>The <code>skills</code> command installs the skill for Claude Code, Codex and most other coding agents.</p>
+    <p>A side note on tokens: any classless stylesheet, zinc or another, saves an agent output tokens, because the agent writes markup and no CSS or utility classes.</p>
   </section>
 </main>
 

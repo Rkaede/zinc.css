@@ -7,14 +7,26 @@ This file provides guidance to coding agents (Claude Code, etc.) when working wi
 
 ## What this is
 
-`zinc.css` is a **classless** CSS framework for AI agents: the pages agents write
-(reports, dashboards, forms that ask the user questions) are plain semantic HTML, and
-zinc styles them. An agent skill, `html-zinc`, goes with it; the docs home page gives
-the prompt that installs it. It styles semantic HTML tags directly
-(`<button>`, `<article>`, `<aside>`, etc.) so users write plain markup with no class
-names and no build step on their end. The entire framework is a single hand-authored
-stylesheet. There is no JavaScript runtime, no preprocessor, and no component library —
-the deliverable is one CSS file.
+`zinc.css` is a **classless** CSS framework for reports, dashboards and forms. It
+styles semantic HTML tags directly (`<button>`, `<article>`, `<aside>`, etc.) so users
+write plain markup with no class names and no build step on their end. The entire
+framework is a single hand-authored stylesheet. There is no JavaScript runtime, no
+preprocessor, and no component library — the deliverable is one CSS file.
+
+### Positioning
+
+zinc is a general classless framework. Don't call it "AI-native", "for AI agents" or
+"built for agents" in the README, the docs or the package description. It is useful in
+agent workflows, and the copy may say so, for three plain reasons and no more:
+
+- the examples are the pages a coding agent is commonly asked for (a digest, a health
+  check, a decision board, a review form with a row of choices for each item);
+- those layouts are tested, so an agent has a worked pattern to copy;
+- an agent skill, `html-zinc`, goes with it; the docs home page gives the prompt that
+  installs it.
+
+That an agent writes fewer output tokens is true of any classless stylesheet, not of
+zinc in particular. Say it as a side note about classless CSS, never as the headline.
 
 ## Branches
 
@@ -36,8 +48,9 @@ change and its documentation land together. There is no separate docs branch.
   this folder.
 - `docs/` — the documentation site: static HTML pages styled by zinc itself, linking
   `../src/lib/zinc.css` so `pnpm run dev` shows live edits. Two pages: the home page
-  (`index.html`: why classless, the getting-started prompt for the skill, the examples
-  with the patterns each one shows, install by hand, theming, browsers) and
+  (`index.html`: why classless, getting started with one `<link>`, the examples with
+  the kind of page each one is, and using zinc with an agent: the prompt that installs
+  the skill and the side note on tokens) and
   `elements.html`. `docs/docs.js` generates each demo's code block from the demo
   (`<figure data-demo>`) and wires up copy buttons; `docs/docs.css` holds the little
   docs-only chrome. Like the framework, the site uses no `class` attributes.
@@ -47,10 +60,19 @@ change and its documentation land together. There is no separate docs branch.
   trying layout options (contents as a list, headings above content, section spacing,
   rules between sub-sections off); docs-only overrides, never part of zinc. Every page's
   head carries the same inline script that applies both before paint.
-- `docs/examples/` — whole realistic pages (reports, a dashboard, a triage board, forms),
-  the kinds of page an agent writes. They stand in for pattern docs: the home page
-  lists each with the patterns it shows, so keep that list true when an example
-  changes. Their content is invented: never paste real conversations, people,
+- `docs/examples/` — whole realistic pages (reports, a dashboard, a triage board, forms):
+  common kinds of page, including the ones a coding agent is often asked for. They
+  stand in for pattern docs. The home page
+  describes each by the kind of page it is (a digest, a health check, a feedback
+  form) and what else that kind suits, not by its subject or its markup, so a reader
+  with another use can place it; keep each description true when an example changes.
+  Each has a thumbnail on the home page, `docs/examples/thumbs/<name>.webp`: a
+  light-mode screenshot at a 1280px-wide viewport with the Theme and Debug buttons
+  hidden, cropped to the page's `<body>` box at 3:4 from the top and saved at
+  900×1200. Retake it when the top of an example changes.
+  `skill-check.html` (every control) is a development page, not a listed example:
+  keep it, but leave it off the home page.
+  Their content is invented: never paste real conversations, people,
   projects, emails or links into them. The same goes for demo content anywhere in
   `docs/`.
 - `build-docs.js` — `pnpm run build:docs`: runs `pnpm run build`, copies `docs/` to

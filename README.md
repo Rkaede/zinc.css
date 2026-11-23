@@ -1,34 +1,11 @@
 # zinc.css
 
-**The classless CSS framework for AI agents.**
+**A classless CSS framework for reports, dashboards and forms.**
 
-When an agent answers with a page instead of a long chat reply (a report, a
-dashboard, a form that asks you questions), it writes plain semantic HTML and
-`zinc.css` styles it. No class names to remember or invent, no build step, one
-`<link>`. The page is set as one calm column of text, with section labels in the
-margin and colour kept for what you focus, check or choose.
-
-zinc comes with an agent skill, `html-zinc`, that tells the agent when a page
-beats a chat reply, how to shape it, and how to ask you several questions with a
-form. Give your agent this prompt:
-
-```text
-Install the html-zinc skill from the zinc.css repo:
-
-npx skills add Rkaede/zinc.css --skill html-zinc
-
-From now on, when I ask for a report, a comparison, a dashboard or anything
-that reads better as a page than as a chat reply, use the skill to write it
-as a single HTML file styled with zinc.css, and open it for me. When you need
-several decisions from me at once, use its questions mode: a form I fill in
-in the browser and paste back to you.
-```
-
-Documentation and example pages live in [`docs/`](./docs/): run `pnpm run dev`
-and open `/docs/`, or serve the repo root with any local server and open
-`docs/index.html`.
-
-You can also link zinc by hand in any page:
+Write plain semantic HTML and `zinc.css` styles it. No class names to remember
+or invent, no build step, one `<link>`. The page is set as one calm column of
+text, with section labels in the margin and colour kept for what you focus,
+check or choose.
 
 ```html
 <!-- one line. that's the install. -->
@@ -38,6 +15,10 @@ You can also link zinc by hand in any page:
 <p>No classes. <a href="#">Just markup.</a></p>
 <button>It styles itself</button>
 ```
+
+Documentation and example pages live in [`docs/`](./docs/): run `pnpm run dev`
+and open `/docs/`, or serve the repo root with any local server and open
+`docs/index.html`.
 
 ### From a CDN
 
@@ -55,6 +36,33 @@ No download, no `npm install` — just point a `<link>` at jsDelivr or unpkg:
 Pin a version once you're past prototyping (e.g. `zinc.css@0.1.0-next.0/zinc.css`) —
 an unpinned URL always serves `latest`, which is fine for a demo but can
 change under you in production.
+
+## With a coding agent
+
+zinc also suits the pages a coding agent writes when a chat reply would run
+long: a report, a dashboard, a form that asks you several questions. The
+[examples](./docs/examples/) are those pages (a digest, a health check, a
+decision board, a review form with a row of choices for each item), each one a
+tested layout the agent can copy.
+
+An agent skill, `html-zinc`, goes with it. It tells the agent when a page beats
+a chat reply, how to shape it, and how to ask you several questions with a form.
+Give your agent this prompt:
+
+```text
+Install the html-zinc skill from the zinc.css repo:
+
+npx skills add Rkaede/zinc.css --skill html-zinc
+
+From now on, when I ask for a report, a comparison, a dashboard or anything
+that reads better as a page than as a chat reply, use the skill to write it
+as a single HTML file styled with zinc.css, and open it for me. When you need
+several decisions from me at once, use its questions mode: a form I fill in
+in the browser and paste back to you.
+```
+
+A side note on tokens: any classless stylesheet, zinc or another, saves an agent
+output tokens, because the agent writes markup and no CSS or utility classes.
 
 ---
 
@@ -104,7 +112,7 @@ Override any of these on `:root` to rebrand without touching the framework:
   --width: 42rem; /* the text column */
   --measure: 38rem; /* where running text wraps, about 75 characters */
   --gutter: clamp(1.25rem, 5vw, 2.5rem); /* page padding */
-  --rail: 11rem; /* the margin that holds section labels on a wide screen */
+  --rail: 11rem; /* the margin that holds section labels on a wide screen, and the sidebar's width */
   --font-sans: ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, monospace;
   --font-display: var(--font-sans);
@@ -139,6 +147,11 @@ sentence under it. Below 56rem it is an ordinary heading.
   hairline between entries.
 - `<menu>` of `<li>` is a toolbar; a `<label>` that wraps a field sits on one
   line with it.
+- An `<aside>` that is a child of `<body>`, beside `<main>`, is a sidebar. From
+  76rem wide it sits in a column of `--rail` width to the right of the text, with
+  no tint, and stays in view; its nav links stack and a fact sheet puts each value
+  under its label. Narrower, it is a note where it is written: before `<main>` to
+  be read first on a phone, after it to be read last.
 
 ## Optional variant hooks
 
