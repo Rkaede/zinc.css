@@ -20,6 +20,9 @@
      [data-form="questions"]                            on <form>
      [role="list"]        on <ul>/<ol>: a list of entries, no markers
      [role="radiogroup"]  around <label><input type="radio"><span>: segments
+     [data-numbers]       on <table>: every column after the first holds
+                          numbers, aligned to the end
+     [data-chosen]        on <article>: the option the page recommends
 
    Tunable design tokens (override on :root):
      --accent  --radius  --radius-lg  --corner-shape  --width  --gutter
@@ -91,6 +94,11 @@
   --danger: light-dark(#b93a2c, #f2877a);
   --on-danger: light-dark(#ffffff, #101311);
   --danger-press: color-mix(in oklab, var(--danger) 90%, #000);
+
+  /* success: the positive pair beside danger. zinc uses it for text added
+     (<ins>); a page may use it for a passing check or a gain */
+  --success: light-dark(#257a52, #68c796);
+  --on-success: light-dark(#ffffff, #101311);
 
   /* neutrals — light: a white page. Fields and choice cards are white too,
      so their outlines carry them; the pale green-grey of the beige paper
@@ -362,11 +370,24 @@ mark {
   padding: 0.08em 0.3em;
   border-radius: 4px;
 }
-ins { background: var(--accent-soft); text-decoration: none; padding: 0.08em 0.25em; border-radius: 4px; }
-/* a highlight or code span that wraps keeps its padding and corners on
-   both lines */
-mark, ins, code { -webkit-box-decoration-break: clone; box-decoration-break: clone; }
-del { color: var(--muted); }
+/* edits: <ins> is text added, tinted green; <del> is text removed, red and
+   struck through, so the pair still reads without colour */
+ins {
+  background: color-mix(in oklab, var(--success) 15%, transparent);
+  text-decoration: none;
+  padding: 0.08em 0.25em;
+  border-radius: 4px;
+}
+del {
+  color: var(--danger);
+  background: color-mix(in oklab, var(--danger) 9%, transparent);
+  text-decoration-color: color-mix(in oklab, var(--danger) 65%, transparent);
+  padding: 0.08em 0.25em;
+  border-radius: 4px;
+}
+/* a highlight, edit or code span that wraps keeps its padding and corners
+   on both lines */
+mark, ins, del, code { -webkit-box-decoration-break: clone; box-decoration-break: clone; }
 abbr[title] { text-decoration: underline dotted; text-decoration-color: var(--line-strong); text-underline-offset: 0.22em; cursor: help; }
 sub, sup { font-size: 0.72em; line-height: 0; }
 
@@ -452,6 +473,19 @@ dl > div > dd {
   font-variant-numeric: normal;
   color: var(--text);
   overflow-wrap: normal;
+}
+/* a second <dd> is a line of context under the label, such as the figure
+   it is compared with. The pair runs bottom to top, so order: -1 puts it
+   last on screen: value, label, context. */
+dl > div > dd ~ dd {
+  order: -1;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+  overflow-wrap: anywhere;
 }
 
 /* blockquote ------------------------------------------------------------- */
@@ -556,6 +590,28 @@ tbody th, tbody td { border-bottom: 1px solid var(--line); }
 tbody th { font-weight: 500; }
 tbody tr:last-child > :where(th, td) { border-bottom: none; }
 tfoot th, tfoot td { border-top: 1px solid var(--line-strong); font-weight: 600; }
+
+/* number table: data-numbers says every column after the first holds
+   numbers. They align to the end, so the digits line up, and keep to one
+   line; the space between columns moves to the start of each. */
+table[data-numbers] :is(th, td):not(:first-child) {
+  text-align: end;
+  white-space: nowrap;
+  padding-inline: 1.5rem 0;
+}
+@media (max-width: 40rem) {
+  table[data-numbers] :is(th, td):not(:first-child) { padding-inline-start: 1rem; }
+}
+
+/* wide table: a table that is the only child of a <div> scrolls sideways
+   inside it when it is wider than the column, instead of running past the
+   page edge */
+div:has(> table:only-child) {
+  overflow-x: auto;
+  scrollbar-width: thin;
+  margin-block-end: 1.1rem;
+}
+div:has(> table:only-child) > table { margin-block-end: 0; }
 
 /* ==========================================================================
    Forms
@@ -1064,6 +1120,17 @@ article {
 article > :last-child:not(dialog) { margin-block-end: 0; }
 article > header { margin-bottom: 0.6rem; }
 article > header > :last-child { margin-bottom: 0; }
+/* a heading followed by a <small> note (a tag, a count, a date) puts the
+   note at the end of the heading's line; they wrap onto two lines when the
+   card is narrow */
+article > header:has(> :first-child + small:last-child) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.15rem 1rem;
+}
+article > header:has(> :first-child + small:last-child) > :first-child { margin-block: 0; }
 article > footer {
   margin-top: 0.9rem;
   padding: 0;
@@ -1074,6 +1141,28 @@ article > footer {
 }
 :is(article, aside) + :is(article, aside) { margin-top: 1rem; }
 :is(article, aside):not(:last-child) { margin-block-end: 1.1rem; }
+
+/* card row: a <div> that holds only articles, two or more, sets them side
+   by side, as many to a row as fit at 16rem or wider. In the page column it
+   bleeds like a single article (see "One edge"). */
+div:has(> article + article):not(:has(> :not(article))) {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: 1rem;
+  margin-block-end: 1.1rem;
+}
+/* the grid spaces the cards; the :not(:last-child) in :is() outweighs the
+   article spacing rules above */
+div:has(> article + article):not(:has(> :not(article))) > :is(article, article:not(:last-child)) { margin: 0; }
+/* chosen card: data-chosen marks the option the page recommends, drawn
+   like a checked choice card. Say so in the card's words too: the ring is
+   not announced. The second selector outweighs the beige article rule at
+   the end of the file, so the card keeps its ring on paper. */
+article[data-chosen],
+:is(:root[data-paper="beige"], :root:has(> body[data-paper="beige"])) article[data-chosen] {
+  box-shadow: inset 0 0 0 2px var(--accent);
+  background-image: linear-gradient(color-mix(in oklab, var(--accent) 5%, transparent) 0 0);
+}
 
 /* note: an <aside> is pressed into the page, the opposite of an article */
 aside {
@@ -1248,6 +1337,11 @@ footer > :last-child:not(dialog) { margin-block-end: 0; }
 :where(main, main > section, main > section > section, main > form > section) > details > :is(pre, aside, article) {
   margin-inline: calc(-1 * var(--bleed));
 }
+/* a card row bleeds too, so the first card's words stay on the edge */
+:where(main, main > section, main > section > section, main > form > section, main > header) > div:has(> article + article):not(:has(> :not(article))),
+:where(main, main > section, main > section > section, main > form > section) > details > div:has(> article + article):not(:has(> :not(article))) {
+  margin-inline: calc(-1 * var(--bleed));
+}
 
 /* phone: a tinted block runs to both edges of the screen, corners square */
 @media (max-width: 40rem) {
@@ -1357,10 +1451,16 @@ body > main + aside { margin-block-start: var(--section-gap); }
 }
 
 /* phone: the spotlight card runs the width of the screen, so only its top
-   and bottom rules are kept */
+   and bottom rules are kept. A card row is one card to a row by now, and
+   each card in it does the same. */
 @media (max-width: 40rem) {
   :where(main, main > section, main > section > section, main > form > section, body > header, main > header) > article,
   :where(main, main > section, main > section > section, main > form > section) > details > article {
+    box-shadow: inset 0 1px 0 var(--line-card), inset 0 -1px 0 var(--line-card);
+  }
+  :where(main, main > section, main > section > section, main > form > section, main > header) > div:has(> article + article):not(:has(> :not(article))) > article,
+  :where(main, main > section, main > section > section, main > form > section) > details > div:has(> article + article):not(:has(> :not(article))) > article {
+    border-radius: 0;
     box-shadow: inset 0 1px 0 var(--line-card), inset 0 -1px 0 var(--line-card);
   }
 }

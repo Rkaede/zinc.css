@@ -56,6 +56,7 @@
       <li><a href="#code">Code</a></li>
       <li><a href="#media">Media</a></li>
       <li><a href="#tables">Tables</a></li>
+      <li><a href="#cards">Cards</a></li>
       <li><a href="#details">Details</a></li>
       <li><a href="#dialog">Dialog</a></li>
       <li><a href="#forms">Forms</a></li>
@@ -68,7 +69,7 @@
   <section id="text">
     <h2>Text</h2>
     <h3>Inline text</h3>
-    <p>Links are ink with a hairline underline, and turn to the accent on hover (with a mouse). <code>&lt;mark&gt;</code> and <code>&lt;ins&gt;</code> take a light tint of the accent; deleted text is muted.</p>
+    <p>Links are ink with a hairline underline, and turn to the accent on hover (with a mouse). <code>&lt;mark&gt;</code> takes a light tint of the accent. Edits take the success and danger colours: <code>&lt;ins&gt;</code> is tinted green, and <code>&lt;del&gt;</code> is red on a red tint and keeps its strike-through, so the pair still reads without colour.</p>
     <figure data-demo>
       <p>
         Read the <a href="https://example.com/guide">ordering guide</a> first.
@@ -125,6 +126,15 @@
       </ol>
     </figure>
     <p>A list with <code>role="list"</code> is a list of entries with no markers; a <code>&lt;dl&gt;</code> is a fact sheet or a row of key figures; a <code>&lt;menu&gt;</code> is a toolbar. The <a href="index.html#examples">examples</a> show each of them in a whole page.</p>
+    <h3>Key figures</h3>
+    <p>A <code>&lt;dl&gt;</code> whose pairs are wrapped in <code>&lt;div&gt;</code> is a row of headline numbers: the value leads and the label sits under it. A second <code>&lt;dd&gt;</code> is a small, muted line of context under the label, such as the figure it is compared with. Keep the row to four.</p>
+    <figure data-demo>
+      <dl>
+        <div><dt>Loaves sold</dt><dd>966</dd><dd>up from 902 last week</dd></div>
+        <div><dt>Sold out by</dt><dd>2:40 pm</dd><dd>an hour earlier</dd></div>
+        <div><dt>Waste</dt><dd>4%</dd><dd>was 7%</dd></div>
+      </dl>
+    </figure>
   </section>
 
   <section id="quotes">
@@ -191,6 +201,62 @@
       </table>
     </figure>
     <p>Fold a long table into a <code>&lt;details&gt;</code>, and say in the <code>&lt;summary&gt;</code> what is inside and how many rows, as the <a href="examples/briefing.html">inbox briefing</a> does.</p>
+    <h3>Number columns and wide tables</h3>
+    <p><code>data-numbers</code> on a table says every column after the first holds numbers: they align to the end, header included, so the digits line up, and keep to one line. A table that is the only child of a <code>&lt;div&gt;</code> scrolls sideways inside it when it is wider than the column, instead of running past the page edge.</p>
+    <figure data-demo>
+      <div>
+        <table data-numbers>
+          <thead>
+            <tr><th scope="col">Shop</th><th scope="col">Loaves</th><th scope="col">Pastries</th><th scope="col">Sold out by</th><th scope="col">Waste</th><th scope="col">Takings</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Riverside</th><td>412</td><td>288</td><td>2:10 pm</td><td>3%</td><td>3,140</td></tr>
+            <tr><th scope="row">Market Lane</th><td>356</td><td>301</td><td>3:25 pm</td><td>5%</td><td>2,915</td></tr>
+            <tr><th scope="row">Eastfield</th><td>198</td><td>122</td><td>4:50 pm</td><td>6%</td><td>1,460</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </figure>
+  </section>
+
+  <section id="cards">
+    <h2>Cards</h2>
+    <p>An <code>&lt;article&gt;</code> is a card, marked out by a hairline (a lighter sheet on the beige paper). Keep it for what deserves the spotlight. In its <code>&lt;header&gt;</code>, a heading followed by a <code>&lt;small&gt;</code> note (a tag, a count, a date) puts the note at the end of the heading's line; the two wrap when the card is narrow.</p>
+    <figure data-demo>
+      <article>
+        <header>
+          <h3>Rye starter</h3>
+          <small>Fed 6 hours ago</small>
+        </header>
+        <p>Ready to mix once it has doubled and passes the float test.</p>
+      </article>
+    </figure>
+    <h3>Cards side by side</h3>
+    <p>A <code>&lt;div&gt;</code> that holds only articles, two or more, sets them side by side, as many to a row as fit at 16rem or wider; on a phone they stack. <code>data-chosen</code> marks the one the page recommends, drawn like a checked choice card. The ring is not announced, so say so in the card's words too.</p>
+    <figure data-demo>
+      <div>
+        <article>
+          <header>
+            <h3>Overnight prove</h3>
+            <small>Today</small>
+          </header>
+          <dl>
+            <dt>Start</dt><dd>9 pm</dd>
+            <dt>Ready</dt><dd>6 am</dd>
+          </dl>
+        </article>
+        <article data-chosen>
+          <header>
+            <h3>Cold retard</h3>
+            <small>Recommended</small>
+          </header>
+          <dl>
+            <dt>Start</dt><dd>4 pm</dd>
+            <dt>Ready</dt><dd>5 am</dd>
+          </dl>
+        </article>
+      </div>
+    </figure>
   </section>
 
   <section id="details">

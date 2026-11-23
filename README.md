@@ -105,7 +105,8 @@ Override any of these on `:root` to rebrand without touching the framework:
 :root {
   --accent: light-dark(#0f766e, #2dd4bf); /* brand color: light shade, dark shade */
   --on-accent: light-dark(#ffffff, #0c0c0d); /* text on accent fills */
-  --danger: light-dark(#b93a2c, #f2877a); /* destructive actions, errors */
+  --danger: light-dark(#b93a2c, #f2877a); /* destructive actions, errors, text removed (<del>) */
+  --success: light-dark(#257a52, #68c796); /* text added (<ins>), a passing check, a gain */
   --radius: 12px; /* corner radius of controls: buttons and fields */
   --radius-lg: 18px; /* corner radius of cards: articles, notes, code blocks, dialogs */
   --corner-shape: superellipse(1.4); /* the curve of those corners; round in browsers without corner-shape */
@@ -142,7 +143,11 @@ sentence under it. Below 56rem it is an ordinary heading.
 - In the page `<header>`, a `<p>` before the `<h1>` is a small line of context,
   and the first `<p>` after it is the lede, set a size larger.
 - A `<dl>` of `<div>` groups is a row of key figures: a large number with a
-  small label under it. A plain `<dl>` of `<dt>`/`<dd>` pairs is a ruled fact sheet.
+  small label under it. A second `<dd>` in a group is a muted line of context
+  under the label, such as the figure it is compared with. A plain `<dl>` of
+  `<dt>`/`<dd>` pairs is a ruled fact sheet.
+- A `<table>` that is the only child of a `<div>` scrolls sideways inside it
+  when it is wider than the column.
 - `<ul role="list">` or `<ol role="list">` is a list of entries: no markers, a
   hairline between entries.
 - `<menu>` of `<li>` is a toolbar; a `<label>` that wraps a field sits on one
@@ -189,6 +194,12 @@ variants:
   <label><input type="radio" name="call" value="keep" /><span>Keep</span></label>
   <label><input type="radio" name="call" value="drop" /><span>Drop</span></label>
 </div>
+
+<!-- a number table: every column after the first aligns to the end -->
+<table data-numbers>…</table>
+
+<!-- a chosen card: the option the page recommends (see Cards & callouts) -->
+<article data-chosen>…</article>
 ```
 
 ## Cards & callouts
@@ -214,6 +225,25 @@ headings — tables, lists, and prose sit directly in the section — and save
 `<article>` for the panel that deserves the spotlight: a top recommendation, a
 key finding, a group of evidence cards. If everything is a card, nothing is.
 Don't nest `<article>` elements.
+
+In a card's `<header>`, a heading followed by a `<small>` note puts the note at
+the end of the heading's line. A `<div>` that holds only articles, two or more,
+sets them side by side, as many to a row as fit at 16rem or wider; on a phone
+they stack. `data-chosen` marks the recommended one with the accent, like a
+checked choice card. The ring is not announced, so say so in the card too:
+
+```html
+<div>
+  <article>
+    <header><h3>Standard runner</h3><small>Today</small></header>
+    <p>9m 40s a run.</p>
+  </article>
+  <article data-chosen>
+    <header><h3>Cached runner</h3><small>Recommended</small></header>
+    <p>6m 12s a run.</p>
+  </article>
+</div>
+```
 
 ## Choice cards & question forms
 

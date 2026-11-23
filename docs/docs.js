@@ -4,7 +4,7 @@
 {
   /* 1. Demos: each <figure data-demo> is the one source of its markup. Its
      innerHTML is dedented and shown in a <pre><code> placed after it. */
-  const BOOLEAN = /\s(checked|disabled|required|open|selected|multiple|hidden|readonly|novalidate|autofocus)=""/g;
+  const BOOLEAN = /\s(checked|disabled|required|open|selected|multiple|hidden|readonly|novalidate|autofocus|data-numbers|data-chosen)=""/g;
   const dedent = (html) => {
     const lines = html.replace(/^\s*\n/, "").replace(/\s+$/, "").split("\n");
     const indent = Math.min(...lines.filter((l) => l.trim()).map((l) => l.match(/^ */)[0].length));

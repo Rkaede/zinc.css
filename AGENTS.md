@@ -82,7 +82,7 @@ change and its documentation land together. There is no separate docs branch.
 - `scripts/contrast.mjs` — `pnpm run contrast`: reads the color tokens from
   `src/lib/zinc.css` and prints a before/after WCAG contrast table for every accent in
   both modes (baseline: the `v0.0.0-pre.5` tag). It also checks the control borders
-  (`--line-strong`) and the danger pair in each mode. It reads rules inside `@layer`
+  (`--line-strong`) and the danger and success pairs in each mode. It reads rules inside `@layer`
   blocks and evaluates hex, `rgb()`, `oklch()`, `oklab()` and `color-mix()` in `srgb` or
   `oklab`; any other color syntax is a parse error (exit 2), so teach the script before
   using one. Exits 1 if a check fails.
@@ -147,25 +147,32 @@ rules should reference these tokens, not hard-coded values.
 - **Danger** is `--danger` and `--on-danger`, a `light-dark(light, dark)` pair like the
   accents, so it needs no entries in the dark blocks. `--danger-press` is derived with
   `color-mix()` like `--accent-press`: darker in `:root`, lighter in both dark blocks.
-  Never hard-code a red.
+  Never hard-code a red. `<del>` is danger on a danger tint.
+- **Success** is `--success` and `--on-success`, a `light-dark()` pair like danger, so
+  it needs no entries in the dark blocks either. It tints `<ins>`. Never hard-code a
+  green.
 - **Paper**: the default page is white. `data-paper="beige"` on `<html>` or `<body>`
   swaps the light neutrals for a green-beige paper (`:root:where([data-paper="beige"],
   :has(> body[data-paper="beige"]))`, kept at `:root` weight so the dark blocks still
   win) and gives `<article>` a fill instead of its hairline (a rule at the end of the
-  file). `--line-card` is the outline of choice cards and the article: firmer than
+  file; the chosen card's rule carries a beige selector that outweighs it).
+  `--line-card` is the outline of choice cards and the article: firmer than
   `--line` on white, equal to it on beige. `pnpm run contrast` only measures the white
   page; check beige by hand after changing its neutrals.
 - **Accent is state**: the accent marks only focus, checked controls, chosen options
-  and progress. Links and buttons are ink (`--ink`, `--on-ink`, `--ink-press`).
+  (including `article[data-chosen]`) and progress. Links and buttons are ink (`--ink`, `--on-ink`, `--ink-press`).
 - **`--line-strong`** is the neutral for control boundaries (form fields, checkbox,
   radio, switch and range tracks, color input, select chevron), at 3:1 or better on
   `--bg` and `--surface`. Like the other neutrals it is defined in `:root` and in both
   dark blocks. `--line` stays for decorative rules.
 - **User-facing API** (documented in README): theme hooks `data-mode` / `data-accent` /
-  `data-paper` on `<html>`; variant hooks `data-variant` / `data-size`, `data-form`, and
+  `data-paper` on `<html>`; variant hooks `data-variant` / `data-size`, `data-form`,
+  `data-numbers` (on `<table>`), `data-chosen` (on `<article>`), and
   `role="button"` / `role="switch"` / `role="list"` / `role="radiogroup"` on elements;
-  tunable tokens (`--accent`, `--radius`, `--width`, `--measure`, `--gutter`, `--rail`,
-  fonts).
+  structural patterns (a second `<dd>` in a key figure, a heading + `<small>` in an
+  article header, a `<div>` of only articles as a card row, a `<div>` around a lone
+  table to scroll it); tunable tokens (`--accent`, `--danger`, `--success`, `--radius`,
+  `--width`, `--measure`, `--gutter`, `--rail`, fonts).
   Treat these as a public contract — renaming a token or attribute is a breaking change.
 
 ## Conventions
