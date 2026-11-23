@@ -64,7 +64,8 @@
   --corner-shape: superellipse(1.4);
 
   /* layout: --width is the measure, the width of the text column. On a wide
-     screen a page with sections gains a margin (--rail) for their labels. */
+     screen a page with sections gains a margin (--rail) for their labels; a
+     sidebar is as wide as that margin. */
   --width: 42rem;
   /* running text stops a little short of it, at about 75 characters */
   --measure: 38rem;
@@ -379,7 +380,8 @@ ul ul, ul ol, ol ul, ol ol { margin-block: 0.3em; }
 /* entry list: <ul role="list"> or <ol role="list"> is a list of entries (a
    message, a finding, a task), each with its own lines of text and controls.
    No markers and no indent; a hairline between entries, and more room around
-   an entry than inside it. */
+   an entry than inside it. A <details> counts as one of an entry's lines, so
+   its summary can be the entry's title. */
 :is(ul, ol)[role="list"] { list-style: none; padding-inline-start: 0; }
 :is(ul, ol)[role="list"] > li {
   margin: 0;
@@ -388,7 +390,7 @@ ul ul, ul ol, ol ul, ol ol { margin-block: 0.3em; }
 }
 :is(ul, ol)[role="list"] > li:first-child { padding-block-start: 0; }
 :is(ul, ol)[role="list"] > li:nth-last-child(1 of :not([hidden])) { padding-block-end: 0; border-block-end: 0; }
-:is(ul, ol)[role="list"] > li > :where(p, ul, ol, dl) { margin-block-end: 0.45rem; }
+:is(ul, ol)[role="list"] > li > :where(p, ul, ol, dl, details) { margin-block-end: 0.45rem; }
 :is(ul, ol)[role="list"] > li > :nth-last-child(1 of :not([hidden])):not(dialog) { margin-block-end: 0; }
 
 /* toolbar: <menu><li> is a wrapping row of controls */
@@ -1259,7 +1261,7 @@ footer > :last-child:not(dialog) { margin-block-end: 0; }
 @media (min-width: 48rem) {
   :where(main, main > section, main > section > section, main > form > section, main > nav) > :is(ul, ol):not([role="list"]) { padding-inline-start: 0; }
   :where(main, main > section, main > section > section, main > form > section) > blockquote { margin-inline-start: calc(-1.25rem - 2px); }
-  :where(main, main > section, main > section > section, main > form > section, :is(main, main > form) > section > :is(ul, ol)[role="list"] > li) > details > summary { margin-inline-start: -1.1rem; }
+  :where(main, main > section, main > section > section, main > form > section, :is(main, main > form) > section > :is(ul, ol)[role="list"] > li, main > section > section > :is(ul, ol)[role="list"] > li) > details > summary { margin-inline-start: -1.1rem; }
   form[data-form="questions"] > fieldset > legend::before {
     display: inline-block;
     inline-size: 2rem;
@@ -1293,8 +1295,63 @@ footer > :last-child:not(dialog) { margin-block-end: 0; }
   :is(main, main > form) > :is(section, nav) > h2:first-child + * { margin-block-start: 0; }
 }
 
+/* sidebar: an <aside> that is a child of <body>, beside <main>, is the page's
+   sidebar: what a reader keeps at hand while reading the page (key facts,
+   contents, what is left to do). On a screen wide enough for a column right
+   of the text, room for the label margin included, it moves there, drops its
+   tint and stays in view. Until then it is a note where it is written: before
+   <main> to be read first on a phone, after it to be read last. */
+body > aside { margin-inline: calc(-1 * var(--bleed)); }
+body > aside + main { margin-block-start: 3rem; }
+body > main + aside { margin-block-start: var(--section-gap); }
+@media (max-width: 40rem) {
+  body > aside { border-radius: 0; }
+}
+@media (min-width: 76rem) {
+  body:has(> aside) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) var(--rail);
+    column-gap: var(--rail-gap);
+    align-content: start;
+    max-width: calc(var(--width) + var(--rail) + var(--rail-gap) + 2 * var(--gutter));
+  }
+  body:has(> aside):has(:is(main, main > form) > :is(section, nav) > h2:first-child) {
+    max-width: calc(var(--width) + 2 * (var(--rail) + var(--rail-gap)) + 2 * var(--gutter));
+  }
+  body:has(> aside) > * { grid-column: 1; }
+  /* grid items keep both margins, so the gap above <main> is the header's */
+  body > aside + main { margin-block-start: 0; }
+  /* it spans the rows of the header, main and footer, and scrolls on its own
+     when taller than the window; the 4px of padding keeps focus rings in */
+  body > aside {
+    grid-column: 2;
+    grid-row: 1 / span 9;
+    align-self: start;
+    position: sticky;
+    inset-block-start: 2rem;
+    max-block-size: calc(100dvh - 4rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    margin: -4px;
+    padding: 4px;
+    background: none;
+    border-radius: 0;
+  }
+  /* a column too narrow for two: nav links stack, and a fact sheet puts each
+     value under its label */
+  body > aside nav ul { flex-direction: column; align-items: start; gap: 0.3rem; }
+  body > aside :where(h2, h3) { margin-block-start: 1.75rem; }
+  body > aside :where(ul, ol):not(nav ul, [role="list"]) { padding-inline-start: 1rem; }
+  body > aside dl:not(:has(> div)) { grid-template-columns: minmax(0, 1fr); }
+  body > aside dl:not(:has(> div)) > dt { padding: 0.6rem 0 0; border: 0; }
+  body > aside dl:not(:has(> div)) > dt:first-child { padding-block-start: 0; }
+  body > aside dl:not(:has(> div)) > dd { padding-block-start: 0.1rem; }
+}
+
 @media print {
   body { padding-block: 0; }
+  body > aside { position: static; max-block-size: none; overflow: visible; }
   :is(main, main > form) > :is(section, nav) > h2:first-child { position: static; }
   form[data-form="questions"] > footer { position: static; }
 }
