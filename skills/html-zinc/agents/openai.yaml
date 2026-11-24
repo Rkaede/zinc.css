@@ -1,0 +1,4 @@
+interface:
+  display_name: "HTML Zinc"
+  short_description: "Create semantic Zinc HTML reports"
+  default_prompt: "Use $html-zinc to create a semantic browser-opened HTML report."

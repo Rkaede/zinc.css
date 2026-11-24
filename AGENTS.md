@@ -2,7 +2,7 @@
 
 This file provides guidance to coding agents (Claude Code, etc.) when working with code in this repository.
 
-> **AGENTS.md is the source of truth.** `CLAUDE.md` is a symlink to this file — edit
+> **AGENTS.md is the source of truth.** `CLAUDE.md` is a symlink to this file. Edit
 > `AGENTS.md` only, never the symlink, and keep all guidance here.
 
 ## What this is
@@ -11,7 +11,7 @@ This file provides guidance to coding agents (Claude Code, etc.) when working wi
 styles semantic HTML tags directly (`<button>`, `<article>`, `<aside>`, etc.) so users
 write plain markup with no class names and no build step on their end. The entire
 framework is a single hand-authored stylesheet. There is no JavaScript runtime, no
-preprocessor, and no component library — the deliverable is one CSS file.
+preprocessor, and no component library: the deliverable is one CSS file.
 
 ### Positioning
 
@@ -20,7 +20,7 @@ zinc is a general classless framework. Don't call it "AI-native", "for AI agents
 agent workflows, and the copy may say so, for three plain reasons and no more:
 
 - the examples are the pages a coding agent is commonly asked for (a digest, a health
-  check, a decision board, a review form with a row of choices for each item);
+  check, a review form with a row of choices for each item);
 - those layouts are tested, so an agent has a worked pattern to copy;
 - an agent skill, `html-zinc`, goes with it; the docs home page gives the prompt that
   installs it.
@@ -35,24 +35,25 @@ change and its documentation land together. There is no separate docs branch.
 
 ## Layout
 
-- `src/lib/zinc.css` — **the framework. The only source of truth.** Everything is
+- `src/lib/zinc.css`: **the framework. The only source of truth.** Everything is
   authored here by hand.
-- `build.js` — minifies `src/lib/zinc.css` → `zinc.css` + `zinc.min.css` **at the repo
+- `build.js` minifies `src/lib/zinc.css` → `zinc.css` + `zinc.min.css` **at the repo
   root** (not `dist/`) via Lightning CSS, so the published npm package has them at its
-  top level — no extra path segment in CDN URLs (e.g.
+  top level, with no extra path segment in CDN URLs (e.g.
   `cdn.jsdelivr.net/npm/zinc.css/zinc.css`). The build does not transform structure,
   only minifies.
-- `tests/` — internal QA pages (not docs or copy-paste examples) that exhaustively
+- `tests/`: internal QA pages (not docs or copy-paste examples) that exhaustively
   exercise every variant/size/state of one part of the framework per file, for catching
   regressions while editing `src/lib/zinc.css`. `pnpm run dev` serves the repo and opens
   this folder.
-- `docs/` — the documentation site: static HTML pages styled by zinc itself, linking
+- `docs/`: the documentation site, static HTML pages styled by zinc itself, linking
   `../src/lib/zinc.css` so `pnpm run dev` shows live edits. Two pages: the home page
   (`index.html`: why classless, getting started with one `<link>`, the examples with
   the kind of page each one is, and using zinc with an agent: the prompt that installs
   the skill and the side note on tokens) and
   `elements.html`. `docs/docs.js` generates each demo's code block from the demo
-  (`<figure data-demo>`) and wires up copy buttons; `docs/docs.css` holds the little
+  (`<figure data-demo>`), wires up copy buttons and the arrows of the home page's
+  examples filmstrip (`ul[data-strip]`); `docs/docs.css` holds the little
   docs-only chrome. Like the framework, the site uses no `class` attributes.
   `docs/theme.js` + `docs/theme.css` add the Theme button and popover (top right, on
   every docs and example page) that set and store `data-mode`, `data-accent` and
@@ -60,7 +61,7 @@ change and its documentation land together. There is no separate docs branch.
   trying layout options (contents as a list, headings above content, section spacing,
   rules between sub-sections off); docs-only overrides, never part of zinc. Every page's
   head carries the same inline script that applies both before paint.
-- `docs/examples/` — whole realistic pages (reports, a dashboard, a triage board, forms):
+- `docs/examples/`: whole realistic pages (reports, a dashboard, forms):
   common kinds of page, including the ones a coding agent is often asked for. They
   stand in for pattern docs. The home page
   describes each by the kind of page it is (a digest, a health check, a feedback
@@ -75,17 +76,22 @@ change and its documentation land together. There is no separate docs branch.
   Their content is invented: never paste real conversations, people,
   projects, emails or links into them. The same goes for demo content anywhere in
   `docs/`.
-- `build-docs.js` — `pnpm run build:docs`: runs `pnpm run build`, copies `docs/` to
+- `build-docs.js` (`pnpm run build:docs`) runs `pnpm run build`, copies `docs/` to
   `dist/docs/`, puts the built `zinc.css` at `dist/docs/zinc.css` and rewrites every
   page's stylesheet link to it, so `dist/docs/` is a self-contained static site.
   Neither `docs/` nor `dist/` is in the npm package (the `files` whitelist).
-- `scripts/contrast.mjs` — `pnpm run contrast`: reads the color tokens from
+- `scripts/contrast.mjs` (`pnpm run contrast`) reads the color tokens from
   `src/lib/zinc.css` and prints a before/after WCAG contrast table for every accent in
   both modes (baseline: the `v0.0.0-pre.5` tag). It also checks the control borders
   (`--line-strong`) and the danger and success pairs in each mode. It reads rules inside `@layer`
   blocks and evaluates hex, `rgb()`, `oklch()`, `oklab()` and `color-mix()` in `srgb` or
   `oklab`; any other color syntax is a parse error (exit 2), so teach the script before
   using one. Exits 1 if a check fails.
+- `skills/html-zinc/`: the agent skill that goes with zinc, installed by the prompt on
+  the docs home page and in the README (`npx skills add Rkaede/zinc.css --skill
+  html-zinc`). It loads zinc from jsDelivr pinned to an exact version: bump that pin
+  (in `SKILL.md` and `references/html-zinc-questions.md`) with every release. Keep it
+  free of personal paths and tools. Not in the npm package.
 - Root-level `zinc.css` / `zinc.min.css`, plus `dist/`, `temp/`, `node_modules/`, are gitignored
   and generated; never edit them by hand.
 - `.agents/skills/` (real files), `.claude/skills/` (relative symlinks to them) and
@@ -103,7 +109,7 @@ pnpm run dev      # serve the repo, opens tests/ for visual QA (docs at /docs/)
 pnpm run contrast   # before/after contrast: every accent × mode, plus control borders and danger (exits 1 on a failure)
 ```
 
-There are no tests, linter, or typecheck in the traditional sense — `tests/` is for
+There are no tests, linter, or typecheck in the traditional sense. `tests/` is for
 manual visual QA, not automated checks. The one automated check is `pnpm run contrast`;
 run it after touching any color token. Run `pnpm run dev` and check pages in `tests/`
 and `docs/` in light/dark, on beige, and across the three accents.
@@ -173,7 +179,7 @@ rules should reference these tokens, not hard-coded values.
   article header, a `<div>` of only articles as a card row, a `<div>` around a lone
   table to scroll it); tunable tokens (`--accent`, `--danger`, `--success`, `--radius`,
   `--width`, `--measure`, `--gutter`, `--rail`, fonts).
-  Treat these as a public contract — renaming a token or attribute is a breaking change.
+  Treat these as a public contract: renaming a token or attribute is a breaking change.
 
 ## Conventions
 
@@ -185,3 +191,6 @@ rules should reference these tokens, not hard-coded values.
 - When adding or changing a styled element, also document it: the elements page for
   an element, an example (and its line on the home page) for a page-level pattern, and
   the README for a token. Every claim and default there must match `src/lib/zinc.css`.
+- Never write an em dash (U+2014), in prose, comments, code, commit messages or demo content,
+  nor as an entity (`&mdash;`) or escape. Use a colon, a comma, parentheses or a new
+  sentence instead. Third-party files under `.agents/skills/` are left as installed.
