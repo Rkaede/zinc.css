@@ -37,17 +37,88 @@ figure[data-demo] + pre {
 dt > code { white-space: nowrap; }
 
 
-/* example thumbnails on the home page: a portrait screenshot of each page's
-   first screen, under its title and description, one to a row and at most
-   26rem wide, with no rule between entries,
-   outlined like a card so its white page stands off the white site.
-   (skill-check.html, every control, is a page for development and isn't
-   listed.) */
-#examples > ul > li { padding-block: 0 3rem; border: 0; }
-#examples > ul > li:last-child { padding-block-end: 0; }
-#examples img {
-  inline-size: min(100%, 26rem);
+/* example thumbnails on the home page: a filmstrip. Each card is a portrait
+   screenshot of a page's first screen, its title and the kind of page it is.
+   The row runs off the right of the window, so the cut-off card says there
+   is more; it scrolls sideways, snapping to a card, with arrow buttons
+   (docs.js) beside a thin scrollbar. (skill-check.html, every control, is a
+   page for development and isn't listed.) */
+
+/* a screenshot, outlined like a card so its white page stands off the white
+   site. The ring is drawn over the image, so it takes no room; a firmer
+   ring fades in on hover. */
+[data-shot] {
+  position: relative;
+  display: block;
   border-radius: var(--radius-lg);
-  box-shadow: 0 0 0 1px var(--line-card);
-  margin-block-start: 0.9rem;
+  corner-shape: var(--corner-shape);
+  transition: transform 180ms var(--ease-out);
 }
+[data-shot] > img { inline-size: 100%; border-radius: inherit; corner-shape: inherit; }
+[data-shot]::before,
+[data-shot]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  corner-shape: inherit;
+  pointer-events: none;
+}
+[data-shot]::after { box-shadow: inset 0 0 0 1px var(--line-card); }
+[data-shot]::before {
+  z-index: 1;
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+  opacity: 0;
+  transition: opacity 150ms var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  a:hover > [data-shot] { transform: translateY(-3px); }
+  a:hover > [data-shot]::before { opacity: 1; }
+}
+a:active > [data-shot] { transform: scale(0.985); transition-duration: 100ms; }
+
+/* --out: from the column's right edge to the window's */
+ul[data-strip] {
+  --out: calc(max(0px, (100vw - var(--width) - 2 * var(--gutter)) / 2) + var(--gutter));
+  display: flex;
+  gap: 1.5rem;
+  margin-block: 1.75rem 0.5rem;
+  margin-inline: -6px calc(-1 * var(--out));
+  /* 6px around the cards keeps the hover lift and the focus ring inside
+     the scroller; the snap point sits at the column edge */
+  padding: 6px var(--out) 1rem 6px;
+  scroll-padding-inline: 6px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+@media (min-width: 56rem) {
+  :root[data-debug-labels="margin"] ul[data-strip] {
+    --out: calc(max(0px, (100vw - var(--width) - var(--rail) - var(--rail-gap) - 2 * var(--gutter)) / 2) + var(--gutter));
+  }
+}
+/* 100vw counts a classic scrollbar, so clip the few pixels it would add */
+html:has(ul[data-strip]) { overflow-x: clip; }
+ul[data-strip] > li {
+  flex: 0 0 min(19rem, 74vw);
+  display: grid;
+  align-content: start;
+  gap: 0.25rem;
+  padding: 0;
+  border: 0;
+  scroll-snap-align: start;
+}
+ul[data-strip] > li > a {
+  display: grid;
+  gap: 0.75rem;
+  text-decoration: none;
+}
+ul[data-strip] > li > a > strong {
+  text-decoration: underline;
+  text-decoration-thickness: max(1px, 0.06em);
+  text-underline-offset: 0.22em;
+  text-decoration-color: color-mix(in oklab, currentColor 38%, transparent);
+}
+ul[data-strip] > li > small { line-height: 1.45; }

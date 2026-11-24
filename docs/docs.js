@@ -45,4 +45,37 @@
       setTimeout(() => (button.textContent = label), 2000);
     });
   }
+
+  /* 4. The examples filmstrip: the arrow buttons scroll it a card at a time
+     and are disabled at each end. Their row stays hidden without JavaScript;
+     the strip still scrolls by its scrollbar, a swipe or the keyboard. */
+  for (const strip of document.querySelectorAll("ul[data-strip]")) {
+    const row = strip.nextElementSibling;
+    const buttons = row?.querySelectorAll("button[data-strip-step]") ?? [];
+    if (!buttons.length) continue;
+    row.hidden = false;
+    const step = (button) => Number(button.dataset.stripStep);
+    const updateEnds = () => {
+      const max = strip.scrollWidth - strip.clientWidth;
+      for (const button of buttons) {
+        button.disabled = step(button) < 0 ? strip.scrollLeft <= 1 : strip.scrollLeft >= max - 1;
+      }
+    };
+    let queued = false;
+    strip.addEventListener("scroll", () => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(() => { queued = false; updateEnds(); });
+    }, { passive: true });
+    addEventListener("resize", updateEnds, { passive: true });
+    for (const button of buttons) {
+      button.addEventListener("click", () => {
+        const card = strip.querySelector("li");
+        const distance = card.offsetWidth + parseFloat(getComputedStyle(strip).columnGap);
+        const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+        strip.scrollBy({ left: step(button) * distance, behavior: calm ? "auto" : "smooth" });
+      });
+    }
+    updateEnds();
+  }
 }

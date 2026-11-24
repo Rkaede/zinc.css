@@ -11,13 +11,13 @@
     <script>
       // Theme hooks, chosen with the Theme button (theme.js) and stored, or set
       // for one page with ?mode= ?accent= ?paper=. Debug panel choices (debug.js),
-      // stored, or ?toc= ?labels= ?spacing= ?rules=.
+      // stored, or ?toc= ?labels= ?spacing= ?rules= ?code=.
       {
         const d = document.documentElement.dataset, u = new URLSearchParams(location.search), read = (key) => {
           try { return JSON.parse(localStorage.getItem(key)) || {}; } catch { return {}; }
         };
         const theme = read("zinc-docs-theme"), debug = read("zinc-docs-debug");
-        for (const [k, a, s] of [["mode", "mode", theme], ["accent", "accent", theme], ["paper", "paper", theme], ["toc", "debugToc", debug], ["labels", "debugLabels", debug], ["spacing", "debugSpacing", debug], ["rules", "debugRules", debug]]) {
+        for (const [k, a, s] of [["mode", "mode", theme], ["accent", "accent", theme], ["paper", "paper", theme], ["toc", "debugToc", debug], ["labels", "debugLabels", debug], ["spacing", "debugSpacing", debug], ["rules", "debugRules", debug], ["code", "debugCode", debug]]) {
           const v = u.get(k) || s[k];
           if (/^[a-z]+$/.test(v || "")) d[a] = v;
         }

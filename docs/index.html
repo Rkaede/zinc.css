@@ -13,13 +13,13 @@
 <script>
   // Theme hooks, chosen with the Theme button (theme.js) and stored, or set
   // for one page with ?mode= ?accent= ?paper=. Debug panel choices (debug.js),
-  // stored, or ?toc= ?labels= ?spacing= ?rules=.
+  // stored, or ?toc= ?labels= ?spacing= ?rules= ?code=.
   {
     const d = document.documentElement.dataset, u = new URLSearchParams(location.search), read = (key) => {
       try { return JSON.parse(localStorage.getItem(key)) || {}; } catch { return {}; }
     };
     const theme = read("zinc-docs-theme"), debug = read("zinc-docs-debug");
-    for (const [k, a, s] of [["mode", "mode", theme], ["accent", "accent", theme], ["paper", "paper", theme], ["toc", "debugToc", debug], ["labels", "debugLabels", debug], ["spacing", "debugSpacing", debug], ["rules", "debugRules", debug]]) {
+    for (const [k, a, s] of [["mode", "mode", theme], ["accent", "accent", theme], ["paper", "paper", theme], ["toc", "debugToc", debug], ["labels", "debugLabels", debug], ["spacing", "debugSpacing", debug], ["rules", "debugRules", debug], ["code", "debugCode", debug]]) {
       const v = u.get(k) || s[k];
       if (/^[a-z]+$/.test(v || "")) d[a] = v;
     }
@@ -33,7 +33,7 @@
 <main>
   <header>
     <h1>zinc.css</h1>
-    <p>A classless stylesheet for reports, dashboards and forms. You write plain semantic HTML with no class names, and zinc sets it as one calm column, with labels in the margin and colour kept for what you focus, check or choose.</p>
+    <p>A classless stylesheet for reports, dashboards and forms. You write plain semantic HTML with no class names, and zinc sets it as one calm column, with colour kept for what you focus, check or choose.</p>
   </header>
 
   <section id="why">
@@ -50,16 +50,13 @@
   <section id="start">
     <h2>Getting started</h2>
     <p>Add one <code>&lt;link&gt;</code> to the <code>&lt;head&gt;</code> of a page.</p>
-    <aside>
-      <p><strong>Use the <code>next</code> tag.</strong> These docs cover <code>0.1.0-next.0</code>, a pre-release published under the npm <code>next</code> tag. An unpinned URL or a plain <code>npm install zinc.css</code> gets <code>latest</code>, which is still an older version with a different look.</p>
-    </aside>
     <pre><code>&lt;!doctype html&gt;
 &lt;html lang="en"&gt;
 &lt;head&gt;
   &lt;meta charset="utf-8" /&gt;
   &lt;meta name="viewport" content="width=device-width, initial-scale=1" /&gt;
   &lt;title&gt;Hello&lt;/title&gt;
-  &lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/zinc.css@0.1.0-next.0/zinc.min.css" /&gt;
+  &lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/zinc.css@0.0.0-pre.7/zinc.min.css" /&gt;
 &lt;/head&gt;
 &lt;body&gt;
   &lt;main&gt;
@@ -69,51 +66,42 @@
   &lt;/main&gt;
 &lt;/body&gt;
 &lt;/html&gt;</code></pre>
-    <p>Keep the viewport <code>&lt;meta&gt;</code>: without it, phones render the page at desktop width. Pinning the exact version, as above, means the page can't change under you; <code>zinc.css@next</code> follows the newest pre-release. unpkg serves the same files, and each package has <code>zinc.css</code> and the minified <code>zinc.min.css</code>.</p>
-    <p>From npm, run <code>npm install zinc.css@next</code>, then link <code>node_modules/zinc.css/zinc.css</code> or <code>import "zinc.css"</code> with a bundler that handles CSS.</p>
+    <p>Keep the viewport <code>&lt;meta&gt;</code>: without it, phones render the page at desktop width. Pinning the exact version, as above, means the page can't change under you; an unpinned URL, <code>zinc.css/zinc.min.css</code>, follows the newest release. unpkg serves the same files, and each package has <code>zinc.css</code> and the minified <code>zinc.min.css</code>.</p>
+    <p>From npm, run <code>npm install zinc.css</code>, then link <code>node_modules/zinc.css/zinc.css</code> or <code>import "zinc.css"</code> with a bundler that handles CSS.</p>
     <p>Every element zinc styles, from inline text to each input type, is on the <a href="elements.html">elements page</a>.</p>
   </section>
 
   <section id="examples">
     <h2>Examples</h2>
-    <p>Each example is a whole page of one common kind. The content is invented, so read it for its shape, not its subject. The Theme button at the top right shows them in dark mode, with another accent or on the beige paper.</p>
-    <ul role="list">
+    <p>Each example is a whole page of one common kind. The content is invented, so read it for its shape, not its subject. Open one to see it whole; there, the Theme button at the top right shows it in dark mode, with another accent or on the beige paper.</p>
+    <ul role="list" data-strip>
       <li>
-        <a href="examples/briefing.html"><strong>Inbox briefing</strong></a>
-        <p>A digest of anything that arrives as a stream: mail, alerts, tickets.</p>
-        <a href="examples/briefing.html" tabindex="-1" aria-hidden="true"><img src="examples/thumbs/briefing.webp" alt="" width="900" height="1200" loading="lazy"></a>
+        <a href="examples/audit-form.html"><span data-shot><img src="examples/thumbs/audit-form.webp" alt="" width="900" height="1200" loading="lazy"></span><strong>Audit decisions</strong></a>
+        <small>A rich feedback form, for reviewing a long list item by item.</small>
       </li>
       <li>
-        <a href="examples/code-health.html"><strong>Code health</strong></a>
-        <p>A health check of one thing: a codebase, a budget, a project.</p>
-        <a href="examples/code-health.html" tabindex="-1" aria-hidden="true"><img src="examples/thumbs/code-health.webp" alt="" width="900" height="1200" loading="lazy"></a>
+        <a href="examples/questions.html"><span data-shot><img src="examples/thumbs/questions.webp" alt="" width="900" height="1200" loading="lazy"></span><strong>Questions</strong></a>
+        <small>A questionnaire for the choices only you can make.</small>
       </li>
       <li>
-        <a href="examples/recommendations.html"><strong>Recommendations</strong></a>
-        <p>A ranked list of findings, the few that matter first.</p>
-        <a href="examples/recommendations.html" tabindex="-1" aria-hidden="true"><img src="examples/thumbs/recommendations.webp" alt="" width="900" height="1200" loading="lazy"></a>
+        <a href="examples/briefing.html"><span data-shot><img src="examples/thumbs/briefing.webp" alt="" width="900" height="1200" loading="lazy"></span><strong>Inbox briefing</strong></a>
+        <small>A digest of anything that arrives as a stream: mail, alerts, tickets.</small>
       </li>
       <li>
-        <a href="examples/triage.html"><strong>Feature triage</strong></a>
-        <p>A decision board for a set of options to weigh.</p>
-        <a href="examples/triage.html" tabindex="-1" aria-hidden="true"><img src="examples/thumbs/triage.webp" alt="" width="900" height="1200" loading="lazy"></a>
+        <a href="examples/code-health.html"><span data-shot><img src="examples/thumbs/code-health.webp" alt="" width="900" height="1200" loading="lazy"></span><strong>Code health</strong></a>
+        <small>A health check of one thing: a codebase, a budget, a project.</small>
       </li>
       <li>
-        <a href="examples/questions.html"><strong>Questions</strong></a>
-        <p>A questionnaire for the choices only you can make.</p>
-        <a href="examples/questions.html" tabindex="-1" aria-hidden="true"><img src="examples/thumbs/questions.webp" alt="" width="900" height="1200" loading="lazy"></a>
-      </li>
-      <li>
-        <a href="examples/audit-form.html"><strong>Audit decisions</strong></a>
-        <p>A rich feedback form, for reviewing a long list item by item.</p>
-        <a href="examples/audit-form.html" tabindex="-1" aria-hidden="true"><img src="examples/thumbs/audit-form.webp" alt="" width="900" height="1200" loading="lazy"></a>
+        <a href="examples/recommendations.html"><span data-shot><img src="examples/thumbs/recommendations.webp" alt="" width="900" height="1200" loading="lazy"></span><strong>Recommendations</strong></a>
+        <small>A ranked list of findings, the few that matter first.</small>
       </li>
     </ul>
+    <p hidden><span role="group"><button type="button" data-variant="secondary" data-size="sm" data-strip-step="-1" aria-label="Earlier examples">←</button><button type="button" data-variant="secondary" data-size="sm" data-strip-step="1" aria-label="More examples">→</button></span></p>
   </section>
 
   <section id="agents">
     <h2>With an agent</h2>
-    <p>zinc also suits the pages a coding agent writes when a chat reply would run long. The examples above are those pages: a digest, a health check, ranked findings, a decision board, a questionnaire, and a review form with a row of choices for each item. Each layout is checked on a phone and on a wide screen, in light and dark, so the agent has a worked pattern to copy.</p>
+    <p>zinc also suits the pages a coding agent writes when a chat reply would run long. The examples above are those pages: a digest, a health check, ranked findings, a questionnaire, and a review form with a row of choices for each item. Each layout is checked on a phone and on a wide screen, in light and dark, so the agent has a worked pattern to copy.</p>
     <p>An agent skill, <code>html-zinc</code>, goes with it. It tells your agent when a page beats a chat reply, how to shape the page so it reads well, and how to ask you several questions at once with a form you fill in and paste back. Paste this into your agent:</p>
     <pre><code>Install the html-zinc skill from the zinc.css repo:
 
@@ -131,7 +119,7 @@ in the browser and paste back to you.</code></pre>
 </main>
 
 <footer>
-  <p>zinc.css 0.1.0-next.0 · MIT License · <a href="https://github.com/Rkaede/zinc.css">GitHub</a> · <a href="https://www.npmjs.com/package/zinc.css">npm</a></p>
+  <p>zinc.css 0.0.0-pre.7 · MIT License · <a href="https://github.com/Rkaede/zinc.css">GitHub</a> · <a href="https://www.npmjs.com/package/zinc.css">npm</a></p>
 </footer>
 </body>
 </html>

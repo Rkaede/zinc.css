@@ -10,13 +10,13 @@
     <script>
       // Theme hooks, chosen with the Theme button (theme.js) and stored, or set
       // for one page with ?mode= ?accent= ?paper=. Debug panel choices (debug.js),
-      // stored, or ?toc= ?labels= ?spacing= ?rules=.
+      // stored, or ?toc= ?labels= ?spacing= ?rules= ?code=.
       {
         const d = document.documentElement.dataset, u = new URLSearchParams(location.search), read = (key) => {
           try { return JSON.parse(localStorage.getItem(key)) || {}; } catch { return {}; }
         };
         const theme = read("zinc-docs-theme"), debug = read("zinc-docs-debug");
-        for (const [k, a, s] of [["mode", "mode", theme], ["accent", "accent", theme], ["paper", "paper", theme], ["toc", "debugToc", debug], ["labels", "debugLabels", debug], ["spacing", "debugSpacing", debug], ["rules", "debugRules", debug]]) {
+        for (const [k, a, s] of [["mode", "mode", theme], ["accent", "accent", theme], ["paper", "paper", theme], ["toc", "debugToc", debug], ["labels", "debugLabels", debug], ["spacing", "debugSpacing", debug], ["rules", "debugRules", debug], ["code", "debugCode", debug]]) {
           const v = u.get(k) || s[k];
           if (/^[a-z]+$/.test(v || "")) d[a] = v;
         }
@@ -37,7 +37,7 @@
         <fieldset>
           <legend>How should finished client projects be handled?<abbr title="required">*</abbr></legend>
           <p>In a sample of 80 project folders, about 25% belong to clients we haven't worked with in three years, and 10–15% are pitches that never went ahead. Anything deleted from the drive is gone for good after 30 days in the bin.</p>
-          <label><input type="radio" name="projects" value="archive" required>
+          <label><input type="radio" name="projects" value="archive" required checked>
             <span><strong>Archive them, don't delete</strong>
             <small>Recommended. Each folder moves to the archive with a short note, and searches skip the archive unless you ask. Nothing is lost.</small></span></label>
           <label><input type="radio" name="projects" value="archive-delete">
@@ -51,7 +51,7 @@
         <fieldset>
           <legend>What happens to raw video footage?</legend>
           <p>It takes up 410 GB of the 670 GB drive, and the total has doubled since spring. Every re-edit adds new exports next to the old ones.</p>
-          <label><input type="radio" name="footage" value="cold">
+          <label><input type="radio" name="footage" value="cold" checked>
             <span><strong>Move it to cold storage, keep the edits</strong>
             <small>Recommended. Raw clips go to the cheaper archive tier, and the final cuts in <code>Exports</code> stay on the drive.</small></span></label>
           <label><input type="radio" name="footage" value="cold-prune">
