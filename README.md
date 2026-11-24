@@ -4,8 +4,7 @@
 
 Write plain semantic HTML and `zinc.css` styles it. No class names to remember
 or invent, no build step, one `<link>`. The page is set as one calm column of
-text, with section labels in the margin and colour kept for what you focus,
-check or choose.
+text, with colour kept for what you focus, check or choose.
 
 ```html
 <!-- one line. that's the install. -->
@@ -22,7 +21,7 @@ and open `/docs/`, or serve the repo root with any local server and open
 
 ### From a CDN
 
-No download, no `npm install` — just point a `<link>` at jsDelivr or unpkg:
+No download, no `npm install`: just point a `<link>` at jsDelivr or unpkg:
 
 ```html
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/zinc.css/zinc.css" />
@@ -33,8 +32,8 @@ No download, no `npm install` — just point a `<link>` at jsDelivr or unpkg:
 <link rel="stylesheet" href="https://unpkg.com/zinc.css/zinc.css" />
 ```
 
-Pin a version once you're past prototyping (e.g. `zinc.css@0.1.0-next.0/zinc.css`) —
-an unpinned URL always serves `latest`, which is fine for a demo but can
+Pin a version once you're past prototyping (e.g. `zinc.css@0.0.0-pre.7/zinc.css`).
+An unpinned URL always serves `latest`, which is fine for a demo but can
 change under you in production.
 
 ## With a coding agent
@@ -42,8 +41,8 @@ change under you in production.
 zinc also suits the pages a coding agent writes when a chat reply would run
 long: a report, a dashboard, a form that asks you several questions. The
 [examples](./docs/examples/) are those pages (a digest, a health check, a
-decision board, a review form with a row of choices for each item), each one a
-tested layout the agent can copy.
+review form with a row of choices for each item), each one a tested layout
+the agent can copy.
 
 An agent skill, `html-zinc`, goes with it. It tells the agent when a page beats
 a chat reply, how to shape it, and how to ask you several questions with a form.
@@ -81,7 +80,7 @@ load it yourself and set the font tokens:
 
 ## Theming
 
-Set hooks on the `<html>` element — no classes anywhere.
+Set hooks on the `<html>` element. No classes anywhere.
 
 | Hook          | Values                            | Effect                                                         |
 | ------------- | --------------------------------- | -------------------------------------------------------------- |
@@ -93,7 +92,7 @@ Set hooks on the `<html>` element — no classes anywhere.
 <html data-mode="dark" data-accent="forest" data-paper="beige"></html>
 ```
 
-`data-paper` also works on `<body>`. The accent marks state only — focus,
+`data-paper` also works on `<body>`. The accent marks state only: focus,
 checked controls, chosen options, progress bars. Links and buttons are ink.
 Every built-in accent meets WCAG AA in both modes, as text and as a fill.
 
@@ -113,7 +112,7 @@ Override any of these on `:root` to rebrand without touching the framework:
   --width: 42rem; /* the text column */
   --measure: 38rem; /* where running text wraps, about 75 characters */
   --gutter: clamp(1.25rem, 5vw, 2.5rem); /* page padding */
-  --rail: 11rem; /* the margin that holds section labels on a wide screen, and the sidebar's width */
+  --rail: 11rem; /* the sidebar's width on a wide screen */
   --font-sans: ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, monospace;
   --font-display: var(--font-sans);
@@ -135,10 +134,8 @@ documented at the top of [`zinc.css`](./src/lib/zinc.css).
 
 ## Page structure
 
-Build a page from `<section>` elements, each starting with an `<h2>`. From 56rem
-wide, each `<h2>` moves into a left margin as a short label that stays in view
-while its section scrolls past, so keep them to one to three words and put the
-sentence under it. Below 56rem it is an ordinary heading.
+Build a page from `<section>` elements, each starting with an `<h2>` above its
+content. Keep the heading to one to three words and put the sentence under it.
 
 - In the page `<header>`, a `<p>` before the `<h1>` is a small line of context,
   and the first `<p>` after it is the lede, set a size larger.
@@ -152,6 +149,9 @@ sentence under it. Below 56rem it is an ordinary heading.
   hairline between entries.
 - `<menu>` of `<li>` is a toolbar; a `<label>` that wraps a field sits on one
   line with it.
+- A `<p>`, `<div>` or `<footer>` that holds only buttons (and an `<output>`
+  for their status) is a row of buttons, with a gap between them and between
+  the lines when they wrap.
 - An `<aside>` that is a child of `<body>`, beside `<main>`, is a sidebar. From
   76rem wide it sits in a column of `--rail` width to the right of the text, with
   no tint, and stays in view; its nav links stack and a fact sheet puts each value
@@ -221,7 +221,7 @@ Two semantic elements carry visual emphasis:
 ```
 
 Cards are emphasis, not structure. Build pages from `<section>` elements with
-headings — tables, lists, and prose sit directly in the section — and save
+headings (tables, lists, and prose sit directly in the section), and save
 `<article>` for the panel that deserves the spotlight: a top recommendation, a
 key finding, a group of evidence cards. If everything is a card, nothing is.
 Don't nest `<article>` elements.

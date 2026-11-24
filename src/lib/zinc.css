@@ -1,5 +1,5 @@
 /* ==========================================================================
-   zinc.css — a classless stylesheet for semantic HTML
+   zinc.css: a classless stylesheet for semantic HTML
    --------------------------------------------------------------------------
    One column of text on one left edge. Section labels sit in the margin,
    marks (bullets, numbers, chevrons, quote bars) hang outside the edge, and
@@ -100,7 +100,7 @@
   --success: light-dark(#257a52, #68c796);
   --on-success: light-dark(#ffffff, #101311);
 
-  /* neutrals — light: a white page. Fields and choice cards are white too,
+  /* neutrals, light: a white page. Fields and choice cards are white too,
      so their outlines carry them; the pale green-grey of the beige paper
      fills the notes and code blocks. --------------------------------------- */
   --bg: #ffffff;
@@ -158,7 +158,7 @@
    controls (scrollbars, pickers) follow data-mode rather than the system */
 :root[data-mode="light"] { color-scheme: light; }
 
-/* dark neutrals — auto (system) unless forced light --------------------- */
+/* dark neutrals: auto (system) unless forced light ---------------------- */
 @media (prefers-color-scheme: dark) {
   :root:not([data-mode="light"]) {
     color-scheme: dark;
@@ -175,7 +175,7 @@
     --danger-press: color-mix(in oklab, var(--danger) 82%, #fff);
   }
 }
-/* dark neutrals — manual override -------------------------------------- */
+/* dark neutrals: manual override --------------------------------------- */
 :root[data-mode="dark"] {
   color-scheme: dark;
   --bg: #141615;
@@ -497,7 +497,7 @@ blockquote {
 blockquote p { margin: 0 0 0.5rem; }
 blockquote > :last-child { margin-block-end: 0; }
 blockquote cite { display: block; font-size: var(--size-small); font-style: normal; color: var(--muted); }
-blockquote cite::before { content: "— "; }
+blockquote cite::before { content: "– "; }
 
 hr {
   border: none;
@@ -621,6 +621,14 @@ label { display: block; font-weight: 500; font-size: var(--size-small); margin-b
    does a group or a row of buttons */
 :where(input, select, textarea, fieldset, progress, meter) + label { margin-top: 1.15rem; }
 :where(input, select, textarea, label) + :where(fieldset, p, menu) { margin-top: 1.5rem; }
+/* a label that wraps any other field puts its words above the field, as a
+   label before one does, and the next label keeps its distance */
+label:where(:has(> :is(input:not([type="checkbox"], [type="radio"], [type="hidden"]), select, textarea))) {
+  display: grid;
+  justify-items: start;
+  gap: 0.4rem;
+}
+label:where(:has(> :is(input:not([type="checkbox"], [type="radio"], [type="hidden"]), select, textarea))) + label { margin-top: 1.15rem; }
 /* a label that wraps a checkbox, radio or switch reads as body text.
    :where() keeps it at label specificity, so choice cards override it. */
 label:where(:has(> input:is([type="checkbox"], [type="radio"]))) {
@@ -641,6 +649,7 @@ label:where(:has(> input:is([type="checkbox"], [type="radio"]))) {
 ), textarea, select {
   font: inherit;
   font-size: var(--size-body);
+  font-weight: 400;
   line-height: 1.5rem;
   width: 100%;
   padding: 0.55rem 0.8rem;
@@ -650,7 +659,9 @@ label:where(:has(> input:is([type="checkbox"], [type="radio"]))) {
   border-radius: var(--radius);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
-textarea { min-height: 6.5rem; resize: vertical; line-height: 1.55; }
+/* a textarea keeps its size: few readers drag the handle, and it clutters
+   the corner. Set resize: vertical on one that needs it. */
+textarea { min-height: 6.5rem; resize: none; line-height: 1.55; }
 
 /* text fields swap the outline for an accent edge (border + 1px ring) and a
    soft halo. Checkboxes, radios, switches, range, color, file and button
@@ -768,14 +779,14 @@ input[type="range"]::-moz-range-track { height: 4px; border-radius: 999px; backg
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 18px; height: 18px;
-  margin-top: -7px;
+  width: 22px; height: 22px;
+  margin-top: -9px;
   border-radius: 50%;
   background: var(--accent);
   border: 2px solid var(--bg);
 }
 input[type="range"]::-moz-range-thumb {
-  width: 18px; height: 18px;
+  width: 22px; height: 22px;
   border-radius: 50%;
   background: var(--accent);
   border: 2px solid var(--bg);
@@ -792,7 +803,7 @@ input[type="color"] {
 input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
 input[type="color"]::-webkit-color-swatch { border: none; border-radius: 4px; }
 
-input[type="file"] { font: inherit; font-size: var(--size-small); color: var(--muted); max-width: 100%; }
+input[type="file"] { font: inherit; font-size: var(--size-small); font-weight: 400; color: var(--muted); max-width: 100%; }
 input[type="file"]::file-selector-button {
   font: inherit; font-weight: 500;
   margin-right: 0.85rem;
@@ -1007,6 +1018,17 @@ input[type="reset"]:where(:not([data-variant])) {
 @media (pointer: coarse) {
   button, input:is([type="submit"], [type="button"], [type="reset"]), a[role="button"], [data-variant] { min-height: 2.75rem; }
   [data-size="sm"] { min-height: 2.25rem; }
+}
+
+/* a row of buttons: a paragraph, div or footer that holds only buttons
+   (and button groups, and an <output> for their status) lays them out with
+   a gap, so they keep apart and, when they wrap, so do the lines. Inline
+   buttons in running text are left alone. */
+:where(p, div:not([role]), footer):has(> :is(button, input:is([type="submit"], [type="button"], [type="reset"]), a[role="button"], [data-variant], [role="group"])):not(:has(> :not(button, input:is([type="submit"], [type="button"], [type="reset"]), a[role="button"], [data-variant], [role="group"], output))) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
 }
 
 /* button group (segmented): a hairline of page shows between the parts --- */
@@ -1364,35 +1386,10 @@ footer > :last-child:not(dialog) { margin-block-end: 0; }
   }
 }
 
-/* the margin: on a wide screen, a page built from <section><h2> gains a
-   left margin, and each section's <h2> moves into it as a label that stays
-   in view while its section scrolls past. The page title and every line of
-   content keep the one edge to the right of it. */
-@media (min-width: 56rem) {
-  body:has(:is(main, main > form) > :is(section, nav) > h2:first-child) {
-    max-width: calc(var(--width) + var(--rail) + var(--rail-gap) + 2 * var(--gutter));
-    padding-inline-start: calc(var(--gutter) + var(--rail) + var(--rail-gap));
-  }
-  :is(main, main > form) > :is(section, nav) > h2:first-child {
-    float: inline-start;
-    inline-size: var(--rail);
-    margin: 0;
-    margin-inline-start: calc(-1 * (var(--rail) + var(--rail-gap)));
-    position: sticky;
-    inset-block-start: 2rem;
-    font-size: var(--size-small);
-    /* the label's first line shares a baseline with the body text beside it */
-    line-height: calc(var(--size-body) * var(--leading));
-    letter-spacing: 0;
-    text-wrap: pretty;
-  }
-  :is(main, main > form) > :is(section, nav) > h2:first-child + * { margin-block-start: 0; }
-}
-
 /* sidebar: an <aside> that is a child of <body>, beside <main>, is the page's
    sidebar: what a reader keeps at hand while reading the page (key facts,
    contents, what is left to do). On a screen wide enough for a column right
-   of the text, room for the label margin included, it moves there, drops its
+   of the text, it moves there, drops its
    tint and stays in view. Until then it is a note where it is written: before
    <main> to be read first on a phone, after it to be read last. */
 body > aside { margin-inline: calc(-1 * var(--bleed)); }
@@ -1408,9 +1405,6 @@ body > main + aside { margin-block-start: var(--section-gap); }
     column-gap: var(--rail-gap);
     align-content: start;
     max-width: calc(var(--width) + var(--rail) + var(--rail-gap) + 2 * var(--gutter));
-  }
-  body:has(> aside):has(:is(main, main > form) > :is(section, nav) > h2:first-child) {
-    max-width: calc(var(--width) + 2 * (var(--rail) + var(--rail-gap)) + 2 * var(--gutter));
   }
   body:has(> aside) > * { grid-column: 1; }
   /* grid items keep both margins, so the gap above <main> is the header's */
@@ -1437,6 +1431,8 @@ body > main + aside { margin-block-start: var(--section-gap); }
   body > aside nav ul { flex-direction: column; align-items: start; gap: 0.3rem; }
   body > aside :where(h2, h3) { margin-block-start: 1.75rem; }
   body > aside :where(ul, ol):not(nav ul, [role="list"]) { padding-inline-start: 1rem; }
+  /* room for a two-digit number */
+  body > aside ol:not([role="list"]) { padding-inline-start: 1.6rem; }
   body > aside dl:not(:has(> div)) { grid-template-columns: minmax(0, 1fr); }
   body > aside dl:not(:has(> div)) > dt { padding: 0.6rem 0 0; border: 0; }
   body > aside dl:not(:has(> div)) > dt:first-child { padding-block-start: 0; }
@@ -1446,7 +1442,6 @@ body > main + aside { margin-block-start: var(--section-gap); }
 @media print {
   body { padding-block: 0; }
   body > aside { position: static; max-block-size: none; overflow: visible; }
-  :is(main, main > form) > :is(section, nav) > h2:first-child { position: static; }
   form[data-form="questions"] > footer { position: static; }
 }
 
@@ -1466,7 +1461,7 @@ body > main + aside { margin-block-start: var(--section-gap); }
 }
 
 /* ==========================================================================
-   Beige paper (data-paper="beige" on <html> or <body>) — see the tokens
+   Beige paper (data-paper="beige" on <html> or <body>); see the tokens
    --------------------------------------------------------------------------
    On paper an <article> is a sheet lifted off the page by tone alone: a
    fill, and no hairline. :is() rather than :where() so this beats the phone

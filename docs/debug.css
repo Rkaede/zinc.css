@@ -30,23 +30,55 @@ details[data-debug-panel] [role="radiogroup"] { margin-block-start: 0.3rem; }
   gap: 0.35rem;
 }
 
-/* section headings above their content, even on a wide screen: undoes
-   zinc's margin labels (min-width: 56rem) and restores the plain <h2> */
+/* section headings in the margin: zinc's layout before headings moved above
+   their content. On a wide screen, a page built from <section><h2> gains a
+   left margin, and each section's <h2> moves into it as a label that stays
+   in view while its section scrolls past. */
 @media (min-width: 56rem) {
-  :root[data-debug-labels="above"] body {
-    max-width: calc(var(--width) + 2 * var(--gutter));
-    padding-inline-start: var(--gutter);
+  :root[data-debug-labels="margin"] body:has(:is(main, main > form) > :is(section, nav) > h2:first-child) {
+    max-width: calc(var(--width) + var(--rail) + var(--rail-gap) + 2 * var(--gutter));
+    padding-inline-start: calc(var(--gutter) + var(--rail) + var(--rail-gap));
   }
-  :root[data-debug-labels="above"] :is(main, main > form) > :is(section, nav) > h2:first-child {
-    float: none;
-    position: static;
-    inline-size: auto;
-    margin: 0 0 0.7em;
-    font-size: 1.375rem;
-    line-height: 1.2;
-    letter-spacing: -0.018em;
-    text-wrap: balance;
+  :root[data-debug-labels="margin"] :is(main, main > form) > :is(section, nav) > h2:first-child {
+    float: inline-start;
+    inline-size: var(--rail);
+    margin: 0;
+    margin-inline-start: calc(-1 * (var(--rail) + var(--rail-gap)));
+    position: sticky;
+    inset-block-start: 2rem;
+    font-size: var(--size-small);
+    /* the label's first line shares a baseline with the body text beside it */
+    line-height: calc(var(--size-body) * var(--leading));
+    letter-spacing: 0;
+    text-wrap: pretty;
   }
+  :root[data-debug-labels="margin"] :is(main, main > form) > :is(section, nav) > h2:first-child + * { margin-block-start: 0; }
+}
+/* with a sidebar too, the page makes room for both */
+@media (min-width: 76rem) {
+  :root[data-debug-labels="margin"] body:has(> aside):has(:is(main, main > form) > :is(section, nav) > h2:first-child) {
+    max-width: calc(var(--width) + 2 * (var(--rail) + var(--rail-gap)) + 2 * var(--gutter));
+  }
+}
+@media print {
+  :root[data-debug-labels="margin"] :is(main, main > form) > :is(section, nav) > h2:first-child { position: static; }
+}
+
+/* code blocks. zinc's default bleeds the tinted box out by --bleed, so the
+   code lines up with the text and the box edge sits outside the column.
+   "aligned": the box sits on the column edge, like a field, and the code is
+   indented by its padding. "unboxed": no tint, so there is no box edge; the
+   code sits on the text edge with a hairline above and below. */
+:root[data-debug-code="aligned"] :is(main, body > header, body > aside) pre {
+  margin-inline: 0;
+  border-radius: var(--radius);
+}
+:root[data-debug-code="unboxed"] :is(main, body > header, body > aside) pre {
+  margin-inline: 0;
+  padding-inline: 0;
+  background: none;
+  border-radius: 0;
+  border-block: 1px solid var(--line);
 }
 
 /* section spacing: scales the gap between sections (zinc's --section-gap,

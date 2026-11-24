@@ -13,13 +13,13 @@
 <script>
   // Theme hooks, chosen with the Theme button (theme.js) and stored, or set
   // for one page with ?mode= ?accent= ?paper=. Debug panel choices (debug.js),
-  // stored, or ?toc= ?labels= ?spacing= ?rules=.
+  // stored, or ?toc= ?labels= ?spacing= ?rules= ?code=.
   {
     const d = document.documentElement.dataset, u = new URLSearchParams(location.search), read = (key) => {
       try { return JSON.parse(localStorage.getItem(key)) || {}; } catch { return {}; }
     };
     const theme = read("zinc-docs-theme"), debug = read("zinc-docs-debug");
-    for (const [k, a, s] of [["mode", "mode", theme], ["accent", "accent", theme], ["paper", "paper", theme], ["toc", "debugToc", debug], ["labels", "debugLabels", debug], ["spacing", "debugSpacing", debug], ["rules", "debugRules", debug]]) {
+    for (const [k, a, s] of [["mode", "mode", theme], ["accent", "accent", theme], ["paper", "paper", theme], ["toc", "debugToc", debug], ["labels", "debugLabels", debug], ["spacing", "debugSpacing", debug], ["rules", "debugRules", debug], ["code", "debugCode", debug]]) {
       const v = u.get(k) || s[k];
       if (/^[a-z]+$/.test(v || "")) d[a] = v;
     }
@@ -261,7 +261,7 @@
 
   <section id="details">
     <h2>Details</h2>
-    <p>A <code>&lt;summary&gt;</code> is a line of text with a chevron and no box. The chevron turns when it opens, and the content grows and fades in where the browser supports it. In a section on a wide screen the chevron hangs in the margin. Consecutive details sit close together. In an entry of a <code>role="list"</code> list a <code>&lt;details&gt;</code> sits as close to the entry's other lines as they do to each other, so its summary can be the entry's title, as in the audit of the <a href="examples/triage.html">feature triage</a>.</p>
+    <p>A <code>&lt;summary&gt;</code> is a line of text with a chevron and no box. The chevron turns when it opens, and the content grows and fades in where the browser supports it. In a section on a wide screen the chevron hangs in the margin. Consecutive details sit close together. In an entry of a <code>role="list"</code> list a <code>&lt;details&gt;</code> sits as close to the entry's other lines as they do to each other, so its summary can be the entry's title.</p>
     <figure data-demo>
       <details>
         <summary>Which flours do you use?</summary>
@@ -293,7 +293,7 @@
 
   <section id="forms">
     <h2>Forms</h2>
-    <p>A <code>&lt;label&gt;</code> is a small, medium-weight line above its field. Fields take the full width, with a firm outline that has at least 3:1 contrast against the page. A focused text field swaps the outline for an accent edge and a soft halo; other controls get the standard accent focus ring. A label after a field keeps its distance from it.</p>
+    <p>A <code>&lt;label&gt;</code> is a small, medium-weight line above its field. Fields take the full width, with a firm outline that has at least 3:1 contrast against the page. A focused text field swaps the outline for an accent edge and a soft halo; other controls get the standard accent focus ring. A label after a field keeps its distance from it. A label can also wrap its field, as in <code>&lt;label&gt;Colour &lt;input type="color"&gt;&lt;/label&gt;</code>; its words still sit above the field.</p>
 
     <h3>Text fields</h3>
     <figure data-demo>
@@ -329,7 +329,7 @@
     </figure>
 
     <h3>Textarea and select</h3>
-    <p>A textarea starts 6.5rem tall and resizes vertically. A select gets a drawn chevron; a multiple select drops it.</p>
+    <p>A textarea starts 6.5rem tall and has no resize handle; set <code>resize: vertical</code> on one that needs it. A select gets a drawn chevron; a multiple select drops it.</p>
     <figure data-demo>
       <label for="f-notes">Notes for the driver</label>
       <textarea id="f-notes" placeholder="Side door, ring twice"></textarea>
@@ -402,7 +402,7 @@
 
   <section id="buttons">
     <h2>Buttons</h2>
-    <p>A button is ink, not accent: it is a command, and its shape says so. A row of buttons sits well in a <code>&lt;menu&gt;</code>, which wraps them with a gap (the <a href="examples/triage.html">feature triage</a> has a toolbar of filters). On a touch screen every button is at least 2.75rem tall (2.25rem for a small one).</p>
+    <p>A button is ink, not accent: it is a command, and its shape says so. A row of buttons sits well in a <code>&lt;menu&gt;</code>, which wraps them with a gap (the <a href="examples/audit-form.html">audit decisions</a> form has a toolbar of filters). A <code>&lt;p&gt;</code>, <code>&lt;div&gt;</code> or <code>&lt;footer&gt;</code> that holds only buttons (and an <code>&lt;output&gt;</code> for their status) lays them out the same way, with a gap between them and between the lines when they wrap. On a touch screen every button is at least 2.75rem tall (2.25rem for a small one).</p>
 
     <h3>Variants</h3>
     <p>Set <code>data-variant</code> to <code>secondary</code>, <code>outline</code>, <code>ghost</code> or <code>danger</code>. Use one primary button per group.</p>
@@ -454,7 +454,7 @@
     </figure>
 
     <h3>Button groups</h3>
-    <p>Wrap buttons in an element with <code>role="group"</code> to join them into one segmented strip, with a hairline of page between the parts. For a choice of one option among a few, use a segmented control instead: radios inside an element with <code>role="radiogroup"</code>, as in the <a href="examples/triage.html">feature triage</a>.</p>
+    <p>Wrap buttons in an element with <code>role="group"</code> to join them into one segmented strip, with a hairline of page between the parts. For a choice of one option among a few, use a segmented control instead: radios inside an element with <code>role="radiogroup"</code>, as in the <a href="examples/audit-form.html">audit decisions</a> form.</p>
     <figure data-demo>
       <div role="group" aria-label="Zoom">
         <button data-variant="secondary">Day</button>
@@ -493,7 +493,7 @@
 </main>
 
 <footer>
-  <p>zinc.css 0.1.0-next.0 · MIT License · <a href="https://github.com/Rkaede/zinc.css">GitHub</a> · <a href="https://www.npmjs.com/package/zinc.css">npm</a></p>
+  <p>zinc.css 0.0.0-pre.7 · MIT License · <a href="https://github.com/Rkaede/zinc.css">GitHub</a> · <a href="https://www.npmjs.com/package/zinc.css">npm</a></p>
 </footer>
 </body>
 </html>

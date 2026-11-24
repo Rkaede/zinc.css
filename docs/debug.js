@@ -7,7 +7,8 @@
   // key: stored name and ?key= URL parameter; attr: the data-* on <html>
   const OPTIONS = [
     { key: "toc", attr: "debugToc", on: "list", label: "Contents as a list", hint: "“On this page” links in one column" },
-    { key: "labels", attr: "debugLabels", on: "above", label: "Headings above content", hint: "Wide windows (56rem+) put them in the margin" },
+    { key: "labels", attr: "debugLabels", on: "margin", label: "Headings in the margin", hint: "On wide windows (56rem+), as a label beside each section" },
+    { key: "code", attr: "debugCode", label: "Code blocks", choices: ["default", "aligned", "unboxed"] },
     { key: "spacing", attr: "debugSpacing", label: "Section spacing", choices: ["tight", "compact", "default", "spacious"] },
     // zinc rules sub-sections by default, so this switch starts on and stores "off"
     { key: "rules", attr: "debugRules", off: "off", label: "Rules between sub-sections", hint: "A hairline above each nested section" },
